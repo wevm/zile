@@ -166,7 +166,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     declaration: true,
     declarationMap: true,
     noEmit: false,
-    outDir: path.resolve(cwd, 'dist'),
+    outDir: tsConfigJson.compilerOptions?.outDir ?? path.resolve(cwd, 'dist'),
     sourceMap: true,
     // TODO: set other fields...
   } as const satisfies TsConfigJson['compilerOptions']
@@ -184,10 +184,6 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
       throw new Error('`exports` field must have a `src` field')
     })
     .map((entry) => path.resolve(cwd, entry))
-
-  if (!pkgJson.name)
-    // TODO: better error message
-    throw new Error('package.json must have a `name` field')
 
   const tmpProjectPath = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
   const tmpProject = path.resolve(tmpProjectPath, 'tsconfig.json')
