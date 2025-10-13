@@ -1,8 +1,6 @@
 name: Prerelease
 on: [push, pull_request]
 
-permissions: {}
-
 jobs:
   build:
     runs-on: ubuntu-latest
