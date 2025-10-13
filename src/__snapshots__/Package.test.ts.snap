@@ -1,0 +1,147 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`'/basic': Package.build > default > output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./index.ts",
+      "types": "./dist/index.js",
+      "default": "./dist/index.d.ts"
+    }
+  }
+}
+
+├── dist
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/basic': Package.build > default > result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.d.ts",
+        "src": "./index.ts",
+        "types": "./dist/index.js",
+      },
+    },
+    "name": "basic",
+    "type": "module",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "declaration": true,
+      "declarationMap": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "noEmit": false,
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+    "include": [
+      "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`'/basic': Package.transpile > default > tree 1`] = `
+"
+├── dist
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/basic-object-exports': Package.build > default > output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./index.ts",
+      "types": "./dist/index.js",
+      "default": "./dist/index.d.ts"
+    }
+  }
+}
+
+├── dist
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/basic-object-exports': Package.build > default > result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.d.ts",
+        "src": "./index.ts",
+        "types": "./dist/index.js",
+      },
+    },
+    "name": "basic",
+    "type": "module",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "declaration": true,
+      "declarationMap": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "noEmit": false,
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic-object-exports/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+    "include": [
+      "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic-object-exports/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`'/basic-object-exports': Package.transpile > default > tree 1`] = `
+"
+├── dist
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;

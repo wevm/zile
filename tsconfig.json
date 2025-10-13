@@ -1,0 +1,18 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    "isolatedModules": true,
+    "module": "nodenext",
+    "moduleDetection": "force",
+    "moduleResolution": "nodenext",
+    "noEmit": true,
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "zile": ["./src/index.ts"]
+    },
+    "skipLibCheck": true,
+    "strict": true,
+    "types": ["vitest/globals"],
+    "verbatimModuleSyntax": true
+  }
+}
