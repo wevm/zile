@@ -47,14 +47,37 @@ exports[`'/basic': Package.build > default > result 1`] = `
       "module": "nodenext",
       "moduleDetection": "force",
       "noEmit": false,
-      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic/dist",
+      "outDir": "/repos/basic/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
       "verbatimModuleSyntax": true,
     },
     "include": [
-      "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic/index.ts",
+      "/repos/basic/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`'/basic': Package.transpile > default > result 1`] = `
+{
+  "tsConfig": {
+    "compilerOptions": {
+      "declaration": true,
+      "declarationMap": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "noEmit": false,
+      "outDir": "/repos/basic/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+    "include": [
+      "/repos/basic/index.ts",
     ],
   },
 }
@@ -120,14 +143,37 @@ exports[`'/basic-object-exports': Package.build > default > result 1`] = `
       "module": "nodenext",
       "moduleDetection": "force",
       "noEmit": false,
-      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic-object-exports/dist",
+      "outDir": "/repos/basic-object-exports/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
       "verbatimModuleSyntax": true,
     },
     "include": [
-      "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic-object-exports/index.ts",
+      "/repos/basic-object-exports/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`'/basic-object-exports': Package.transpile > default > result 1`] = `
+{
+  "tsConfig": {
+    "compilerOptions": {
+      "declaration": true,
+      "declarationMap": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "noEmit": false,
+      "outDir": "/repos/basic-object-exports/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+    "include": [
+      "/repos/basic-object-exports/index.ts",
     ],
   },
 }

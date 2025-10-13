@@ -19,9 +19,10 @@ describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
 
 describe.each(await repos())('$relative: Package.transpile', ({ cwd }) => {
   test('default', async () => {
-    const _result = await Package.transpile({
+    const result = await Package.transpile({
       cwd,
     })
+    expect(result).toMatchSnapshot('result')
     expect(await tree(cwd)).toMatchSnapshot('tree')
   })
 })

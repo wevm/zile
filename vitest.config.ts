@@ -9,5 +9,6 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     globalSetup: path.resolve(import.meta.dirname, 'test/setup.global.ts'),
+    setupFiles: [path.resolve(import.meta.dirname, 'test/setup.ts')],
   },
 })
