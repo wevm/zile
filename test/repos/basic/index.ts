@@ -1,4 +1,7 @@
+import { bar as bar1, foo as foo1 } from './foo.js'
+
 export function foo(options: foo.Options = {}) {
+  foo1(options)
   console.log('Hello, foo!', options.value)
 }
 
@@ -9,6 +12,7 @@ export declare namespace foo {
 }
 
 export function bar(options: bar.Options = {}) {
+  bar1(options)
   console.log('Hello, bar!', options.value)
 }
 

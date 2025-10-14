@@ -1,10 +1,13 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`'/basic': Package.build > default > main 1`] = `
-"export function foo(options = {}) {
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
     console.log('Hello, foo!', options.value);
 }
 export function bar(options = {}) {
+    bar1(options);
     console.log('Hello, bar!', options.value);
 }
 (function (bar) {
@@ -36,10 +39,15 @@ exports[`'/basic': Package.build > default > output 1`] = `
 
 
 ├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
 │   ├── index.d.ts
 │   ├── index.d.ts.map
 │   ├── index.js
 │   └── index.js.map
+├── foo.ts
 ├── index.ts
 ├── package.json
 └── tsconfig.json
@@ -140,10 +148,15 @@ exports[`'/basic': Package.transpile > default > result 1`] = `
 exports[`'/basic': Package.transpile > default > tree 1`] = `
 "
 ├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
 │   ├── index.d.ts
 │   ├── index.d.ts.map
 │   ├── index.js
 │   └── index.js.map
+├── foo.ts
 ├── index.ts
 ├── package.json
 └── tsconfig.json
@@ -151,10 +164,13 @@ exports[`'/basic': Package.transpile > default > tree 1`] = `
 `;
 
 exports[`'/basic-object-exports': Package.build > default > main 1`] = `
-"export function foo(options = {}) {
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
     console.log('Hello, foo!', options.value);
 }
 export function bar(options = {}) {
+    bar1(options);
     console.log('Hello, bar!', options.value);
 }
 (function (bar) {
@@ -186,10 +202,15 @@ exports[`'/basic-object-exports': Package.build > default > output 1`] = `
 
 
 ├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
 │   ├── index.d.ts
 │   ├── index.d.ts.map
 │   ├── index.js
 │   └── index.js.map
+├── foo.ts
 ├── index.ts
 ├── package.json
 └── tsconfig.json
@@ -290,10 +311,15 @@ exports[`'/basic-object-exports': Package.transpile > default > result 1`] = `
 exports[`'/basic-object-exports': Package.transpile > default > tree 1`] = `
 "
 ├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
 │   ├── index.d.ts
 │   ├── index.d.ts.map
 │   ├── index.js
 │   └── index.js.map
+├── foo.ts
 ├── index.ts
 ├── package.json
 └── tsconfig.json
