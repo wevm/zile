@@ -1,5 +1,21 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`'/basic': Package.build > default > main 1`] = `
+"export function foo(options = {}) {
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
 exports[`'/basic': Package.build > default > output 1`] = `
 "{
   "name": "basic",
@@ -8,11 +24,16 @@ exports[`'/basic': Package.build > default > output 1`] = `
   "exports": {
     ".": {
       "src": "./index.ts",
-      "types": "./dist/index.js",
-      "default": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
-  }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }
+
 
 ├── dist
 │   ├── index.d.ts
@@ -30,27 +51,36 @@ exports[`'/basic': Package.build > default > result 1`] = `
   "packageJson": {
     "exports": {
       ".": {
-        "default": "./dist/index.d.ts",
+        "default": "./dist/index.js",
         "src": "./index.ts",
-        "types": "./dist/index.js",
+        "types": "./dist/index.d.ts",
       },
     },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
     "name": "basic",
+    "sideEffects": false,
     "type": "module",
+    "types": "./dist/index.d.ts",
     "version": "0.0.0",
   },
   "tsConfig": {
     "compilerOptions": {
+      "composite": false,
       "declaration": true,
+      "declarationDir": undefined,
       "declarationMap": true,
+      "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "nodenext",
+      "module": "esnext",
       "moduleDetection": "force",
+      "moduleResolution": "bundler",
       "noEmit": false,
       "outDir": "/repos/basic/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
+      "target": "es2021",
       "verbatimModuleSyntax": true,
     },
     "include": [
@@ -60,20 +90,42 @@ exports[`'/basic': Package.build > default > result 1`] = `
 }
 `;
 
+exports[`'/basic': Package.build > default > types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
 exports[`'/basic': Package.transpile > default > result 1`] = `
 {
   "tsConfig": {
     "compilerOptions": {
+      "composite": false,
       "declaration": true,
+      "declarationDir": undefined,
       "declarationMap": true,
+      "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "nodenext",
+      "module": "esnext",
       "moduleDetection": "force",
+      "moduleResolution": "bundler",
       "noEmit": false,
       "outDir": "/repos/basic/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
+      "target": "es2021",
       "verbatimModuleSyntax": true,
     },
     "include": [
@@ -96,6 +148,22 @@ exports[`'/basic': Package.transpile > default > tree 1`] = `
 "
 `;
 
+exports[`'/basic-object-exports': Package.build > default > main 1`] = `
+"export function foo(options = {}) {
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
 exports[`'/basic-object-exports': Package.build > default > output 1`] = `
 "{
   "name": "basic",
@@ -104,11 +172,16 @@ exports[`'/basic-object-exports': Package.build > default > output 1`] = `
   "exports": {
     ".": {
       "src": "./index.ts",
-      "types": "./dist/index.js",
-      "default": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
-  }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }
+
 
 ├── dist
 │   ├── index.d.ts
@@ -126,27 +199,36 @@ exports[`'/basic-object-exports': Package.build > default > result 1`] = `
   "packageJson": {
     "exports": {
       ".": {
-        "default": "./dist/index.d.ts",
+        "default": "./dist/index.js",
         "src": "./index.ts",
-        "types": "./dist/index.js",
+        "types": "./dist/index.d.ts",
       },
     },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
     "name": "basic",
+    "sideEffects": false,
     "type": "module",
+    "types": "./dist/index.d.ts",
     "version": "0.0.0",
   },
   "tsConfig": {
     "compilerOptions": {
+      "composite": false,
       "declaration": true,
+      "declarationDir": undefined,
       "declarationMap": true,
+      "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "nodenext",
+      "module": "esnext",
       "moduleDetection": "force",
+      "moduleResolution": "bundler",
       "noEmit": false,
       "outDir": "/repos/basic-object-exports/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
+      "target": "es2021",
       "verbatimModuleSyntax": true,
     },
     "include": [
@@ -156,20 +238,42 @@ exports[`'/basic-object-exports': Package.build > default > result 1`] = `
 }
 `;
 
+exports[`'/basic-object-exports': Package.build > default > types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
 exports[`'/basic-object-exports': Package.transpile > default > result 1`] = `
 {
   "tsConfig": {
     "compilerOptions": {
+      "composite": false,
       "declaration": true,
+      "declarationDir": undefined,
       "declarationMap": true,
+      "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "nodenext",
+      "module": "esnext",
       "moduleDetection": "force",
+      "moduleResolution": "bundler",
       "noEmit": false,
       "outDir": "/repos/basic-object-exports/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
+      "target": "es2021",
       "verbatimModuleSyntax": true,
     },
     "include": [

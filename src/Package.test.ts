@@ -11,9 +11,13 @@ describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
       cwd,
     })
     expect(result).toMatchSnapshot('result')
-    expect(
-      [await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8'), await tree(cwd)].join('\n'),
-    ).toMatchSnapshot('output')
+    const packageJsonString = await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8')
+    const packageJson = JSON.parse(packageJsonString)
+    expect([packageJsonString, await tree(cwd)].join('\n\n')).toMatchSnapshot('output')
+    expect(await fs.readFile(path.resolve(cwd, packageJson.main), 'utf-8')).toMatchSnapshot('main')
+    expect(await fs.readFile(path.resolve(cwd, packageJson.types), 'utf-8')).toMatchSnapshot(
+      'types',
+    )
   })
 })
 

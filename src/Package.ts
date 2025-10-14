@@ -52,11 +52,19 @@ export async function decoratePackageJson(
 
   // biome-ignore lint/style/noNonNullAssertion: _
   const relativeOutDir = `./${path.relative(cwd, tsConfig.compilerOptions!.outDir!)}`
+  const outFile = (name: string, ext: string) => `./${path.join(relativeOutDir, name + ext)}`
 
   if (!pkgJson.exports)
     // TODO: better error message
     throw new Error('package.json must have an `exports` field')
 
+  type Exports = {
+    [key: string]: {
+      src: string
+      types: string
+      default: string
+    }
+  }
   const exports = Object.fromEntries(
     Object.entries(pkgJson.exports).map(([key, value]) => {
       // Transform single `package.json#exports` entrypoints. They
@@ -76,8 +84,8 @@ export async function decoratePackageJson(
           key,
           {
             src: value,
-            types: `./${path.join(relativeOutDir, `${name}.js`)}`,
-            default: `./${path.join(relativeOutDir, `${name}.d.ts`)}`,
+            types: outFile(name, '.d.ts'),
+            default: outFile(name, '.js'),
           },
         ]
       }
@@ -100,19 +108,30 @@ export async function decoratePackageJson(
           key,
           {
             ...value,
-            types: `./${path.join(relativeOutDir, `${name}.js`)}`,
-            default: `./${path.join(relativeOutDir, `${name}.d.ts`)}`,
+            types: outFile(name, '.d.ts'),
+            default: outFile(name, '.js'),
           },
         ]
       }
 
       // TODO: better error message
-      throw new Error('`exports` field must have a `src` field')
+      throw new Error('`exports` field must be an object with a `src` field')
     }),
-  )
+  ) as Exports
+
+  const root = exports['.']
 
   return {
     ...pkgJson,
+    type: pkgJson.type ?? 'module',
+    sideEffects: pkgJson.sideEffects ?? false,
+    ...(root
+      ? {
+          main: pkgJson.main ?? root.default,
+          module: pkgJson.module ?? root.default,
+          types: pkgJson.types ?? root.types,
+        }
+      : {}),
     exports,
   } as PackageJson
 }
@@ -163,12 +182,19 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
 
   const compilerOptions = {
     ...tsConfigJson.compilerOptions,
+    composite: false,
     declaration: true,
+    declarationDir: tsConfigJson.compilerOptions?.declarationDir,
     declarationMap: true,
+    emitDeclarationOnly: false,
+    esModuleInterop: true,
+    module: 'esnext',
+    moduleResolution: 'bundler',
     noEmit: false,
     outDir: tsConfigJson.compilerOptions?.outDir ?? path.resolve(cwd, 'dist'),
+    skipLibCheck: true,
     sourceMap: true,
-    // TODO: set other fields...
+    target: tsConfigJson.compilerOptions?.target ?? 'es2021',
   } as const satisfies TsConfigJson['compilerOptions']
 
   if (!pkgJson.exports)
@@ -184,6 +210,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
       throw new Error('`exports` field must have a `src` field')
     })
     .map((entry) => path.resolve(cwd, entry))
+    .filter((entry) => entry.endsWith('.ts'))
 
   const tmpProjectPath = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
   const tmpProject = path.resolve(tmpProjectPath, 'tsconfig.json')
