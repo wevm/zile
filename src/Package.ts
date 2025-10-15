@@ -180,6 +180,21 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
 
   const [pkgJson, tsConfigJson] = await Promise.all([readPackageJson(cwd), readTsconfigJson(cwd)])
 
+  const tsconfigPath = path.resolve(cwd, 'tsconfig.json')
+  const { module: mod, moduleResolution: modRes } = tsConfigJson.compilerOptions ?? {}
+  // TODO: CLI `zile check --fix` command to add these and rewrite extensions in project (if needed).
+  // TODO: extract to Package.checkTsconfig()
+  const isNodeNext = (val?: string) => val === 'nodenext' || val === 'NodeNext'
+  const errors = []
+  if (!isNodeNext(mod))
+    errors.push(`  - "module" must be "nodenext". Found: ${mod ? `"${mod}"` : 'undefined'}`)
+  if (!isNodeNext(modRes))
+    errors.push(
+      `  - "moduleResolution" must be "nodenext". Found: ${modRes ? `"${modRes}"` : 'undefined'}`,
+    )
+  if (errors.length > 0)
+    throw new Error(`${tsconfigPath} has invalid configuration:\n${errors.join('\n')}`)
+
   const compilerOptions = {
     ...tsConfigJson.compilerOptions,
     composite: false,
@@ -188,8 +203,6 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     declarationMap: true,
     emitDeclarationOnly: false,
     esModuleInterop: true,
-    module: 'esnext',
-    moduleResolution: 'bundler',
     noEmit: false,
     outDir: tsConfigJson.compilerOptions?.outDir ?? path.resolve(cwd, 'dist'),
     skipLibCheck: true,

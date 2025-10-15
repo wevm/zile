@@ -3,10 +3,16 @@ import path from 'node:path'
 import { setupRepos, tree } from '../test/utils.js'
 import * as Package from './Package.js'
 
-const repos = () => setupRepos().then(({ repos }) => repos)
+const repos = () =>
+  setupRepos().then(({ repos }) => repos.filter(({ relative }) => !relative.includes('invalid-')))
 
 describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
   test('default', async () => {
+    if (cwd.includes('error-')) {
+      await expect(Package.build({ cwd })).rejects.toMatchSnapshot('error')
+      return
+    }
+
     const result = await Package.build({
       cwd,
     })
@@ -23,6 +29,11 @@ describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
 
 describe.each(await repos())('$relative: Package.transpile', ({ cwd }) => {
   test('default', async () => {
+    if (cwd.includes('error-')) {
+      await expect(Package.transpile({ cwd })).rejects.toMatchSnapshot('error')
+      return
+    }
+
     const result = await Package.transpile({
       cwd,
     })

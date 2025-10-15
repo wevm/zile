@@ -17,6 +17,7 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/",
+        "/test/repos/error-module-resolution",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
       ]
@@ -30,6 +31,7 @@ describe('Packages.find', () => {
 
     expect(relative(result)).toMatchInlineSnapshot(`
       [
+        "/test/repos/error-module-resolution",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
       ]
@@ -70,6 +72,7 @@ describe('Packages.find', () => {
 
     expect(relative(result)).toMatchInlineSnapshot(`
       [
+        "/test/repos/error-module-resolution",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
       ]
@@ -132,6 +135,7 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/",
+        "/test/repos/error-module-resolution",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
       ]
@@ -176,6 +180,7 @@ describe('Packages.build', () => {
 
     const result = await Packages.build({
       cwd,
+      includes: ['**', '!**/error-*', '!**/node_modules/**'],
     })
 
     expect(result).toMatchSnapshot()

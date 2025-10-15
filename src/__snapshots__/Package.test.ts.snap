@@ -81,9 +81,9 @@ exports[`'/basic': Package.build > default > result 1`] = `
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "esnext",
+      "module": "nodenext",
       "moduleDetection": "force",
-      "moduleResolution": "bundler",
+      "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/basic/dist",
       "skipLibCheck": true,
@@ -127,9 +127,9 @@ exports[`'/basic': Package.transpile > default > result 1`] = `
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "esnext",
+      "module": "nodenext",
       "moduleDetection": "force",
-      "moduleResolution": "bundler",
+      "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/basic/dist",
       "skipLibCheck": true,
@@ -244,9 +244,9 @@ exports[`'/basic-object-exports': Package.build > default > result 1`] = `
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "esnext",
+      "module": "nodenext",
       "moduleDetection": "force",
-      "moduleResolution": "bundler",
+      "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/basic-object-exports/dist",
       "skipLibCheck": true,
@@ -290,9 +290,9 @@ exports[`'/basic-object-exports': Package.transpile > default > result 1`] = `
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
       "isolatedModules": true,
-      "module": "esnext",
+      "module": "nodenext",
       "moduleDetection": "force",
-      "moduleResolution": "bundler",
+      "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/basic-object-exports/dist",
       "skipLibCheck": true,
@@ -324,4 +324,16 @@ exports[`'/basic-object-exports': Package.transpile > default > tree 1`] = `
 ├── package.json
 └── tsconfig.json
 "
+`;
+
+exports[`'/error-module-resolution': Package.build > default > error 1`] = `
+[Error: /Users/jakemoxey/git/zile2/test/.tmp/0/repos/error-module-resolution/tsconfig.json has invalid configuration:
+  - "module" must be "nodenext". Found: "preserve"
+  - "moduleResolution" must be "nodenext". Found: "bundler"]
+`;
+
+exports[`'/error-module-resolution': Package.transpile > default > error 1`] = `
+[Error: /Users/jakemoxey/git/zile2/test/.tmp/1/repos/error-module-resolution/tsconfig.json has invalid configuration:
+  - "module" must be "nodenext". Found: "preserve"
+  - "moduleResolution" must be "nodenext". Found: "bundler"]
 `;
