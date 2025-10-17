@@ -1,4 +1,6 @@
 import { spawn } from 'node:child_process'
+import * as fs from 'node:fs/promises'
+import * as path from 'node:path'
 import { setupRepos, tree } from '../test/utils.js'
 
 const repos = () =>
@@ -22,6 +24,12 @@ describe.each(await repos())('$relative: Cli.run', ({ cwd }) => {
     )
     await promise.promise
 
-    expect(await tree(cwd)).toMatchSnapshot('output tree')
+    const packageJsonString = await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8')
+    const packageJson = JSON.parse(packageJsonString)
+    expect([packageJsonString, await tree(cwd)].join('\n\n')).toMatchSnapshot('output')
+    expect(await fs.readFile(path.resolve(cwd, packageJson.main), 'utf-8')).toMatchSnapshot('main')
+    expect(await fs.readFile(path.resolve(cwd, packageJson.types), 'utf-8')).toMatchSnapshot(
+      'types',
+    )
   })
 })
