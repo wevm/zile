@@ -2,10 +2,8 @@ import * as fs from 'node:fs/promises'
 import path from 'node:path'
 import * as Packages from '../src/Packages.js'
 
-let i = 0
-
 export async function setupRepos() {
-  const tmpCwd = path.resolve(import.meta.dirname, `.tmp/${i++}/repos`)
+  const tmpCwd = path.resolve(import.meta.dirname, `.tmp/${crypto.randomUUID()}/repos`)
   const cwd = path.resolve(import.meta.dirname, 'repos')
 
   await fs.rm(tmpCwd, { recursive: true }).catch(() => {})

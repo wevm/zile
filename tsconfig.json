@@ -1,7 +1,7 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
+    "lib": ["ES2024"],
     "isolatedModules": true,
     "module": "nodenext",
     "moduleDetection": "force",
@@ -11,6 +11,7 @@
     "paths": {
       "zile": ["./src/index.ts"]
     },
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "types": ["vitest/globals"],

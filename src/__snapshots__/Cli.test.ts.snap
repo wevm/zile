@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`'/basic': Cli.run > default > output tree 1`] = `
+"
+├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/basic-object-exports': Cli.run > default > output tree 1`] = `
+"
+├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/single-entrypoint': Cli.run > default > output tree 1`] = `
+"
+├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;

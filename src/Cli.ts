@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { cac } from 'cac'
-import pkgJson from '../package.json' with { type: 'json' }
-import { build } from './cli/commands/build.ts'
+import * as commands from './internal/cli/commands.js'
+import pkgJson from './internal/package.json' with { type: 'json' }
 
 /**
  * Runs the CLI with the given arguments.
@@ -15,8 +15,8 @@ export async function run(options: run.Options): Promise<void> {
   const cli = cac(pkgJson.name)
   cli.version(pkgJson.version)
 
-  build(cli.command('[root]', ''))
-  build(cli.command('build', 'Build a package'))
+  commands.build(cli.command('[root]', ''))
+  commands.build(cli.command('build', 'Build a package'))
 
   cli.help()
   cli.parse(args)

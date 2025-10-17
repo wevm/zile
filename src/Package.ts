@@ -434,12 +434,12 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   const promise = Promise.withResolvers<null>()
 
   // TODO: add logging
-  // child.stdout.on("data", (data) => {
-  //   console.log(data.toString());
-  // });
-  // child.stderr.on("data", (data) => {
-  //   console.error(data.toString());
-  // });
+  // child.stdout.on('data', (data) => {
+  //   console.log(data.toString())
+  // })
+  // child.stderr.on('data', (data) => {
+  //   console.error(data.toString())
+  // })
   child.on('close', (code) => {
     if (code === 0) promise.resolve(null)
     else promise.reject(new Error(`tsgo exited with code ${code}`))

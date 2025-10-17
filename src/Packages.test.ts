@@ -18,9 +18,11 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/single-entrypoint",
-        "/test/repos/basic",
-        "/test/repos/basic-object-exports",
         "/test/repos/error-module-resolution",
+        "/test/repos/basic-object-exports",
+        "/test/repos/basic",
+        "/src/internal",
+        "/dist/internal",
       ]
     `)
   })
@@ -33,9 +35,9 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/single-entrypoint",
-        "/test/repos/basic",
-        "/test/repos/basic-object-exports",
         "/test/repos/error-module-resolution",
+        "/test/repos/basic-object-exports",
+        "/test/repos/basic",
       ]
     `)
   })
@@ -75,9 +77,9 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/single-entrypoint",
-        "/test/repos/basic",
-        "/test/repos/basic-object-exports",
         "/test/repos/error-module-resolution",
+        "/test/repos/basic-object-exports",
+        "/test/repos/basic",
       ]
     `)
   })
@@ -139,9 +141,11 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/single-entrypoint",
-        "/test/repos/basic",
-        "/test/repos/basic-object-exports",
         "/test/repos/error-module-resolution",
+        "/test/repos/basic-object-exports",
+        "/test/repos/basic",
+        "/src/internal",
+        "/dist/internal",
       ]
     `)
   })
