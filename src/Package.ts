@@ -1,9 +1,10 @@
 import * as cp from 'node:child_process'
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
+import * as Tsconfig from 'tsconfck'
 import type { PackageJson, TsConfigJson } from 'type-fest'
 
-export type { PackageJson }
+export type { PackageJson, TsConfigJson }
 
 /**
  * Builds a package.
@@ -14,10 +15,10 @@ export type { PackageJson }
 export async function build(options: build.Options): Promise<build.ReturnType> {
   const { cwd = process.cwd() } = options
 
-  const { tsConfig } = await transpile({ cwd })
-
-  const packageJson_user = await readPackageJson(cwd)
-  const packageJson = await decoratePackageJson(packageJson_user, { cwd, tsConfig })
+  const pkgJson = await readPackageJson({ cwd })
+  const entries = getEntries({ cwd, pkgJson })
+  const { tsConfig } = await transpile({ cwd, entries })
+  const packageJson = await decoratePackageJson(pkgJson, { cwd, tsConfig })
   await writePackageJson(cwd, packageJson)
 
   return { packageJson, tsConfig }
@@ -54,9 +55,31 @@ export async function decoratePackageJson(
   const relativeOutDir = `./${path.relative(cwd, tsConfig.compilerOptions!.outDir!)}`
   const outFile = (name: string, ext: string) => `./${path.join(relativeOutDir, name + ext)}`
 
-  if (!pkgJson.exports)
-    // TODO: better error message
-    throw new Error('package.json must have an `exports` field')
+  let exps = pkgJson.exports
+
+  // Support single entrypoint via `main` field
+  if (!exps) {
+    if (!pkgJson.main)
+      // TODO: better error message
+      throw new Error('package.json must have an `exports` or `main` field')
+
+    // Transform single `package.json#main` field. They
+    // must point to the source file. Otherwise, an error is thrown.
+    //
+    // main: "./src/index.ts"
+    // ↓ ↓ ↓
+    // main: "./src/index.ts"
+    // exports: {
+    //   ".": {
+    //     "src": "./src/index.ts",
+    //     "types": "./dist/index.d.ts",
+    //     "default": "./dist/index.js",
+    //   },
+    // }
+    exps = {
+      '.': pkgJson.main,
+    }
+  }
 
   type Exports = {
     [key: string]: {
@@ -66,7 +89,7 @@ export async function decoratePackageJson(
     }
   }
   const exports = Object.fromEntries(
-    Object.entries(pkgJson.exports).map(([key, value]) => {
+    Object.entries(exps).map(([key, value]) => {
       // Transform single `package.json#exports` entrypoints. They
       // must point to the source file. Otherwise, an error is thrown.
       //
@@ -146,15 +169,70 @@ export declare namespace decoratePackageJson {
 }
 
 /**
+ * Gets entry files from package.json exports field or main field.
+ *
+ * @param options - Options for getting entry files.
+ * @returns Array of absolute paths to entry files.
+ */
+export function getEntries(options: getEntries.Options): string[] {
+  const { cwd, pkgJson } = options
+
+  // Support single entrypoint via `main` field
+  if (!pkgJson.exports) {
+    if (!pkgJson.main)
+      // TODO: better error message
+      throw new Error('package.json must have an `exports` or `main` field')
+
+    const entry = path.resolve(cwd, pkgJson.main)
+    if (!/\.(m|c)?[jt]sx?$/.test(entry))
+      // TODO: better error message
+      throw new Error('`main` field must point to a TypeScript or JavaScript file')
+
+    return [entry]
+  }
+
+  const entries = Object.values(pkgJson.exports)
+    .map((entry) => {
+      if (typeof entry === 'string') return entry
+      if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
+        return entry.src
+      // TODO: better error message
+      throw new Error('`exports` field must have a `src` field')
+    })
+    .map((entry) => path.resolve(cwd, entry))
+    .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry))
+
+  return entries
+}
+
+export declare namespace getEntries {
+  type Options = {
+    /** Working directory. */
+    cwd: string
+    /** Package.json file. */
+    pkgJson: PackageJson
+  }
+}
+
+/**
  * Reads the package.json file from the given working directory.
  *
  * @param cwd - Working directory to read the package.json file from.
  * @returns Parsed package.json file as an object.
  */
-export async function readPackageJson(cwd: string) {
+export async function readPackageJson(options: readPackageJson.Options) {
+  const { cwd } = options
+
   return (await fs
     .readFile(path.resolve(cwd, 'package.json'), 'utf-8')
     .then(JSON.parse)) as PackageJson
+}
+
+export declare namespace readPackageJson {
+  type Options = {
+    /** Working directory. */
+    cwd: string
+  }
 }
 
 /**
@@ -163,10 +241,9 @@ export async function readPackageJson(cwd: string) {
  * @param cwd - Working directory to read the tsconfig.json file from.
  * @returns Parsed tsconfig.json file as an object.
  */
-export async function readTsconfigJson(cwd: string) {
-  return (await fs
-    .readFile(path.resolve(cwd, 'tsconfig.json'), 'utf-8')
-    .then(JSON.parse)) as TsConfigJson
+export async function readTsconfigJson(cwd: string): Promise<TsConfigJson> {
+  const result = await Tsconfig.parse(path.resolve(cwd, 'tsconfig.json'))
+  return result.tsconfig
 }
 
 /**
@@ -176,10 +253,9 @@ export async function readTsconfigJson(cwd: string) {
  * @returns Transpilation artifacts.
  */
 export async function transpile(options: transpile.Options): Promise<transpile.ReturnType> {
-  const { cwd = process.cwd() } = options
+  const { cwd = process.cwd(), entries } = options
 
-  const [pkgJson, tsConfigJson] = await Promise.all([readPackageJson(cwd), readTsconfigJson(cwd)])
-
+  const tsConfigJson = await readTsconfigJson(cwd)
   const tsconfigPath = path.resolve(cwd, 'tsconfig.json')
   const { module: mod, moduleResolution: modRes } = tsConfigJson.compilerOptions ?? {}
   // TODO: CLI `zile check --fix` command to add these and rewrite extensions in project (if needed).
@@ -210,21 +286,6 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     target: tsConfigJson.compilerOptions?.target ?? 'es2021',
   } as const satisfies TsConfigJson['compilerOptions']
 
-  if (!pkgJson.exports)
-    // TODO: better error message
-    throw new Error('package.json must have an `exports` field')
-
-  const include = Object.values(pkgJson.exports)
-    .map((entry) => {
-      if (typeof entry === 'string') return entry
-      if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
-        return entry.src
-      // TODO: better error message
-      throw new Error('`exports` field must have a `src` field')
-    })
-    .map((entry) => path.resolve(cwd, entry))
-    .filter((entry) => entry.endsWith('.ts'))
-
   const tmpProjectPath = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
   const tmpProject = path.resolve(tmpProjectPath, 'tsconfig.json')
 
@@ -236,7 +297,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
 
   const tsConfig = {
     compilerOptions,
-    include,
+    include: entries,
   } as const
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
 
@@ -269,6 +330,8 @@ export declare namespace transpile {
   type Options = {
     /** Working directory of the package to transpile. @default process.cwd() */
     cwd?: string | undefined
+    /** Entry files to include in the transpilation. */
+    entries: string[]
   }
 
   type ReturnType = {

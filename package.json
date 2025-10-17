@@ -11,7 +11,8 @@
   },
   "packageManager": "bun@1.3",
   "dependencies": {
-    "@typescript/native-preview": "^7.0.0-dev.20251010.1"
+    "@typescript/native-preview": "^7.0.0-dev.20251010.1",
+    "tsconfck": "^3.1.6"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",

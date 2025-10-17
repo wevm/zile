@@ -1,0 +1,7 @@
+{
+  "name": "single-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.ts"
+}
+
