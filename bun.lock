@@ -4,17 +4,17 @@
     "": {
       "name": "zile",
       "dependencies": {
-        "@arethetypeswrong/core": "^0.18.2",
+        "@arethetypeswrong/cli": "^0.18.2",
         "@typescript/native-preview": "^7.0.0-dev.20251010.1",
+        "cac": "^6.7.14",
+        "publint": "^0.3.14",
         "tsconfck": "^3.1.6",
       },
       "devDependencies": {
-        "@arethetypeswrong/cli": "^0.18.2",
         "@biomejs/biome": "^2.2.5",
         "@changesets/changelog-github": "^0.5.0",
         "@changesets/cli": "^2.27.7",
         "@types/node": "^24.7.1",
-        "publint": "^0.3.14",
         "type-fest": "^5.0.1",
         "typescript": "^5.9.3",
         "vitest": "^3.2.4",
@@ -577,6 +577,8 @@
     "wrap-ansi": ["wrap-ansi@7.0.0", "", { "dependencies": { "ansi-styles": "^4.0.0", "string-width": "^4.1.0", "strip-ansi": "^6.0.0" } }, "sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q=="],
 
     "y18n": ["y18n@5.0.8", "", {}, "sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA=="],
+
+    "yaml": ["yaml@2.8.1", "", { "bin": { "yaml": "bin.mjs" } }, "sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw=="],
 
     "yargs": ["yargs@16.2.0", "", { "dependencies": { "cliui": "^7.0.2", "escalade": "^3.1.1", "get-caller-file": "^2.0.5", "require-directory": "^2.1.1", "string-width": "^4.2.0", "y18n": "^5.0.5", "yargs-parser": "^20.2.2" } }, "sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw=="],
 
