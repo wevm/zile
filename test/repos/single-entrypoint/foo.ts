@@ -21,4 +21,3 @@ export namespace bar {
     console.log('Hello, baz!', options.value)
   }
 }
-

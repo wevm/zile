@@ -4,6 +4,7 @@
     "": {
       "name": "zile",
       "dependencies": {
+        "@arethetypeswrong/core": "^0.18.2",
         "@typescript/native-preview": "^7.0.0-dev.20251010.1",
         "tsconfck": "^3.1.6",
       },

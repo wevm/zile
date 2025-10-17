@@ -38,6 +38,131 @@ export declare namespace build {
   }
 }
 
+export async function check(options: check.Options): Promise<check.ReturnType> {
+  const { cwd = process.cwd() } = options
+  const [attw, publint] = await Promise.all([checkAttw({ cwd }), checkPublint({ cwd })])
+  return { output: { attw: attw.output, publint: publint.output } }
+}
+
+export declare namespace check {
+  type Options = {
+    /** Working directory to check. @default process.cwd() */
+    cwd?: string | undefined
+  }
+
+  type ReturnType = {
+    /** Check results. */
+    output: {
+      /** ATTW CLI output as a string. */
+      attw: string
+      /** Publint CLI output as a string. */
+      publint: string
+    }
+  }
+}
+
+/**
+ * Checks if the package is properly typed using @arethetypeswrong/cli.
+ *
+ * @param options - Options for checking a package.
+ * @returns CLI output as a string.
+ */
+export async function checkAttw(options: checkAttw.Options): Promise<checkAttw.ReturnType> {
+  const { cwd = process.cwd() } = options
+
+  const attw = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', 'attw')
+  const child = cp.spawn(
+    attw,
+    ['--pack', '.', '--format', 'table-flipped', '--profile', 'esm-only'],
+    {
+      cwd,
+      env: { ...process.env, NO_COLOR: '1' },
+    },
+  )
+
+  const promise = Promise.withResolvers<checkAttw.ReturnType>()
+  const stdout: Buffer[] = []
+  const stderr: Buffer[] = []
+
+  child.stdout.on('data', (data: Buffer) => {
+    stdout.push(data)
+  })
+  child.stderr.on('data', (data: Buffer) => {
+    stderr.push(data)
+  })
+  child.on('close', (code) => {
+    const output = Buffer.concat(stdout).toString()
+    const error = Buffer.concat(stderr).toString()
+    if (code === 0) promise.resolve({ output })
+    else promise.reject(new Error(`attw exited with code ${code}\n${error}`))
+  })
+  child.on('error', promise.reject)
+
+  return await promise.promise
+}
+
+export declare namespace checkAttw {
+  type Options = {
+    /** Working directory to check. @default process.cwd() */
+    cwd?: string | undefined
+  }
+
+  type ReturnType = {
+    /** CLI output as a string. */
+    output: string
+  }
+}
+
+/**
+ * Checks the package using publint CLI.
+ *
+ * @param options - Options for checking a package.
+ * @returns CLI output as a string.
+ */
+export async function checkPublint(
+  options: checkPublint.Options,
+): Promise<checkPublint.ReturnType> {
+  const { cwd = process.cwd() } = options
+
+  const publint = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', 'publint')
+  const child = cp.spawn(publint, ['--strict'], {
+    cwd,
+    env: { ...process.env, NO_COLOR: '1' },
+  })
+
+  const promise = Promise.withResolvers<checkPublint.ReturnType>()
+  const stdout: Buffer[] = []
+  const stderr: Buffer[] = []
+
+  child.stdout.on('data', (data: Buffer) => {
+    stdout.push(data)
+  })
+  child.stderr.on('data', (data: Buffer) => {
+    stderr.push(data)
+  })
+  child.on('close', (code) => {
+    const output = Buffer.concat(stdout).toString()
+    const error = Buffer.concat(stderr).toString()
+    if (code === 0) promise.resolve({ output })
+    else promise.reject(new Error(`publint exited with code ${code}\n${error}`))
+  })
+  child.on('error', promise.reject)
+
+  return await promise.promise
+}
+
+export declare namespace checkPublint {
+  type Options = {
+    /** Working directory to check. @default process.cwd() */
+    cwd?: string | undefined
+  }
+
+  type ReturnType = {
+    /** CLI output as a string. */
+    output: string
+  }
+}
+
 /**
  * Decorates the package.json file to include publish-specific fields.
  *

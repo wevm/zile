@@ -1,60 +1,6 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`'/basic': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/basic': Package.build > default > output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": {
-      "src": "./index.ts",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-├── dist
-│   ├── foo.d.ts
-│   ├── foo.d.ts.map
-│   ├── foo.js
-│   ├── foo.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/basic': Package.build > default > result 1`] = `
+exports[`/single-entrypoint: Package.build default: result 1`] = `
 {
   "packageJson": {
     "exports": {
@@ -64,9 +10,9 @@ exports[`'/basic': Package.build > default > result 1`] = `
         "types": "./dist/index.d.ts",
       },
     },
-    "main": "./dist/index.js",
+    "main": "./index.ts",
     "module": "./dist/index.js",
-    "name": "basic",
+    "name": "single-entrypoint",
     "sideEffects": false,
     "type": "module",
     "types": "./dist/index.d.ts",
@@ -85,7 +31,7 @@ exports[`'/basic': Package.build > default > result 1`] = `
       "moduleDetection": "force",
       "moduleResolution": "nodenext",
       "noEmit": false,
-      "outDir": "/repos/basic/dist",
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/single-entrypoint/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -93,184 +39,43 @@ exports[`'/basic': Package.build > default > result 1`] = `
       "verbatimModuleSyntax": true,
     },
     "include": [
-      "/repos/basic/index.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/single-entrypoint/index.ts",
     ],
   },
 }
 `;
 
-exports[`'/basic': Package.build > default > types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/basic-object-exports': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/basic-object-exports': Package.build > default > output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": {
-      "src": "./index.ts",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-├── dist
-│   ├── foo.d.ts
-│   ├── foo.d.ts.map
-│   ├── foo.js
-│   ├── foo.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/basic-object-exports': Package.build > default > result 1`] = `
+exports[`/single-entrypoint: Package.build default: check 1`] = `
 {
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./index.ts",
-        "types": "./dist/index.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "basic",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "composite": false,
-      "declaration": true,
-      "declarationDir": undefined,
-      "declarationMap": true,
-      "emitDeclarationOnly": false,
-      "esModuleInterop": true,
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": false,
-      "outDir": "/repos/basic-object-exports/dist",
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "strict": true,
-      "target": "es2021",
-      "verbatimModuleSyntax": true,
-    },
-    "include": [
-      "/repos/basic-object-exports/index.ts",
-    ],
-  },
-}
-`;
-
-exports[`'/basic-object-exports': Package.build > default > types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/error-module-resolution': Package.build > default > error 1`] = `
-[Error: /Users/jakemoxey/git/zile2/test/.tmp/0/repos/error-module-resolution/tsconfig.json has invalid configuration:
-  - "module" must be "nodenext". Found: "preserve"
-  - "moduleResolution" must be "nodenext". Found: "bundler"]
-`;
-
-exports[`'/single-entrypoint': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js'
-
-export function foo(options: foo.Options = {}) {
-  foo1(options)
-  console.log('Hello, foo!', options.value)
-}
-
-export declare namespace foo {
-  type Options = {
-    value?: string | undefined
-  }
-}
-
-export function bar(options: bar.Options = {}) {
-  bar1(options)
-  console.log('Hello, bar!', options.value)
-}
-
-export namespace bar {
-  export type Options = {
-    value?: string | undefined
-  }
-
-  export function baz(options: Options = {}) {
-    console.log('Hello, baz!', options.value)
-  }
-}
-
+  "output": {
+    "attw": 
 "
+single-entrypoint v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+
+┌─────────────────────┬───────────────────┬─────────┬──────────────────┬────────────────────────────────────────┐
+│                     │ node16 (from ESM) │ bundler │ node10 (ignored) │ node16 (from CJS) (ignored)            │
+├─────────────────────┼───────────────────┼─────────┼──────────────────┼────────────────────────────────────────┤
+│ "single-entrypoint" │ 🟢 (ESM)          │ 🟢      │ (ignored) 🟢     │ (ignored) ⚠️ ESM (dynamic import only) │
+└─────────────────────┴───────────────────┴─────────┴──────────────────┴────────────────────────────────────────┘
+"
+,
+    "publint": 
+"Running publint v0.3.14 for single-entrypoint...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
 `;
 
-exports[`'/single-entrypoint': Package.build > default > output 1`] = `
+exports[`/single-entrypoint: Package.build default: output 1`] = `
 "{
   "name": "single-entrypoint",
   "version": "0.0.0",
@@ -305,7 +110,55 @@ exports[`'/single-entrypoint': Package.build > default > output 1`] = `
 "
 `;
 
-exports[`'/single-entrypoint': Package.build > default > result 1`] = `
+exports[`/single-entrypoint: Package.build default: main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js'
+
+export function foo(options: foo.Options = {}) {
+  foo1(options)
+  console.log('Hello, foo!', options.value)
+}
+
+export declare namespace foo {
+  type Options = {
+    value?: string | undefined
+  }
+}
+
+export function bar(options: bar.Options = {}) {
+  bar1(options)
+  console.log('Hello, bar!', options.value)
+}
+
+export namespace bar {
+  export type Options = {
+    value?: string | undefined
+  }
+
+  export function baz(options: Options = {}) {
+    console.log('Hello, baz!', options.value)
+  }
+}
+"
+`;
+
+exports[`/single-entrypoint: Package.build default: types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/basic: Package.build default: result 1`] = `
 {
   "packageJson": {
     "exports": {
@@ -315,9 +168,9 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
         "types": "./dist/index.d.ts",
       },
     },
-    "main": "./index.ts",
+    "main": "./dist/index.js",
     "module": "./dist/index.js",
-    "name": "single-entrypoint",
+    "name": "basic",
     "sideEffects": false,
     "type": "module",
     "types": "./dist/index.d.ts",
@@ -336,7 +189,7 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
       "moduleDetection": "force",
       "moduleResolution": "nodenext",
       "noEmit": false,
-      "outDir": "/repos/single-entrypoint/dist",
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -344,13 +197,97 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
       "verbatimModuleSyntax": true,
     },
     "include": [
-      "/repos/single-entrypoint/index.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic/index.ts",
     ],
   },
 }
 `;
 
-exports[`'/single-entrypoint': Package.build > default > types 1`] = `
+exports[`/basic: Package.build default: check 1`] = `
+{
+  "output": {
+    "attw": 
+"
+basic v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+
+┌─────────┬───────────────────┬─────────┬──────────────────┬────────────────────────────────────────┐
+│         │ node16 (from ESM) │ bundler │ node10 (ignored) │ node16 (from CJS) (ignored)            │
+├─────────┼───────────────────┼─────────┼──────────────────┼────────────────────────────────────────┤
+│ "basic" │ 🟢 (ESM)          │ 🟢      │ (ignored) 🟢     │ (ignored) ⚠️ ESM (dynamic import only) │
+└─────────┴───────────────────┴─────────┴──────────────────┴────────────────────────────────────────┘
+"
+,
+    "publint": 
+"Running publint v0.3.14 for basic...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
+`;
+
+exports[`/basic: Package.build default: output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/basic: Package.build default: main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/basic: Package.build default: types 1`] = `
 "export declare function foo(options?: foo.Options): void;
 export declare namespace foo {
     type Options = {
@@ -366,3 +303,153 @@ export declare namespace bar {
 }
 //# sourceMappingURL=index.d.ts.map"
 `;
+
+exports[`/basic-object-exports: Package.build default: result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "basic",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic-object-exports/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2021",
+      "verbatimModuleSyntax": true,
+    },
+    "include": [
+      "/Users/jakemoxey/git/zile2/test/.tmp/0/repos/basic-object-exports/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`/basic-object-exports: Package.build default: check 1`] = `
+{
+  "output": {
+    "attw": 
+"
+basic v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+
+┌─────────┬───────────────────┬─────────┬──────────────────┬────────────────────────────────────────┐
+│         │ node16 (from ESM) │ bundler │ node10 (ignored) │ node16 (from CJS) (ignored)            │
+├─────────┼───────────────────┼─────────┼──────────────────┼────────────────────────────────────────┤
+│ "basic" │ 🟢 (ESM)          │ 🟢      │ (ignored) 🟢     │ (ignored) ⚠️ ESM (dynamic import only) │
+└─────────┴───────────────────┴─────────┴──────────────────┴────────────────────────────────────────┘
+"
+,
+    "publint": 
+"Running publint v0.3.14 for basic...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
+`;
+
+exports[`/basic-object-exports: Package.build default: output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/basic-object-exports: Package.build default: main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/basic-object-exports: Package.build default: types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/error-module-resolution: Package.build default: error 1`] = `[Error: /Users/jakemoxey/git/zile2/test/.tmp/0/repos/error-module-resolution/tsconfig.json has invalid configuration:
+  - "module" must be "nodenext". Found: "preserve"
+  - "moduleResolution" must be "nodenext". Found: "bundler"]`;
