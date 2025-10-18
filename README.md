@@ -4,7 +4,13 @@ Opinionated build tool for TypeScript libraries.
 
 ## Getting Started
 
-### 1. Add Entrypoints
+### 1. Install
+
+```
+npm i zile
+```
+
+### 2. Add Entrypoints
 
 Zile does not require specific configuration. However, it does require a few fields in your `package.json` file to be present depending if you have a single or multiple entrypoints.
 
@@ -42,7 +48,7 @@ Multiple entrypoints can be specified as the `exports` field pointing to your so
 
 > The `exports` will be remapped to the built files in your output when you run `zile`.
 
-### 2. Run Zile
+### 3. Run Zile
 
 Add a `build` script to your `package.json` file, and run it with `npm run build`.
 

@@ -7,7 +7,9 @@
     "zile": "./dist/Cli.js"
   },
   "scripts": {
-    "build": "echo 'TODO'",
+    "build": "bun src/Cli.ts",
+    "changeset:publish": "bun run build && changeset publish",
+    "changeset:version": "changeset version",
     "check": "biome check --fix --unsafe",
     "check:types": "tsc -b",
     "test": "vitest --watch=false"
