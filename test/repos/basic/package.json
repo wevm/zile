@@ -2,15 +2,8 @@
   "name": "basic",
   "version": "0.0.0",
   "type": "module",
-  "exports": {
-    ".": {
-      "src": "./index.ts",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
+  "bin": {
+    "basic": "./cli.ts"
   },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  "main": "./index.ts"
 }

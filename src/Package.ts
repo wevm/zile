@@ -190,14 +190,33 @@ export async function decoratePackageJson(
   const relativeOutDir = `./${path.relative(cwd, outDir)}`
   const outFile = (name: string, ext: string = '') => `./${path.join(relativeOutDir, name + ext)}`
 
+  if (!pkgJson.exports && !pkgJson.main && !pkgJson.bin)
+    // TODO: better error message
+    throw new Error('package.json must have an `exports`, `main`, or `bin` field')
+
+  let bin = pkgJson.bin
+  if (bin) {
+    if (typeof bin === 'string') {
+      if (!bin.startsWith(relativeOutDir)) {
+        const name = path.basename(bin, path.extname(bin))
+        bin = outFile(name, '.js')
+      }
+    } else {
+      bin = Object.fromEntries(
+        Object.entries(bin).map(([key, value]) => {
+          if (!value) throw new Error(`\`bin.${key}\` field must have a value`)
+          if (value.startsWith(relativeOutDir)) return [key, value]
+          const name = path.basename(value, path.extname(value))
+          return [key, outFile(name, '.js')]
+        }),
+      )
+    }
+  }
+
   let exps = pkgJson.exports
 
   // Support single entrypoint via `main` field
-  if (!exps) {
-    if (!pkgJson.main)
-      // TODO: better error message
-      throw new Error('package.json must have an `exports` or `main` field')
-
+  if (pkgJson.main) {
     // Transform single `package.json#main` field. They
     // must point to the source file. Otherwise, an error is thrown.
     //
@@ -213,6 +232,7 @@ export async function decoratePackageJson(
     // }
     exps = {
       '.': pkgJson.main,
+      ...(typeof exps === 'object' ? exps : {}),
     }
   }
 
@@ -224,76 +244,83 @@ export async function decoratePackageJson(
     }
   }
   const exports = Object.fromEntries(
-    Object.entries(exps).map(([key, value]) => {
-      function linkExports(src: string, dest: string) {
-        try {
-          const destJsAbsolute = path.resolve(cwd, outFile(dest, '.js'))
-          const destDtsAbsolute = path.resolve(cwd, outFile(dest, '.d.ts'))
-          const dir = path.dirname(destJsAbsolute)
+    exps
+      ? Object.entries(exps).map(([key, value]) => {
+          function linkExports(src: string, dest: string) {
+            try {
+              const destJsAbsolute = path.resolve(cwd, outFile(dest, '.js'))
+              const destDtsAbsolute = path.resolve(cwd, outFile(dest, '.d.ts'))
+              const dir = path.dirname(destJsAbsolute)
 
-          if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
+              if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
 
-          const srcAbsolute = path.resolve(cwd, src)
-          const srcRelativeJs = path.relative(path.dirname(destJsAbsolute), srcAbsolute)
-          const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
+              const srcAbsolute = path.resolve(cwd, src)
+              const srcRelativeJs = path.relative(path.dirname(destJsAbsolute), srcAbsolute)
+              const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
 
-          fsSync.symlinkSync(srcRelativeJs, destJsAbsolute, 'file')
-          fsSync.symlinkSync(srcRelativeDts, destDtsAbsolute, 'file')
-        } catch {}
-      }
+              fsSync.symlinkSync(srcRelativeJs, destJsAbsolute, 'file')
+              fsSync.symlinkSync(srcRelativeDts, destDtsAbsolute, 'file')
+            } catch {}
+          }
 
-      // Transform single `package.json#exports` entrypoints. They
-      // must point to the source file. Otherwise, an error is thrown.
-      //
-      // "./utils": "./src/utils.ts"
-      // ↓ ↓ ↓
-      // "./utils": {
-      //   "src": "./src/utils.ts",
-      //   "types": "./dist/utils.js",
-      //   "default": "./dist/utils.d.ts"
-      // }
-      if (typeof value === 'string') {
-        if (value.startsWith(relativeOutDir)) return [key, value]
-        const name = path.basename(value, path.extname(value))
-        if (link) linkExports(value, name)
-        return [
-          key,
-          {
-            src: value,
-            types: outFile(name, '.d.ts'),
-            default: outFile(name, '.js'),
-          },
-        ]
-      }
+          // Transform single `package.json#exports` entrypoints. They
+          // must point to the source file. Otherwise, an error is thrown.
+          //
+          // "./utils": "./src/utils.ts"
+          // ↓ ↓ ↓
+          // "./utils": {
+          //   "src": "./src/utils.ts",
+          //   "types": "./dist/utils.js",
+          //   "default": "./dist/utils.d.ts"
+          // }
+          if (typeof value === 'string') {
+            if (value.startsWith(relativeOutDir)) return [key, value]
+            const name = path.basename(value, path.extname(value))
+            if (link) linkExports(value, name)
+            return [
+              key,
+              {
+                src: value,
+                types: outFile(name, '.d.ts'),
+                default: outFile(name, '.js'),
+              },
+            ]
+          }
 
-      // Transform object-like `package.json#exports` entrypoints. They
-      // must include a `src` field pointing to the source file, otherwise
-      // an error is thrown.
-      //
-      // "./utils": "./src/utils.ts"
-      // ↓ ↓ ↓
-      // "./utils": {
-      //   "src": "./src/utils.ts",
-      //   "types": "./dist/utils.js",
-      //   "default": "./dist/utils.d.ts"
-      // }
-      if (typeof value === 'object' && value && 'src' in value && typeof value.src === 'string') {
-        if (value.src.startsWith(relativeOutDir)) return [key, value]
-        const name = path.basename(value.src, path.extname(value.src))
-        if (link) linkExports(value.src, name)
-        return [
-          key,
-          {
-            ...value,
-            types: outFile(name, '.d.ts'),
-            default: outFile(name, '.js'),
-          },
-        ]
-      }
+          // Transform object-like `package.json#exports` entrypoints. They
+          // must include a `src` field pointing to the source file, otherwise
+          // an error is thrown.
+          //
+          // "./utils": "./src/utils.ts"
+          // ↓ ↓ ↓
+          // "./utils": {
+          //   "src": "./src/utils.ts",
+          //   "types": "./dist/utils.js",
+          //   "default": "./dist/utils.d.ts"
+          // }
+          if (
+            typeof value === 'object' &&
+            value &&
+            'src' in value &&
+            typeof value.src === 'string'
+          ) {
+            if (value.src.startsWith(relativeOutDir)) return [key, value]
+            const name = path.basename(value.src, path.extname(value.src))
+            if (link) linkExports(value.src, name)
+            return [
+              key,
+              {
+                ...value,
+                types: outFile(name, '.d.ts'),
+                default: outFile(name, '.js'),
+              },
+            ]
+          }
 
-      // TODO: better error message
-      throw new Error('`exports` field must be an object with a `src` field')
-    }),
+          // TODO: better error message
+          throw new Error('`exports` field must be an object with a `src` field')
+        })
+      : [],
   ) as Exports
 
   const root = exports['.']
@@ -302,6 +329,7 @@ export async function decoratePackageJson(
     ...pkgJson,
     type: pkgJson.type ?? 'module',
     sideEffects: pkgJson.sideEffects ?? false,
+    ...(bin ? { bin } : {}),
     ...(root
       ? {
           main: root.default,
@@ -333,30 +361,31 @@ export declare namespace decoratePackageJson {
 export function getEntries(options: getEntries.Options): string[] {
   const { cwd, pkgJson } = options
 
-  // Support single entrypoint via `main` field
-  if (!pkgJson.exports) {
-    if (!pkgJson.main)
-      // TODO: better error message
-      throw new Error('package.json must have an `exports` or `main` field')
+  let entries: string[] = []
 
-    const entry = path.resolve(cwd, pkgJson.main)
-    if (!/\.(m|c)?[jt]sx?$/.test(entry))
-      // TODO: better error message
-      throw new Error('`main` field must point to a TypeScript or JavaScript file')
+  if (!pkgJson.exports && !pkgJson.main && !pkgJson.bin)
+    // TODO: better error message
+    throw new Error('package.json must have an `exports`, `main`, or `bin` field')
 
-    return [entry]
+  if (pkgJson.bin) {
+    if (typeof pkgJson.bin === 'string') entries.push(path.resolve(cwd, pkgJson.bin))
+    // biome-ignore lint/style/noNonNullAssertion: _
+    else entries = Object.values(pkgJson.bin).map((value) => path.resolve(cwd, value!))
   }
 
-  const entries = Object.values(pkgJson.exports)
-    .map((entry) => {
-      if (typeof entry === 'string') return entry
-      if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
-        return entry.src
-      // TODO: better error message
-      throw new Error('`exports` field must have a `src` field')
-    })
-    .map((entry) => path.resolve(cwd, entry))
-    .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry))
+  if (pkgJson.main) entries.push(path.resolve(cwd, pkgJson.main))
+
+  if (pkgJson.exports)
+    entries = Object.values(pkgJson.exports)
+      .map((entry) => {
+        if (typeof entry === 'string') return entry
+        if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
+          return entry.src
+        // TODO: better error message
+        throw new Error('`exports` field must have a `src` field')
+      })
+      .map((entry) => path.resolve(cwd, entry))
+      .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry))
 
   return entries
 }

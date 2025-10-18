@@ -62,8 +62,7 @@ describe.each(await repos())('$relative: Cli.run', ({ cwd }) => {
         : typeof rootExport === 'object' && rootExport
           ? rootExport.default
           : null
-    const typesPath =
-      typeof rootExport === 'object' && rootExport ? rootExport.types : null
+    const typesPath = typeof rootExport === 'object' && rootExport ? rootExport.types : null
 
     if (defaultPath) {
       const mainStats = await fs.lstat(path.resolve(cwd, defaultPath))

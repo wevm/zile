@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "bin": {
-    "zile": "./src/Cli.ts"
+    "zile": "./dist/Cli.js"
   },
   "scripts": {
     "build": "echo 'TODO'",

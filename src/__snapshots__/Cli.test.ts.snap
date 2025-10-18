@@ -24,17 +24,20 @@ exports[`'/basic': Cli.run > default > output 1`] = `
   "name": "basic",
   "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "basic": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "src": "./index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  }
 }
 
 
@@ -47,6 +50,7 @@ exports[`'/basic': Cli.run > default > output 1`] = `
 │   ├── index.d.ts.map
 │   ├── index.js
 │   └── index.js.map
+├── cli.ts
 ├── foo.ts
 ├── index.ts
 ├── package.json
@@ -78,23 +82,27 @@ exports[`'/basic': Cli.run > link > output 1`] = `
   "name": "basic",
   "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "basic": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "src": "./index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  }
 }
 
 
 ├── dist
 │   ├── index.d.ts -> ../index.ts
 │   └── index.js -> ../index.ts
+├── cli.ts
 ├── foo.ts
 ├── index.ts
 ├── package.json
