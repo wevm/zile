@@ -127,7 +127,7 @@ exports[`Packages.build > builds all packages 1`] = `
         "verbatimModuleSyntax": true,
       },
       "include": [
-        "./cli.ts",
+        "/repos/basic/cli.ts",
         "/repos/basic/index.ts",
       ],
     },

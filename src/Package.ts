@@ -14,13 +14,13 @@ export type { PackageJson, TsConfigJson }
  * @returns Build artifacts.
  */
 export async function build(options: build.Options): Promise<build.ReturnType> {
-  const { cwd = process.cwd(), link = false } = options
+  const { cwd = process.cwd(), link = false, tsgo } = options
 
   let [pkgJson, tsConfig] = await Promise.all([readPackageJson({ cwd }), readTsconfigJson({ cwd })])
   const entries = getEntries({ cwd, pkgJson })
 
   if (!link) {
-    const result = await transpile({ cwd, entries })
+    const result = await transpile({ cwd, entries, tsgo })
     tsConfig = result.tsConfig
   }
 
@@ -39,6 +39,8 @@ export declare namespace build {
     cwd?: string | undefined
     /** Whether to link output files to source files for development. @default false */
     link?: boolean | undefined
+    /** Whether to use tsgo for transpilation. @default false */
+    tsgo?: boolean | undefined
   }
 
   type ReturnType = {
@@ -446,7 +448,7 @@ export declare namespace readTsconfigJson {
  * @returns Transpilation artifacts.
  */
 export async function transpile(options: transpile.Options): Promise<transpile.ReturnType> {
-  const { cwd = process.cwd(), entries } = options
+  const { cwd = process.cwd(), entries, tsgo } = options
 
   const tsConfigJson = await readTsconfigJson({ cwd })
   const tsconfigPath = path.resolve(cwd, 'tsconfig.json')
@@ -495,8 +497,8 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   } as const
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
 
-  const tsgo = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', 'tsgo')
-  const child = cp.spawn(tsgo, ['--project', tmpProject], {
+  const tsc = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
+  const child = cp.spawn(tsc, ['--project', tmpProject], {
     cwd,
   })
 
@@ -526,6 +528,8 @@ export declare namespace transpile {
     cwd?: string | undefined
     /** Entry files to include in the transpilation. */
     entries: string[]
+    /** Whether to use tsgo for transpilation. @default false */
+    tsgo?: boolean | undefined
   }
 
   type ReturnType = {

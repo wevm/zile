@@ -1,6 +1,6 @@
 # Zile
 
-Opinionated build tool for TypeScript libraries. Powered by [TypeScript 7 (tsgo)](https://github.com/microsoft/typescript-go).
+Opinionated build tool for TypeScript libraries.
 
 ## Getting Started
 

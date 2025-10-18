@@ -42,6 +42,10 @@ exports[`'/basic': Cli.run > default > output 1`] = `
 
 
 ├── dist
+│   ├── cli.d.ts
+│   ├── cli.d.ts.map
+│   ├── cli.js
+│   ├── cli.js.map
 │   ├── foo.d.ts
 │   ├── foo.d.ts.map
 │   ├── foo.js
