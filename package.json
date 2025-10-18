@@ -14,7 +14,10 @@
     "check:types": "tsc -b",
     "test": "vitest --watch=false"
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "main": "./dist/index.js",
   "packageManager": "bun@1.3",
   "dependencies": {

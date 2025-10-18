@@ -14,9 +14,12 @@ export type { PackageJson, TsConfigJson }
  * @returns Build artifacts.
  */
 export async function build(options: build.Options): Promise<build.ReturnType> {
-  const { cwd = process.cwd(), link = false, tsgo } = options
+  const { cwd = process.cwd(), link = false, project = './tsconfig.json', tsgo } = options
 
-  let [pkgJson, tsConfig] = await Promise.all([readPackageJson({ cwd }), readTsconfigJson({ cwd })])
+  let [pkgJson, tsConfig] = await Promise.all([
+    readPackageJson({ cwd }),
+    readTsconfigJson({ cwd, project }),
+  ])
   const entries = getEntries({ cwd, pkgJson })
 
   if (!link) {
@@ -39,6 +42,8 @@ export declare namespace build {
     cwd?: string | undefined
     /** Whether to link output files to source files for development. @default false */
     link?: boolean | undefined
+    /** Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json' */
+    project?: string | undefined
     /** Whether to use tsgo for transpilation. @default false */
     tsgo?: boolean | undefined
   }
@@ -84,14 +89,10 @@ export async function checkAttw(options: checkAttw.Options): Promise<checkAttw.R
   const { cwd = process.cwd() } = options
 
   const attw = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', 'attw')
-  const child = cp.spawn(
-    attw,
-    ['--pack', '.', '--format', 'ascii', '--profile', 'esm-only'],
-    {
-      cwd,
-      env: { ...process.env, NO_COLOR: '1' },
-    },
-  )
+  const child = cp.spawn(attw, ['--pack', '.', '--format', 'ascii', '--profile', 'esm-only'], {
+    cwd,
+    env: { ...process.env, NO_COLOR: '1' },
+  })
 
   const promise = Promise.withResolvers<checkAttw.ReturnType>()
   const stdout: Buffer[] = []
@@ -426,11 +427,12 @@ export declare namespace readPackageJson {
  * Reads the tsconfig.json file from the given working directory.
  *
  * @param cwd - Working directory to read the tsconfig.json file from.
+ * @param project - Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json'
  * @returns Parsed tsconfig.json file as an object.
  */
 export async function readTsconfigJson(options: readTsconfigJson.Options): Promise<TsConfigJson> {
-  const { cwd } = options
-  const result = await Tsconfig.parse(path.resolve(cwd, 'tsconfig.json'))
+  const { cwd, project = './tsconfig.json' } = options
+  const result = await Tsconfig.parse(path.resolve(cwd, project))
   return result.tsconfig
 }
 
@@ -438,6 +440,8 @@ export declare namespace readTsconfigJson {
   type Options = {
     /** Working directory. */
     cwd: string
+    /** Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json' */
+    project?: string | undefined
   }
 }
 
@@ -448,10 +452,10 @@ export declare namespace readTsconfigJson {
  * @returns Transpilation artifacts.
  */
 export async function transpile(options: transpile.Options): Promise<transpile.ReturnType> {
-  const { cwd = process.cwd(), entries, tsgo } = options
+  const { cwd = process.cwd(), entries, project = './tsconfig.json', tsgo } = options
 
-  const tsConfigJson = await readTsconfigJson({ cwd })
-  const tsconfigPath = path.resolve(cwd, 'tsconfig.json')
+  const tsConfigJson = await readTsconfigJson({ cwd, project })
+  const tsconfigPath = path.resolve(cwd, project)
   const { module: mod, moduleResolution: modRes } = tsConfigJson.compilerOptions ?? {}
 
   // TODO: CLI `zile check --fix` command to add these and rewrite extensions in project (if needed).
@@ -504,13 +508,8 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
 
   const promise = Promise.withResolvers<null>()
 
-  // TODO: add logging
-  // child.stdout.on('data', (data) => {
-  //   console.log(data.toString())
-  // })
-  // child.stderr.on('data', (data) => {
-  //   console.error(data.toString())
-  // })
+  child.stdout.on('data', (data) => console.log(data.toString()))
+  child.stderr.on('data', (data) => console.error(data.toString()))
   child.on('close', (code) => {
     if (code === 0) promise.resolve(null)
     else promise.reject(new Error(`tsgo exited with code ${code}`))
@@ -528,6 +527,8 @@ export declare namespace transpile {
     cwd?: string | undefined
     /** Entry files to include in the transpilation. */
     entries: string[]
+    /** Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json' */
+    project?: string | undefined
     /** Whether to use tsgo for transpilation. @default false */
     tsgo?: boolean | undefined
   }
