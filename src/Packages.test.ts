@@ -22,7 +22,6 @@ describe('Packages.find', () => {
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
         "/src/internal",
-        "/dist/internal",
       ]
     `)
   })
@@ -145,7 +144,6 @@ describe('Packages.find', () => {
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
         "/src/internal",
-        "/dist/internal",
       ]
     `)
   })

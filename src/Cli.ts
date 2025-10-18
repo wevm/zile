@@ -16,7 +16,8 @@ export async function run(options: run.Options): Promise<void> {
   cli.version(pkgJson.version)
 
   commands.build(cli.command('[root]', ''))
-  commands.build(cli.command('build', 'Build a package'))
+  commands.build(cli.command('build', 'Build package'))
+  commands.build(cli.command('dev', 'Resolve package exports to source for development'), { link: true })
 
   cli.help()
   cli.parse(args)

@@ -30,9 +30,16 @@ export async function tree(dir: string, prefix = ''): Promise<string> {
     const connector = isLast ? '└── ' : '├── '
     const newPrefix = isLast ? '    ' : '│   '
 
-    result += `${prefix}${connector}${entry.name}\n`
+    let name = entry.name
+    if (entry.isSymbolicLink()) {
+      const target = await fs.readlink(path.join(dir, entry.name))
+      name += ` -> ${target}`
+    }
 
-    if (entry.isDirectory()) result += await tree(path.join(dir, entry.name), prefix + newPrefix)
+    result += `${prefix}${connector}${name}\n`
+
+    if (entry.isDirectory() && !entry.isSymbolicLink())
+      result += await tree(path.join(dir, entry.name), prefix + newPrefix)
   }
 
   return result

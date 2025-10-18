@@ -1,4 +1,5 @@
 import * as cp from 'node:child_process'
+import * as fsSync from 'node:fs'
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
 import * as Tsconfig from 'tsconfck'
@@ -13,12 +14,20 @@ export type { PackageJson, TsConfigJson }
  * @returns Build artifacts.
  */
 export async function build(options: build.Options): Promise<build.ReturnType> {
-  const { cwd = process.cwd() } = options
+  const { cwd = process.cwd(), link = false } = options
 
-  const pkgJson = await readPackageJson({ cwd })
+  let [pkgJson, tsConfig] = await Promise.all([readPackageJson({ cwd }), readTsconfigJson({ cwd })])
   const entries = getEntries({ cwd, pkgJson })
-  const { tsConfig } = await transpile({ cwd, entries })
-  const packageJson = await decoratePackageJson(pkgJson, { cwd, tsConfig })
+
+  if (!link) {
+    const result = await transpile({ cwd, entries })
+    tsConfig = result.tsConfig
+  }
+
+  const outDir = tsConfig.compilerOptions?.outDir ?? path.resolve(cwd, 'dist')
+  if (link) await fs.rm(outDir, { recursive: true })
+  const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir })
+
   await writePackageJson(cwd, packageJson)
 
   return { packageJson, tsConfig }
@@ -28,6 +37,8 @@ export declare namespace build {
   type Options = {
     /** Working directory to start searching from. @default process.cwd() */
     cwd?: string | undefined
+    /** Whether to link output files to source files for development. @default false */
+    link?: boolean | undefined
   }
 
   type ReturnType = {
@@ -174,11 +185,10 @@ export async function decoratePackageJson(
   pkgJson: PackageJson,
   options: decoratePackageJson.Options,
 ) {
-  const { cwd, tsConfig } = options
+  const { cwd, link, outDir } = options
 
-  // biome-ignore lint/style/noNonNullAssertion: _
-  const relativeOutDir = `./${path.relative(cwd, tsConfig.compilerOptions!.outDir!)}`
-  const outFile = (name: string, ext: string) => `./${path.join(relativeOutDir, name + ext)}`
+  const relativeOutDir = `./${path.relative(cwd, outDir)}`
+  const outFile = (name: string, ext: string = '') => `./${path.join(relativeOutDir, name + ext)}`
 
   let exps = pkgJson.exports
 
@@ -215,6 +225,23 @@ export async function decoratePackageJson(
   }
   const exports = Object.fromEntries(
     Object.entries(exps).map(([key, value]) => {
+      function linkExports(src: string, dest: string) {
+        try {
+          const destJsAbsolute = path.resolve(cwd, outFile(dest, '.js'))
+          const destDtsAbsolute = path.resolve(cwd, outFile(dest, '.d.ts'))
+          const dir = path.dirname(destJsAbsolute)
+
+          if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
+
+          const srcAbsolute = path.resolve(cwd, src)
+          const srcRelativeJs = path.relative(path.dirname(destJsAbsolute), srcAbsolute)
+          const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
+
+          fsSync.symlinkSync(srcRelativeJs, destJsAbsolute, 'file')
+          fsSync.symlinkSync(srcRelativeDts, destDtsAbsolute, 'file')
+        } catch {}
+      }
+
       // Transform single `package.json#exports` entrypoints. They
       // must point to the source file. Otherwise, an error is thrown.
       //
@@ -228,6 +255,7 @@ export async function decoratePackageJson(
       if (typeof value === 'string') {
         if (value.startsWith(relativeOutDir)) return [key, value]
         const name = path.basename(value, path.extname(value))
+        if (link) linkExports(value, name)
         return [
           key,
           {
@@ -252,6 +280,7 @@ export async function decoratePackageJson(
       if (typeof value === 'object' && value && 'src' in value && typeof value.src === 'string') {
         if (value.src.startsWith(relativeOutDir)) return [key, value]
         const name = path.basename(value.src, path.extname(value.src))
+        if (link) linkExports(value.src, name)
         return [
           key,
           {
@@ -275,9 +304,9 @@ export async function decoratePackageJson(
     sideEffects: pkgJson.sideEffects ?? false,
     ...(root
       ? {
-          main: pkgJson.main ?? root.default,
-          module: pkgJson.module ?? root.default,
-          types: pkgJson.types ?? root.types,
+          main: root.default,
+          module: root.default,
+          types: root.types,
         }
       : {}),
     exports,
@@ -288,8 +317,10 @@ export declare namespace decoratePackageJson {
   type Options = {
     /** Working directory. */
     cwd: string
-    /** Transformed tsconfig.json file. */
-    tsConfig: TsConfigJson
+    /** Whether to link output files to source files for development. */
+    link: boolean
+    /** Output directory. */
+    outDir: string
   }
 }
 
@@ -366,9 +397,17 @@ export declare namespace readPackageJson {
  * @param cwd - Working directory to read the tsconfig.json file from.
  * @returns Parsed tsconfig.json file as an object.
  */
-export async function readTsconfigJson(cwd: string): Promise<TsConfigJson> {
+export async function readTsconfigJson(options: readTsconfigJson.Options): Promise<TsConfigJson> {
+  const { cwd } = options
   const result = await Tsconfig.parse(path.resolve(cwd, 'tsconfig.json'))
   return result.tsconfig
+}
+
+export declare namespace readTsconfigJson {
+  type Options = {
+    /** Working directory. */
+    cwd: string
+  }
 }
 
 /**
@@ -380,9 +419,10 @@ export async function readTsconfigJson(cwd: string): Promise<TsConfigJson> {
 export async function transpile(options: transpile.Options): Promise<transpile.ReturnType> {
   const { cwd = process.cwd(), entries } = options
 
-  const tsConfigJson = await readTsconfigJson(cwd)
+  const tsConfigJson = await readTsconfigJson({ cwd })
   const tsconfigPath = path.resolve(cwd, 'tsconfig.json')
   const { module: mod, moduleResolution: modRes } = tsConfigJson.compilerOptions ?? {}
+
   // TODO: CLI `zile check --fix` command to add these and rewrite extensions in project (if needed).
   // TODO: extract to Package.checkTsconfig()
   const isNodeNext = (val?: string) => val === 'nodenext' || val === 'NodeNext'
