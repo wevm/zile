@@ -86,7 +86,7 @@ export async function checkAttw(options: checkAttw.Options): Promise<checkAttw.R
   const attw = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', 'attw')
   const child = cp.spawn(
     attw,
-    ['--pack', '.', '--format', 'table-flipped', '--profile', 'esm-only'],
+    ['--pack', '.', '--format', 'ascii', '--profile', 'esm-only'],
     {
       cwd,
       env: { ...process.env, NO_COLOR: '1' },
