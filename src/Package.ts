@@ -349,8 +349,7 @@ export function getEntries(options: getEntries.Options): string[] {
   const entries: string[] = []
 
   if (pkgJson.bin) {
-    if (typeof pkgJson.bin === 'string')
-      entries.push(path.resolve(cwd, pkgJson.bin))
+    if (typeof pkgJson.bin === 'string') entries.push(path.resolve(cwd, pkgJson.bin))
     else
       entries.push(
         ...(Object.entries(pkgJson.bin)
@@ -527,7 +526,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
 
   await fs.rm(compilerOptions.outDir, { recursive: true }).catch(() => {})
-  const tsc = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
+  const tsc = findTsc({ bin: tsgo ? 'tsgo' : 'tsc', cwd })
   const child = cp.spawn(tsc, ['--project', tmpProject], {
     cwd,
     stdio: 'inherit',
@@ -572,4 +571,39 @@ export declare namespace transpile {
  */
 export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   await fs.writeFile(path.resolve(cwd, 'package.json'), JSON.stringify(pkgJson, null, 2), 'utf-8')
+}
+
+/**
+ * Finds the nearest node_modules/.bin binary by traversing up the directory tree.
+ *
+ * @param options - Options for finding the binary.
+ * @returns Absolute path to the binary.
+ * @internal
+ */
+// biome-ignore lint/correctness/noUnusedVariables: _
+function findTsc(options: findTsc.Options): string {
+  const { bin, cwd = import.meta.dirname } = options
+
+  let currentDir = path.resolve(cwd)
+  const root = path.parse(currentDir).root
+
+  while (currentDir !== root) {
+    const binPath = path.join(currentDir, 'node_modules', '.bin', bin)
+    if (fsSync.existsSync(binPath)) return binPath
+
+    const parentDir = path.dirname(currentDir)
+    if (parentDir === currentDir) break
+    currentDir = parentDir
+  }
+
+  throw new Error(`node_modules/.bin/${bin} not found`)
+}
+
+declare namespace findTsc {
+  type Options = {
+    /** Binary name to find */
+    bin: string
+    /** Working directory to start searching from. @default import.meta.dirname */
+    cwd?: string | undefined
+  }
 }
