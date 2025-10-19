@@ -86,35 +86,6 @@ export declare namespace checkInput {
 }
 
 /**
- * Checks the output of the package.
- *
- * @param options - Options for checking the output.
- * @returns Output results.
- */
-export async function checkOutput(options: checkOutput.Options): Promise<checkOutput.ReturnType> {
-  const { cwd = process.cwd() } = options
-  const [attw, publint] = await Promise.all([checkAttw({ cwd }), checkPublint({ cwd })])
-  return { output: { attw: attw.output, publint: publint.output } }
-}
-
-export declare namespace checkOutput {
-  type Options = {
-    /** Working directory to check. @default process.cwd() */
-    cwd?: string | undefined
-  }
-
-  type ReturnType = {
-    /** Check results. */
-    output: {
-      /** ATTW CLI output as a string. */
-      attw: string
-      /** Publint CLI output as a string. */
-      publint: string
-    }
-  }
-}
-
-/**
  * Determines if the package.json file is valid for transpiling.
  *
  * @param options - Options for checking the package.json file.
@@ -177,104 +148,6 @@ export declare namespace checkPackageJson {
   }
 
   type ReturnType = undefined
-}
-
-/**
- * Checks if the package is properly typed using @arethetypeswrong/cli.
- *
- * @param options - Options for checking a package.
- * @returns CLI output as a string.
- */
-export async function checkAttw(options: checkAttw.Options): Promise<checkAttw.ReturnType> {
-  const { cwd = process.cwd() } = options
-
-  const attw = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', 'attw')
-  const child = cp.spawn(attw, ['--pack', '.', '--format', 'ascii', '--profile', 'esm-only'], {
-    cwd,
-    env: { ...process.env, NO_COLOR: '1' },
-  })
-
-  const promise = Promise.withResolvers<checkAttw.ReturnType>()
-  const stdout: Buffer[] = []
-  const stderr: Buffer[] = []
-
-  child.stdout.on('data', (data: Buffer) => {
-    stdout.push(data)
-  })
-  child.stderr.on('data', (data: Buffer) => {
-    stderr.push(data)
-  })
-  child.on('close', (code) => {
-    const output = Buffer.concat(stdout).toString()
-    const error = Buffer.concat(stderr).toString()
-    if (code === 0) promise.resolve({ output })
-    else promise.reject(new Error(`attw exited with code ${code}\n${error}`))
-  })
-  child.on('error', promise.reject)
-
-  return await promise.promise
-}
-
-export declare namespace checkAttw {
-  type Options = {
-    /** Working directory to check. @default process.cwd() */
-    cwd?: string | undefined
-  }
-
-  type ReturnType = {
-    /** CLI output as a string. */
-    output: string
-  }
-}
-
-/**
- * Checks the package using publint CLI.
- *
- * @param options - Options for checking a package.
- * @returns CLI output as a string.
- */
-export async function checkPublint(
-  options: checkPublint.Options,
-): Promise<checkPublint.ReturnType> {
-  const { cwd = process.cwd() } = options
-
-  const publint = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', 'publint')
-  const child = cp.spawn(publint, ['--strict'], {
-    cwd,
-    env: { ...process.env, NO_COLOR: '1' },
-  })
-
-  const promise = Promise.withResolvers<checkPublint.ReturnType>()
-  const stdout: Buffer[] = []
-  const stderr: Buffer[] = []
-
-  child.stdout.on('data', (data: Buffer) => {
-    stdout.push(data)
-  })
-  child.stderr.on('data', (data: Buffer) => {
-    stderr.push(data)
-  })
-  child.on('close', (code) => {
-    const output = Buffer.concat(stdout).toString()
-    const error = Buffer.concat(stderr).toString()
-    if (code === 0) promise.resolve({ output })
-    else promise.reject(new Error(`publint exited with code ${code}\n${error}`))
-  })
-  child.on('error', promise.reject)
-
-  return await promise.promise
-}
-
-export declare namespace checkPublint {
-  type Options = {
-    /** Working directory to check. @default process.cwd() */
-    cwd?: string | undefined
-  }
-
-  type ReturnType = {
-    /** CLI output as a string. */
-    output: string
-  }
 }
 
 /**
@@ -617,16 +490,16 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     sourceMap: true,
     target: tsConfigJson.compilerOptions?.target ?? 'es2021',
   } as const satisfies TsConfigJson['compilerOptions']
-  
+
   const tsConfig = {
     compilerOptions,
     exclude: tsConfigJson.exclude ?? [],
     include: entries,
   } as const
-  
+
   const tmpProject = path.resolve(cwd, 'tsconfig.tmp.json')
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
-  
+
   await fs.rm(compilerOptions.outDir, { recursive: true }).catch(() => {})
   const tsc = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
   const child = cp.spawn(tsc, ['--project', tmpProject], {

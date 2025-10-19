@@ -1,6 +1,6 @@
 import * as fs from 'node:fs/promises'
 import path from 'node:path'
-import { setupRepos, tree } from '../test/utils.js'
+import { checkOutput, setupRepos, tree } from '../test/utils.js'
 import * as Package from './Package.js'
 
 const repos = () =>
@@ -21,7 +21,7 @@ describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
     }
 
     {
-      const result = await Package.checkOutput({ cwd })
+      const result = await checkOutput({ cwd })
       expect(result).toMatchSnapshot('check')
     }
 
