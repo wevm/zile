@@ -6,8 +6,8 @@ Opinionated build tool for TypeScript libraries.
 
 ### 1. Install
 
-```
-npm i zile
+```sh
+npm i zile typescript
 ```
 
 ### 2. Add Entrypoints
