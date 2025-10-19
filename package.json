@@ -36,10 +36,7 @@
     "type-fest": "^5.0.1",
     "vitest": "^3.2.4"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wevm/zile.git"
-  },
+  "repository": "wevm/zile",
   "sideEffects": false,
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
