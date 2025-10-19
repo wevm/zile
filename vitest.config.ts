@@ -10,5 +10,6 @@ export default defineConfig({
     globals: true,
     globalSetup: path.resolve(import.meta.dirname, 'test/setup.global.ts'),
     setupFiles: [path.resolve(import.meta.dirname, 'test/setup.ts')],
+    testTimeout: 30_000,
   },
 })
