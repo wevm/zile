@@ -18,4 +18,4 @@ jobs:
       - name: Prerelease
         run: | 
           bun run build
-          bunx pkg-pr-new publish --bun --compact
+          bunx pkg-pr-new publish --bun
