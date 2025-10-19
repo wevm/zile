@@ -31,7 +31,10 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
     tsConfig = result.tsConfig
   }
 
-  if (link) await fs.rm(outDir, { recursive: true })
+  if (link) {
+    await fs.rm(outDir, { recursive: true })
+    await fs.mkdir(outDir, { recursive: true })
+  }
 
   const sourceDir = getSourceDir({ entries })
   const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir })
