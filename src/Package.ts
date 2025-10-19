@@ -416,9 +416,7 @@ export async function decoratePackageJson(
               },
             ]
           }
-
-          // TODO: better error message
-          throw new Error('`exports` field must be an object with a `src` field')
+          throw new Error('`exports` field in package.json must be an object with a `src` field')
         })
       : [],
   ) as Exports
@@ -479,8 +477,7 @@ export function getEntries(options: getEntries.Options): string[] {
         if (typeof entry === 'string') return entry
         if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
           return entry.src
-        // TODO: better error message
-        throw new Error('`exports` field must have a `src` field')
+        throw new Error('`exports` field in package.json must have a `src` field')
       })
       .map((entry) => path.resolve(cwd, entry))
       .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry))
@@ -634,12 +631,11 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   const tsc = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
   const child = cp.spawn(tsc, ['--project', tmpProject], {
     cwd,
+    stdio: 'inherit',
   })
 
   const promise = Promise.withResolvers<null>()
 
-  child.stdout.on('data', (data) => console.log(data.toString()))
-  child.stderr.on('data', (data) => console.error(data.toString()))
   child.on('close', (code) => {
     if (code === 0) promise.resolve(null)
     else promise.reject(new Error(`tsgo exited with code ${code}`))
