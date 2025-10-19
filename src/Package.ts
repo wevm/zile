@@ -16,12 +16,14 @@ export type { PackageJson, TsConfigJson }
 export async function build(options: build.Options): Promise<build.ReturnType> {
   const { cwd = process.cwd(), link = false, project = './tsconfig.json', tsgo } = options
 
-  await checkInput({ cwd })
-
   let [pkgJson, tsConfig] = await Promise.all([
     readPackageJson({ cwd }),
     readTsconfigJson({ cwd, project }),
   ])
+  const outDir = tsConfig.compilerOptions?.outDir ?? path.resolve(cwd, 'dist')
+
+  await checkInput({ cwd, outDir })
+
   const entries = getEntries({ cwd, pkgJson })
 
   if (!link) {
@@ -29,7 +31,6 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
     tsConfig = result.tsConfig
   }
 
-  const outDir = tsConfig.compilerOptions?.outDir ?? path.resolve(cwd, 'dist')
   if (link) await fs.rm(outDir, { recursive: true })
 
   const sourceDir = getSourceDir({ entries })
@@ -74,6 +75,8 @@ export declare namespace checkInput {
   type Options = {
     /** Working directory to check. @default process.cwd() */
     cwd?: string | undefined
+    /** Output directory. @default path.resolve(cwd, 'dist') */
+    outDir?: string | undefined
   }
 
   type ReturnType = undefined
@@ -117,38 +120,43 @@ export declare namespace checkOutput {
 export async function checkPackageJson(
   options: checkPackageJson.Options,
 ): Promise<checkPackageJson.ReturnType> {
-  const { cwd = process.cwd() } = options
+  const { cwd = process.cwd(), outDir = path.resolve(cwd, 'dist') } = options
   const pkgJson = await readPackageJson({ cwd })
+
+  function exists(value: string) {
+    if (value.includes(path.relative(cwd, outDir))) return true
+    return fsSync.existsSync(path.resolve(cwd, value))
+  }
 
   if (!pkgJson.exports && !pkgJson.main && !pkgJson.bin)
     throw new Error('package.json must have an `exports`, `main`, or `bin` field')
 
   if (pkgJson.bin)
     if (typeof pkgJson.bin === 'string') {
-      if (!fsSync.existsSync(path.resolve(cwd, pkgJson.bin)))
+      if (!exists(pkgJson.bin))
         throw new Error(`\`${pkgJson.bin}\` does not exist on \`package.json#bin\``)
     } else {
       for (const [key, value] of Object.entries(pkgJson.bin)) {
         if (!value) throw new Error(`\`bin.${key}\` value must be a string`)
-        if (typeof value === 'string' && !fsSync.existsSync(path.resolve(cwd, value)))
+        if (typeof value === 'string' && !exists(value))
           throw new Error(`\`${value}\` does not exist on \`package.json#bin.${key}\``)
       }
     }
 
   if (pkgJson.main)
-    if (!fsSync.existsSync(path.resolve(cwd, pkgJson.main)))
+    if (!exists(pkgJson.main))
       throw new Error(`\`${pkgJson.main}\` does not exist on \`package.json#main\``)
 
   if (pkgJson.exports) {
     for (const [key, entry] of Object.entries(pkgJson.exports)) {
-      if (typeof entry === 'string' && !fsSync.existsSync(path.resolve(cwd, entry)))
+      if (typeof entry === 'string' && !exists(entry))
         throw new Error(`\`${entry}\` does not exist on \`package.json#exports["${key}"]\``)
       if (
         typeof entry === 'object' &&
         entry &&
         'src' in entry &&
         typeof entry.src === 'string' &&
-        !fsSync.existsSync(path.resolve(cwd, entry.src))
+        !exists(entry.src)
       )
         throw new Error(`\`${entry.src}\` does not exist on \`package.json#exports["${key}"].src\``)
     }
@@ -161,6 +169,8 @@ export declare namespace checkPackageJson {
   type Options = {
     /** Working directory to check. @default process.cwd() */
     cwd?: string | undefined
+    /** Output directory. @default path.resolve(cwd, 'dist') */
+    outDir?: string | undefined
   }
 
   type ReturnType = undefined
