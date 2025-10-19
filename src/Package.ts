@@ -632,6 +632,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
 
   const tsConfig = {
     compilerOptions,
+    exclude: tsConfigJson.exclude ?? [],
     include: entries,
   } as const
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
