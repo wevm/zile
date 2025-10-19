@@ -14,9 +14,9 @@ export async function build(command: Command, options: build.Options = {}) {
         project = './tsconfig.json',
         tsgo = false,
       } = typeof options1 === 'object' ? options1 : options2
-      console.log(`${link ? 'Linking' : 'Building'} package at ${cwd}`)
+      console.log(`→ ${link ? 'Linking' : 'Building'} package at ${cwd}`)
       await Package.build({ cwd, link, project, tsgo })
-      console.log(`${link ? 'Linking' : 'Building'} completed successfully`)
+      console.log(`✔︎ ${link ? 'Linking' : 'Building'} completed successfully`)
     })
 }
 
