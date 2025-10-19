@@ -170,6 +170,9 @@ Point to your source file:
 > Zile transforms this to point to the built file and generates `exports`, `module` and `types` fields:
 > ```json
 > {
+>   "name": "my-pkg",
+>   "version": "0.0.0",
+>   "type": "module",
 >   "main": "./dist/index.js",
 >   "module": "./dist/index.js",
 >   "types": "./dist/index.d.ts",
@@ -252,6 +255,8 @@ Point to your source file:
 > ```json
 > {
 >   "name": "my-cli",
+>   "version": "0.0.0",
+>   "type": "module",
 >   "bin": {
 >     "my-cli": "./dist/cli.js",
 >     "my-cli.src": "./src/cli.ts"
