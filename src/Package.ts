@@ -250,6 +250,7 @@ export async function decoratePackageJson(
           // }
           if (typeof value === 'string') {
             if (value.startsWith(relativeOutDir)) return [key, value]
+            if (!/\.(m|c)?[jt]sx?$/.test(value)) return [key, value]
             if (link) linkExports(value)
             return [
               key,
@@ -279,6 +280,7 @@ export async function decoratePackageJson(
             typeof value.src === 'string'
           ) {
             if (value.src.startsWith(relativeOutDir)) return [key, value]
+            if (!/\.(m|c)?[jt]sx?$/.test(value.src)) return [key, value]
             if (link) linkExports(value.src)
             return [
               key,
@@ -334,18 +336,16 @@ export declare namespace decoratePackageJson {
 export function getEntries(options: getEntries.Options): string[] {
   const { cwd, pkgJson } = options
 
-  let entries: string[] = []
+  const entries: string[] = []
 
   if (pkgJson.bin) {
     if (typeof pkgJson.bin === 'string') entries.push(path.resolve(cwd, pkgJson.bin))
     // biome-ignore lint/style/noNonNullAssertion: _
-    else entries = Object.values(pkgJson.bin).map((value) => path.resolve(cwd, value!))
+    else entries.push(...Object.values(pkgJson.bin).map((value) => path.resolve(cwd, value!)))
   }
 
-  if (pkgJson.main) entries.push(path.resolve(cwd, pkgJson.main))
-
   if (pkgJson.exports)
-    entries = Object.values(pkgJson.exports)
+    entries.push(...Object.values(pkgJson.exports)
       .map((entry) => {
         if (typeof entry === 'string') return entry
         if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
@@ -353,7 +353,8 @@ export function getEntries(options: getEntries.Options): string[] {
         throw new Error('`exports` field in package.json must have a `src` field')
       })
       .map((entry) => path.resolve(cwd, entry))
-      .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry))
+      .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry)))
+    else if (pkgJson.main) entries.push(path.resolve(cwd, pkgJson.main))
 
   return entries
 }
@@ -375,6 +376,8 @@ export declare namespace getEntries {
  */
 export function getSourceDir(options: getSourceDir.Options): string {
   const { cwd = process.cwd(), entries } = options
+
+  if (entries.length === 0) return path.resolve(cwd, 'src')
 
   // Get directories of all entries
   const dirs = entries.map((entry) => path.dirname(entry))
