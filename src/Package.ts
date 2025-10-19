@@ -620,24 +620,18 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     sourceMap: true,
     target: tsConfigJson.compilerOptions?.target ?? 'es2021',
   } as const satisfies TsConfigJson['compilerOptions']
-
-  const tmpProjectPath = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
-  const tmpProject = path.resolve(tmpProjectPath, 'tsconfig.json')
-
-  await Promise.allSettled([
-    fs.rm(tmpProjectPath, { recursive: true }),
-    fs.rm(compilerOptions.outDir, { recursive: true }),
-  ])
-  await fs.mkdir(tmpProjectPath, { recursive: true })
-
+  
   const tsConfig = {
     compilerOptions,
     exclude: tsConfigJson.exclude ?? [],
     include: entries,
   } as const
+  
+  const tmpProject = path.resolve(cwd, 'tsconfig.tmp.json')
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
-
-  const tsc = path.resolve(process.cwd(), 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
+  
+  await fs.rm(compilerOptions.outDir, { recursive: true }).catch(() => {})
+  const tsc = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
   const child = cp.spawn(tsc, ['--project', tmpProject], {
     cwd,
   })
@@ -652,7 +646,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   })
   child.on('error', promise.reject)
 
-  await promise.promise
+  await promise.promise.finally(() => fs.rm(tmpProject))
 
   return { tsConfig }
 }

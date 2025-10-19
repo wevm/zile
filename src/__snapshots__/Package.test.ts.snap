@@ -132,6 +132,7 @@ exports[`'/basic': Package.build > default > result 1`] = `
       "target": "es2021",
       "verbatimModuleSyntax": true,
     },
+    "exclude": [],
     "include": [
       "/repos/basic/cli.ts",
       "/repos/basic/index.ts",
@@ -351,6 +352,7 @@ exports[`'/basic-object-exports': Package.build > default > result 1`] = `
       "target": "es2021",
       "verbatimModuleSyntax": true,
     },
+    "exclude": [],
     "include": [
       "/repos/basic-object-exports/index.ts",
     ],
@@ -630,6 +632,7 @@ exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
       "target": "es2021",
       "verbatimModuleSyntax": true,
     },
+    "exclude": [],
     "include": [
       "/repos/multiple-entrypoint/src/index.ts",
       "/repos/multiple-entrypoint/src/foo.ts",
@@ -873,6 +876,7 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
       "target": "es2021",
       "verbatimModuleSyntax": true,
     },
+    "exclude": [],
     "include": [
       "/repos/single-entrypoint/index.ts",
     ],
