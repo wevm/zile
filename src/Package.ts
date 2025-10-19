@@ -500,7 +500,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   const tsConfig = {
     compilerOptions,
     exclude: tsConfigJson.exclude ?? [],
-    include: entries,
+    include: [...(tsConfigJson.include ?? []), ...entries],
   } as const
 
   const tmpProject = path.resolve(cwd, 'tsconfig.tmp.json')
