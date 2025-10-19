@@ -36,7 +36,7 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
     await fs.mkdir(outDir, { recursive: true })
   }
 
-  const sourceDir = getSourceDir({ entries })
+  const sourceDir = getSourceDir({ cwd, entries })
   const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir })
 
   await writePackageJson(cwd, packageJson)
@@ -374,7 +374,7 @@ export declare namespace getEntries {
  * @returns Source directory.
  */
 export function getSourceDir(options: getSourceDir.Options): string {
-  const { entries } = options
+  const { cwd = process.cwd(), entries } = options
 
   // Get directories of all entries
   const dirs = entries.map((entry) => path.dirname(entry))
@@ -392,11 +392,14 @@ export function getSourceDir(options: getSourceDir.Options): string {
     else break
   }
 
-  return commonSegments.join(path.sep)
+  const commonPath = commonSegments.join(path.sep);
+  return path.resolve(cwd, path.relative(cwd, commonPath).split(path.sep)[0]);
 }
 
 export declare namespace getSourceDir {
   type Options = {
+    /** Working directory. */
+    cwd?: string | undefined
     /** Entry files. */
     entries: string[]
   }
