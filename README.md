@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  Opinionated build tool for TypeScript libraries, powered by <code>tsc</code>.
+  Opinionated build tool for TypeScript libraries, powered by <code>tsc</code> (or `tsgo`!).
 <p>
 
 <p align="center">
