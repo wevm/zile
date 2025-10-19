@@ -637,7 +637,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   } as const
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
 
-  const tsc = path.resolve(import.meta.dirname, '..', 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
+  const tsc = path.resolve(process.cwd(), 'node_modules', '.bin', tsgo ? 'tsgo' : 'tsc')
   const child = cp.spawn(tsc, ['--project', tmpProject], {
     cwd,
   })
