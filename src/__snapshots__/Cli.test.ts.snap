@@ -25,7 +25,8 @@ exports[`'/basic': Cli.run > default > output 1`] = `
   "version": "0.0.0",
   "type": "module",
   "bin": {
-    "basic": "./dist/cli.js"
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
   },
   "main": "./dist/index.js",
   "sideEffects": false,
@@ -87,7 +88,8 @@ exports[`'/basic': Cli.run > link > output 1`] = `
   "version": "0.0.0",
   "type": "module",
   "bin": {
-    "basic": "./dist/cli.js"
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
   },
   "main": "./dist/index.js",
   "sideEffects": false,

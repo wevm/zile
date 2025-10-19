@@ -176,13 +176,23 @@ export async function decoratePackageJson(
   let bin = pkgJson.bin
   if (bin) {
     if (typeof bin === 'string') {
-      if (!bin.startsWith(relativeOutDir)) bin = outFile(bin, '.js')
+      if (!bin.startsWith(relativeOutDir))
+        bin = {
+          // biome-ignore lint/style/noNonNullAssertion: _
+          [pkgJson.name!]: outFile(bin, '.js'),
+          // biome-ignore lint/style/useTemplate: _
+          // biome-ignore lint/style/noNonNullAssertion: _
+          [pkgJson.name! + '.src']: bin,
+        }
     } else {
       bin = Object.fromEntries(
-        Object.entries(bin).map(([key, value]) => {
+        Object.entries(bin).flatMap((entry) => {
+          const [key, value] = entry
           if (!value) throw new Error(`\`bin.${key}\` field must have a value`)
-          if (value.startsWith(relativeOutDir)) return [key, value]
-          return [key, outFile(value, '.js')]
+          return [
+            [key.replace('.src', ''), outFile(value, '.js')],
+            [key, value],
+          ]
         }),
       )
     }
@@ -339,22 +349,32 @@ export function getEntries(options: getEntries.Options): string[] {
   const entries: string[] = []
 
   if (pkgJson.bin) {
-    if (typeof pkgJson.bin === 'string') entries.push(path.resolve(cwd, pkgJson.bin))
-    // biome-ignore lint/style/noNonNullAssertion: _
-    else entries.push(...Object.values(pkgJson.bin).map((value) => path.resolve(cwd, value!)))
+    if (typeof pkgJson.bin === 'string')
+      entries.push(path.resolve(cwd, pkgJson.bin))
+    else
+      entries.push(
+        ...(Object.entries(pkgJson.bin)
+          .map(([key, value]) =>
+            // biome-ignore lint/style/noNonNullAssertion: _
+            key.endsWith('.src') ? path.resolve(cwd, value!) : undefined,
+          )
+          .filter(Boolean) as string[]),
+      )
   }
 
   if (pkgJson.exports)
-    entries.push(...Object.values(pkgJson.exports)
-      .map((entry) => {
-        if (typeof entry === 'string') return entry
-        if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
-          return entry.src
-        throw new Error('`exports` field in package.json must have a `src` field')
-      })
-      .map((entry) => path.resolve(cwd, entry))
-      .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry)))
-    else if (pkgJson.main) entries.push(path.resolve(cwd, pkgJson.main))
+    entries.push(
+      ...Object.values(pkgJson.exports)
+        .map((entry) => {
+          if (typeof entry === 'string') return entry
+          if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
+            return entry.src
+          throw new Error('`exports` field in package.json must have a `src` field')
+        })
+        .map((entry) => path.resolve(cwd, entry))
+        .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry)),
+    )
+  else if (pkgJson.main) entries.push(path.resolve(cwd, pkgJson.main))
 
   return entries
 }
@@ -395,8 +415,8 @@ export function getSourceDir(options: getSourceDir.Options): string {
     else break
   }
 
-  const commonPath = commonSegments.join(path.sep);
-  return path.resolve(cwd, path.relative(cwd, commonPath).split(path.sep)[0]);
+  const commonPath = commonSegments.join(path.sep)
+  return path.resolve(cwd, path.relative(cwd, commonPath).split(path.sep)[0])
 }
 
 export declare namespace getSourceDir {

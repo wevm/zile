@@ -147,6 +147,7 @@ exports[`Packages.build > builds all packages 1`] = `
     "packageJson": {
       "bin": {
         "basic": "./dist/cli.js",
+        "basic.src": "./cli.ts",
       },
       "exports": {
         ".": {

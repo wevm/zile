@@ -54,7 +54,8 @@ exports[`'/basic': Package.build > default > output 1`] = `
   "version": "0.0.0",
   "type": "module",
   "bin": {
-    "basic": "./dist/cli.js"
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
   },
   "main": "./dist/index.js",
   "sideEffects": false,
@@ -96,6 +97,7 @@ exports[`'/basic': Package.build > default > result 1`] = `
   "packageJson": {
     "bin": {
       "basic": "./dist/cli.js",
+      "basic.src": "./cli.ts",
     },
     "exports": {
       ".": {
@@ -166,7 +168,8 @@ exports[`'/basic': Package.build > link > output 1`] = `
   "version": "0.0.0",
   "type": "module",
   "bin": {
-    "basic": "./dist/cli.js"
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
   },
   "main": "./dist/index.js",
   "sideEffects": false,
@@ -198,6 +201,7 @@ exports[`'/basic': Package.build > link > result 1`] = `
   "packageJson": {
     "bin": {
       "basic": "./dist/cli.js",
+      "basic.src": "./cli.ts",
     },
     "exports": {
       ".": {
