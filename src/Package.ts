@@ -32,7 +32,7 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
   }
 
   if (link) {
-    await fs.rm(outDir, { recursive: true })
+    await fs.rm(outDir, { recursive: true }).catch(() => {})
     await fs.mkdir(outDir, { recursive: true })
   }
 
