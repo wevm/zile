@@ -1,0 +1,13 @@
+{
+  "name": "error-exports-object-not-exists",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./non-existent.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}
+

@@ -1,0 +1,7 @@
+{
+  "name": "error-bin-string-not-exists",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": "./non-existent.ts"
+}
+

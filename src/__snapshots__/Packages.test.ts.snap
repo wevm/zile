@@ -49,6 +49,60 @@ exports[`Packages.build > builds all packages 1`] = `
       "exports": {
         ".": {
           "default": "./dist/index.js",
+          "src": "./src/index.ts",
+          "types": "./dist/index.d.ts",
+        },
+        "./foo": {
+          "default": "./dist/foo.js",
+          "src": "./src/foo.ts",
+          "types": "./dist/foo.d.ts",
+        },
+        "./nested/dir": {
+          "default": "./dist/nested/dir/bar.js",
+          "src": "./src/nested/dir/bar.ts",
+          "types": "./dist/nested/dir/bar.d.ts",
+        },
+      },
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
+      "name": "multiple-entrypoint",
+      "sideEffects": false,
+      "type": "module",
+      "types": "./dist/index.d.ts",
+      "version": "0.0.0",
+    },
+    "tsConfig": {
+      "compilerOptions": {
+        "composite": false,
+        "declaration": true,
+        "declarationDir": undefined,
+        "declarationMap": true,
+        "emitDeclarationOnly": false,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "module": "nodenext",
+        "moduleDetection": "force",
+        "moduleResolution": "nodenext",
+        "noEmit": false,
+        "outDir": "/repos/multiple-entrypoint/dist",
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2021",
+        "verbatimModuleSyntax": true,
+      },
+      "include": [
+        "/repos/multiple-entrypoint/src/index.ts",
+        "/repos/multiple-entrypoint/src/foo.ts",
+        "/repos/multiple-entrypoint/src/nested/dir/bar.ts",
+      ],
+    },
+  },
+  {
+    "packageJson": {
+      "exports": {
+        ".": {
+          "default": "./dist/index.js",
           "src": "./index.ts",
           "types": "./dist/index.d.ts",
         },

@@ -441,11 +441,316 @@ exports[`'/basic-object-exports': Package.build > link > result 1`] = `
 
 exports[`'/basic-object-exports': Package.build > link > types-target 1`] = `"../index.ts"`;
 
+exports[`'/error-bin-object-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent-cli.ts\` does not exist on \`package.json#bin.cli\`]`;
+
+exports[`'/error-bin-string-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#bin\`]`;
+
+exports[`'/error-exports-object-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#exports["."].src\`]`;
+
+exports[`'/error-exports-string-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#exports["."]\`]`;
+
+exports[`'/error-main-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#main\`]`;
+
+exports[`'/error-missing-entry-fields': Package.build > default > error 1`] = `[Error: package.json must have an \`exports\`, \`main\`, or \`bin\` field]`;
+
 exports[`'/error-module-resolution': Package.build > default > error 1`] = `
 "/repos/error-module-resolution/tsconfig.json has invalid configuration:
   - "module" must be "nodenext". Found: "preserve"
   - "moduleResolution" must be "nodenext". Found: "bundler""
 `;
+
+exports[`'/multiple-entrypoint': Package.build > default > check 1`] = `
+{
+  "output": {
+    "attw": "
+multiple-entrypoint v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
+
+
+"multiple-entrypoint"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"multiple-entrypoint/foo"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 💀 Resolution failed
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"multiple-entrypoint/nested/dir"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 💀 Resolution failed
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+",
+    "publint": "Running publint v0.3.14 for multiple-entrypoint...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+",
+  },
+}
+`;
+
+exports[`'/multiple-entrypoint': Package.build > default > main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/multiple-entrypoint': Package.build > default > output 1`] = `
+"{
+  "name": "multiple-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "src": "./src/foo.ts",
+      "types": "./dist/foo.d.ts",
+      "default": "./dist/foo.js"
+    },
+    "./nested/dir": {
+      "src": "./src/nested/dir/bar.ts",
+      "types": "./dist/nested/dir/bar.d.ts",
+      "default": "./dist/nested/dir/bar.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+├── dist
+│   ├── nested
+│   │   └── dir
+│   │       ├── bar.d.ts
+│   │       ├── bar.d.ts.map
+│   │       ├── bar.js
+│   │       └── bar.js.map
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── nested
+│   │   └── dir
+│   │       └── bar.ts
+│   ├── foo.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+      "./foo": {
+        "default": "./dist/foo.js",
+        "src": "./src/foo.ts",
+        "types": "./dist/foo.d.ts",
+      },
+      "./nested/dir": {
+        "default": "./dist/nested/dir/bar.js",
+        "src": "./src/nested/dir/bar.ts",
+        "types": "./dist/nested/dir/bar.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "multiple-entrypoint",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "outDir": "/repos/multiple-entrypoint/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2021",
+      "verbatimModuleSyntax": true,
+    },
+    "include": [
+      "/repos/multiple-entrypoint/src/index.ts",
+      "/repos/multiple-entrypoint/src/foo.ts",
+      "/repos/multiple-entrypoint/src/nested/dir/bar.ts",
+    ],
+  },
+}
+`;
+
+exports[`'/multiple-entrypoint': Package.build > default > types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/multiple-entrypoint': Package.build > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/multiple-entrypoint': Package.build > link > output 1`] = `
+"{
+  "name": "multiple-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "src": "./src/foo.ts",
+      "types": "./dist/foo.d.ts",
+      "default": "./dist/foo.js"
+    },
+    "./nested/dir": {
+      "src": "./src/nested/dir/bar.ts",
+      "types": "./dist/nested/dir/bar.d.ts",
+      "default": "./dist/nested/dir/bar.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+├── dist
+│   ├── nested
+│   │   └── dir
+│   │       ├── bar.d.ts -> ../../../src/nested/dir/bar.ts
+│   │       └── bar.js -> ../../../src/nested/dir/bar.ts
+│   ├── foo.d.ts -> ../src/foo.ts
+│   ├── foo.js -> ../src/foo.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── nested
+│   │   └── dir
+│   │       └── bar.ts
+│   ├── foo.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/multiple-entrypoint': Package.build > link > result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+      "./foo": {
+        "default": "./dist/foo.js",
+        "src": "./src/foo.ts",
+        "types": "./dist/foo.d.ts",
+      },
+      "./nested/dir": {
+        "default": "./dist/nested/dir/bar.js",
+        "src": "./src/nested/dir/bar.ts",
+        "types": "./dist/nested/dir/bar.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "multiple-entrypoint",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+  },
+}
+`;
+
+exports[`'/multiple-entrypoint': Package.build > link > types-target 1`] = `"../src/index.ts"`;
 
 exports[`'/single-entrypoint': Package.build > default > check 1`] = `
 {

@@ -21,7 +21,7 @@ describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
     }
 
     {
-      const result = await Package.check({ cwd })
+      const result = await Package.checkOutput({ cwd })
       expect(result).toMatchSnapshot('check')
     }
 
@@ -69,6 +69,34 @@ describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
       expect(typesStats.isSymbolicLink()).toBe(true)
       const typesTarget = await fs.readlink(path.resolve(cwd, typesPath))
       expect(typesTarget).toMatchSnapshot('types-target')
+    }
+  })
+})
+
+describe('Package.getSourceDir', () => {
+  test('common', async () => {
+    {
+      const result = Package.getSourceDir({
+        entries: [
+          path.resolve(process.cwd(), 'src/index.ts'),
+          path.resolve(process.cwd(), 'src/foo.ts'),
+          path.resolve(process.cwd(), 'src/nested/dir/index.ts'),
+          path.resolve(process.cwd(), 'src/nested/dir/bar.ts'),
+        ],
+      })
+      expect(result).toBe(path.resolve(process.cwd(), 'src'))
+    }
+
+    {
+      const result = Package.getSourceDir({
+        entries: [
+          path.resolve(process.cwd(), 'src/index.ts'),
+          path.resolve(process.cwd(), 'foo.ts'),
+          path.resolve(process.cwd(), 'bar/nested/dir/index.ts'),
+          path.resolve(process.cwd(), 'src/nested/dir/bar.ts'),
+        ],
+      })
+      expect(result).toBe(process.cwd())
     }
   })
 })

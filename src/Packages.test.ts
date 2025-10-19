@@ -18,7 +18,14 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/single-entrypoint",
+        "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
+        "/test/repos/error-missing-entry-fields",
+        "/test/repos/error-main-not-exists",
+        "/test/repos/error-exports-string-not-exists",
+        "/test/repos/error-exports-object-not-exists",
+        "/test/repos/error-bin-string-not-exists",
+        "/test/repos/error-bin-object-not-exists",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
         "/src/internal",
@@ -34,7 +41,14 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/single-entrypoint",
+        "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
+        "/test/repos/error-missing-entry-fields",
+        "/test/repos/error-main-not-exists",
+        "/test/repos/error-exports-string-not-exists",
+        "/test/repos/error-exports-object-not-exists",
+        "/test/repos/error-bin-string-not-exists",
+        "/test/repos/error-bin-object-not-exists",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
       ]
@@ -76,7 +90,14 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/single-entrypoint",
+        "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
+        "/test/repos/error-missing-entry-fields",
+        "/test/repos/error-main-not-exists",
+        "/test/repos/error-exports-string-not-exists",
+        "/test/repos/error-exports-object-not-exists",
+        "/test/repos/error-bin-string-not-exists",
+        "/test/repos/error-bin-object-not-exists",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
       ]
@@ -140,7 +161,14 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/single-entrypoint",
+        "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
+        "/test/repos/error-missing-entry-fields",
+        "/test/repos/error-main-not-exists",
+        "/test/repos/error-exports-string-not-exists",
+        "/test/repos/error-exports-object-not-exists",
+        "/test/repos/error-bin-string-not-exists",
+        "/test/repos/error-bin-object-not-exists",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
         "/src/internal",

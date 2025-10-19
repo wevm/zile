@@ -220,6 +220,150 @@ exports[`'/basic-object-exports': Cli.run > link > output 1`] = `
 
 exports[`'/basic-object-exports': Cli.run > link > types-target 1`] = `"../index.ts"`;
 
+exports[`'/multiple-entrypoint': Cli.run > default > main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/multiple-entrypoint': Cli.run > default > output 1`] = `
+"{
+  "name": "multiple-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "src": "./src/foo.ts",
+      "types": "./dist/foo.d.ts",
+      "default": "./dist/foo.js"
+    },
+    "./nested/dir": {
+      "src": "./src/nested/dir/bar.ts",
+      "types": "./dist/nested/dir/bar.d.ts",
+      "default": "./dist/nested/dir/bar.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+├── dist
+│   ├── nested
+│   │   └── dir
+│   │       ├── bar.d.ts
+│   │       ├── bar.d.ts.map
+│   │       ├── bar.js
+│   │       └── bar.js.map
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── nested
+│   │   └── dir
+│   │       └── bar.ts
+│   ├── foo.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/multiple-entrypoint': Cli.run > default > types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/multiple-entrypoint': Cli.run > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/multiple-entrypoint': Cli.run > link > output 1`] = `
+"{
+  "name": "multiple-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "src": "./src/foo.ts",
+      "types": "./dist/foo.d.ts",
+      "default": "./dist/foo.js"
+    },
+    "./nested/dir": {
+      "src": "./src/nested/dir/bar.ts",
+      "types": "./dist/nested/dir/bar.d.ts",
+      "default": "./dist/nested/dir/bar.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+├── dist
+│   ├── nested
+│   │   └── dir
+│   │       ├── bar.d.ts -> ../../../src/nested/dir/bar.ts
+│   │       └── bar.js -> ../../../src/nested/dir/bar.ts
+│   ├── foo.d.ts -> ../src/foo.ts
+│   ├── foo.js -> ../src/foo.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── nested
+│   │   └── dir
+│   │       └── bar.ts
+│   ├── foo.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/multiple-entrypoint': Cli.run > link > types-target 1`] = `"../src/index.ts"`;
+
 exports[`'/single-entrypoint': Cli.run > default > main 1`] = `
 "import { bar as bar1, foo as foo1 } from './foo.js';
 export function foo(options = {}) {

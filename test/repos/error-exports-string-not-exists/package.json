@@ -1,0 +1,9 @@
+{
+  "name": "error-exports-string-not-exists",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./non-existent.ts"
+  }
+}
+

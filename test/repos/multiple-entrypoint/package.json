@@ -1,0 +1,10 @@
+{
+  "name": "multiple-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./foo": "./src/foo.ts",
+    "./nested/dir": "./src/nested/dir/bar.ts"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "error-bin-object-not-exists",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "cli": "./non-existent-cli.ts"
+  }
+}
+

@@ -16,6 +16,8 @@ export type { PackageJson, TsConfigJson }
 export async function build(options: build.Options): Promise<build.ReturnType> {
   const { cwd = process.cwd(), link = false, project = './tsconfig.json', tsgo } = options
 
+  await checkInput({ cwd })
+
   let [pkgJson, tsConfig] = await Promise.all([
     readPackageJson({ cwd }),
     readTsconfigJson({ cwd, project }),
@@ -29,7 +31,9 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
 
   const outDir = tsConfig.compilerOptions?.outDir ?? path.resolve(cwd, 'dist')
   if (link) await fs.rm(outDir, { recursive: true })
-  const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir })
+
+  const sourceDir = getSourceDir({ entries })
+  const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir })
 
   await writePackageJson(cwd, packageJson)
 
@@ -56,13 +60,38 @@ export declare namespace build {
   }
 }
 
-export async function check(options: check.Options): Promise<check.ReturnType> {
+/**
+ * Checks the inputs of the package.
+ *
+ * @param options - Options for checking the input.
+ * @returns Input check results.
+ */
+export async function checkInput(options: checkInput.Options): Promise<checkInput.ReturnType> {
+  return await checkPackageJson(options)
+}
+
+export declare namespace checkInput {
+  type Options = {
+    /** Working directory to check. @default process.cwd() */
+    cwd?: string | undefined
+  }
+
+  type ReturnType = undefined
+}
+
+/**
+ * Checks the output of the package.
+ *
+ * @param options - Options for checking the output.
+ * @returns Output results.
+ */
+export async function checkOutput(options: checkOutput.Options): Promise<checkOutput.ReturnType> {
   const { cwd = process.cwd() } = options
   const [attw, publint] = await Promise.all([checkAttw({ cwd }), checkPublint({ cwd })])
   return { output: { attw: attw.output, publint: publint.output } }
 }
 
-export declare namespace check {
+export declare namespace checkOutput {
   type Options = {
     /** Working directory to check. @default process.cwd() */
     cwd?: string | undefined
@@ -77,6 +106,64 @@ export declare namespace check {
       publint: string
     }
   }
+}
+
+/**
+ * Determines if the package.json file is valid for transpiling.
+ *
+ * @param options - Options for checking the package.json file.
+ * @returns Whether the package.json file is valid for transpiling.
+ */
+export async function checkPackageJson(
+  options: checkPackageJson.Options,
+): Promise<checkPackageJson.ReturnType> {
+  const { cwd = process.cwd() } = options
+  const pkgJson = await readPackageJson({ cwd })
+
+  if (!pkgJson.exports && !pkgJson.main && !pkgJson.bin)
+    throw new Error('package.json must have an `exports`, `main`, or `bin` field')
+
+  if (pkgJson.bin)
+    if (typeof pkgJson.bin === 'string') {
+      if (!fsSync.existsSync(path.resolve(cwd, pkgJson.bin)))
+        throw new Error(`\`${pkgJson.bin}\` does not exist on \`package.json#bin\``)
+    } else {
+      for (const [key, value] of Object.entries(pkgJson.bin)) {
+        if (!value) throw new Error(`\`bin.${key}\` value must be a string`)
+        if (typeof value === 'string' && !fsSync.existsSync(path.resolve(cwd, value)))
+          throw new Error(`\`${value}\` does not exist on \`package.json#bin.${key}\``)
+      }
+    }
+
+  if (pkgJson.main)
+    if (!fsSync.existsSync(path.resolve(cwd, pkgJson.main)))
+      throw new Error(`\`${pkgJson.main}\` does not exist on \`package.json#main\``)
+
+  if (pkgJson.exports) {
+    for (const [key, entry] of Object.entries(pkgJson.exports)) {
+      if (typeof entry === 'string' && !fsSync.existsSync(path.resolve(cwd, entry)))
+        throw new Error(`\`${entry}\` does not exist on \`package.json#exports["${key}"]\``)
+      if (
+        typeof entry === 'object' &&
+        entry &&
+        'src' in entry &&
+        typeof entry.src === 'string' &&
+        !fsSync.existsSync(path.resolve(cwd, entry.src))
+      )
+        throw new Error(`\`${entry.src}\` does not exist on \`package.json#exports["${key}"].src\``)
+    }
+  }
+
+  return undefined
+}
+
+export declare namespace checkPackageJson {
+  type Options = {
+    /** Working directory to check. @default process.cwd() */
+    cwd?: string | undefined
+  }
+
+  type ReturnType = undefined
 }
 
 /**
@@ -188,29 +275,28 @@ export async function decoratePackageJson(
   pkgJson: PackageJson,
   options: decoratePackageJson.Options,
 ) {
-  const { cwd, link, outDir } = options
+  const { cwd, link, outDir, sourceDir } = options
 
   const relativeOutDir = `./${path.relative(cwd, outDir)}`
-  const outFile = (name: string, ext: string = '') => `./${path.join(relativeOutDir, name + ext)}`
+  const relativeSourceDir = `./${path.relative(cwd, sourceDir)}`
 
-  if (!pkgJson.exports && !pkgJson.main && !pkgJson.bin)
-    // TODO: better error message
-    throw new Error('package.json must have an `exports`, `main`, or `bin` field')
+  const outFile = (name: string, ext: string = '') =>
+    './' +
+    path.join(
+      relativeOutDir,
+      name.replace(relativeSourceDir, '').replace(path.extname(name), '') + ext,
+    )
 
   let bin = pkgJson.bin
   if (bin) {
     if (typeof bin === 'string') {
-      if (!bin.startsWith(relativeOutDir)) {
-        const name = path.basename(bin, path.extname(bin))
-        bin = outFile(name, '.js')
-      }
+      if (!bin.startsWith(relativeOutDir)) bin = outFile(bin, '.js')
     } else {
       bin = Object.fromEntries(
         Object.entries(bin).map(([key, value]) => {
           if (!value) throw new Error(`\`bin.${key}\` field must have a value`)
           if (value.startsWith(relativeOutDir)) return [key, value]
-          const name = path.basename(value, path.extname(value))
-          return [key, outFile(name, '.js')]
+          return [key, outFile(value, '.js')]
         }),
       )
     }
@@ -249,15 +335,15 @@ export async function decoratePackageJson(
   const exports = Object.fromEntries(
     exps
       ? Object.entries(exps).map(([key, value]) => {
-          function linkExports(src: string, dest: string) {
+          function linkExports(entry: string) {
             try {
-              const destJsAbsolute = path.resolve(cwd, outFile(dest, '.js'))
-              const destDtsAbsolute = path.resolve(cwd, outFile(dest, '.d.ts'))
+              const destJsAbsolute = path.resolve(cwd, outFile(entry, '.js'))
+              const destDtsAbsolute = path.resolve(cwd, outFile(entry, '.d.ts'))
               const dir = path.dirname(destJsAbsolute)
 
               if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
 
-              const srcAbsolute = path.resolve(cwd, src)
+              const srcAbsolute = path.resolve(cwd, entry)
               const srcRelativeJs = path.relative(path.dirname(destJsAbsolute), srcAbsolute)
               const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
 
@@ -278,14 +364,13 @@ export async function decoratePackageJson(
           // }
           if (typeof value === 'string') {
             if (value.startsWith(relativeOutDir)) return [key, value]
-            const name = path.basename(value, path.extname(value))
-            if (link) linkExports(value, name)
+            if (link) linkExports(value)
             return [
               key,
               {
                 src: value,
-                types: outFile(name, '.d.ts'),
-                default: outFile(name, '.js'),
+                types: outFile(value, '.d.ts'),
+                default: outFile(value, '.js'),
               },
             ]
           }
@@ -308,14 +393,13 @@ export async function decoratePackageJson(
             typeof value.src === 'string'
           ) {
             if (value.src.startsWith(relativeOutDir)) return [key, value]
-            const name = path.basename(value.src, path.extname(value.src))
-            if (link) linkExports(value.src, name)
+            if (link) linkExports(value.src)
             return [
               key,
               {
                 ...value,
-                types: outFile(name, '.d.ts'),
-                default: outFile(name, '.js'),
+                types: outFile(value.src, '.d.ts'),
+                default: outFile(value.src, '.js'),
               },
             ]
           }
@@ -352,6 +436,8 @@ export declare namespace decoratePackageJson {
     link: boolean
     /** Output directory. */
     outDir: string
+    /** Source directory. */
+    sourceDir: string
   }
 }
 
@@ -365,10 +451,6 @@ export function getEntries(options: getEntries.Options): string[] {
   const { cwd, pkgJson } = options
 
   let entries: string[] = []
-
-  if (!pkgJson.exports && !pkgJson.main && !pkgJson.bin)
-    // TODO: better error message
-    throw new Error('package.json must have an `exports`, `main`, or `bin` field')
 
   if (pkgJson.bin) {
     if (typeof pkgJson.bin === 'string') entries.push(path.resolve(cwd, pkgJson.bin))
@@ -403,17 +485,54 @@ export declare namespace getEntries {
 }
 
 /**
+ * Gets the source directory from the entry files.
+ *
+ * @param options - Options for getting the source directory.
+ * @returns Source directory.
+ */
+export function getSourceDir(options: getSourceDir.Options): string {
+  const { entries } = options
+
+  // Get directories of all entries
+  const dirs = entries.map((entry) => path.dirname(entry))
+
+  // Split each directory into segments
+  const segments = dirs.map((dir) => dir.split(path.sep))
+
+  // Find common segments
+  const commonSegments: string[] = []
+  const minLength = Math.min(...segments.map((s) => s.length))
+
+  for (let i = 0; i < minLength; i++) {
+    const segment = segments[0][i]
+    if (segments.every((s) => s[i] === segment)) commonSegments.push(segment)
+    else break
+  }
+
+  return commonSegments.join(path.sep)
+}
+
+export declare namespace getSourceDir {
+  type Options = {
+    /** Entry files. */
+    entries: string[]
+  }
+}
+
+/**
  * Reads the package.json file from the given working directory.
  *
  * @param cwd - Working directory to read the package.json file from.
  * @returns Parsed package.json file as an object.
  */
+const packageJsonCache: Map<string, PackageJson> = new Map()
 export async function readPackageJson(options: readPackageJson.Options) {
   const { cwd } = options
 
-  return (await fs
-    .readFile(path.resolve(cwd, 'package.json'), 'utf-8')
-    .then(JSON.parse)) as PackageJson
+  if (packageJsonCache.has(cwd)) return packageJsonCache.get(cwd) as PackageJson
+  const packageJson = await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8').then(JSON.parse)
+  packageJsonCache.set(cwd, packageJson)
+  return packageJson
 }
 
 export declare namespace readPackageJson {
@@ -430,9 +549,12 @@ export declare namespace readPackageJson {
  * @param project - Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json'
  * @returns Parsed tsconfig.json file as an object.
  */
+const tsconfigJsonCache: Map<string, TsConfigJson> = new Map()
 export async function readTsconfigJson(options: readTsconfigJson.Options): Promise<TsConfigJson> {
   const { cwd, project = './tsconfig.json' } = options
+  if (tsconfigJsonCache.has(cwd)) return tsconfigJsonCache.get(cwd) as TsConfigJson
   const result = await Tsconfig.parse(path.resolve(cwd, project))
+  tsconfigJsonCache.set(cwd, result.tsconfig)
   return result.tsconfig
 }
 
