@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { cac } from 'cac'
 import * as commands from './internal/cli/commands.js'
 import pkgJson from './internal/package.json' with { type: 'json' }
