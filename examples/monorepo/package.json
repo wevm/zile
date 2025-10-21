@@ -1,0 +1,15 @@
+{
+  "name": "monorepo",
+  "private": true,
+  "scripts": {
+    "build": "bun run --filter='./packages/*' build",
+    "dev": "bun run --filter='./packages/*' dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "zile": "latest"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

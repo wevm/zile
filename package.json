@@ -18,7 +18,17 @@
     "dist",
     "src"
   ],
+  "sideEffects": false,
   "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "packageManager": "bun@1.3",
   "dependencies": {
     "cac": "6.7.14",
@@ -43,18 +53,13 @@
     "@changesets/cli": "^2.27.7",
     "@types/node": "^24.7.1",
     "publint": "0.3.14",
+    "typescript": "^5.9.3",
     "type-fest": "^5.0.1",
     "vitest": "^3.2.4"
   },
   "repository": "wevm/zile",
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "src": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  }
+  "workspaces": [
+    ".",
+    "examples/*"
+  ]
 }
