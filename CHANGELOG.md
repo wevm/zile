@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.4
+
+### Patch Changes
+
+- [`e14952d`](https://github.com/wevm/zile/commit/e14952d03b306cc8b6d1c36cda68f79aa47b5b68) Thanks [@jxom](https://github.com/jxom)! - Fixed CLI.
+
 ## 0.0.3
 
 ### Patch Changes
