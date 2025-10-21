@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.6
+
+### Patch Changes
+
+- [`8c43401`](https://github.com/wevm/zile/commit/8c434018e84df3e3912f4e54589be1306a85e271) Thanks [@jxom](https://github.com/jxom)! - Added support for copying assets.
+
 ## 0.0.5
 
 ### Patch Changes
