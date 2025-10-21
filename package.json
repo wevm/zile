@@ -57,9 +57,5 @@
     "type-fest": "^5.0.1",
     "vitest": "^3.2.4"
   },
-  "repository": "wevm/zile",
-  "workspaces": [
-    ".",
-    "examples/*"
-  ]
+  "repository": "wevm/zile"
 }
