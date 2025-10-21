@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.5
+
+### Patch Changes
+
+- [`7416057`](https://github.com/wevm/zile/commit/741605732819f93240a7808d833234de43c8477b) Thanks [@jxom](https://github.com/jxom)! - Added indent detection when writing back to `package.json`.
+
 ## 0.0.4
 
 ### Patch Changes
