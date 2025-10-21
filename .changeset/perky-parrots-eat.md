@@ -1,5 +1,0 @@
----
-"zile": patch
----
-
-Fixed CLI.
