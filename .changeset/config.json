@@ -5,7 +5,7 @@
   "changelog": ["@changesets/changelog-github", { "repo": "wevm/zile" }],
   "commit": false,
   "fixed": [],
-  "ignore": [],
+  "ignore": ["basic"],
   "linked": [],
   "updateInternalDependencies": "patch"
 }

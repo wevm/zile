@@ -3,5 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "bin": "./cli.ts",
-  "main": "./index.ts"
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./foo": "./foo.ts",
+    "./config": "./config.json"
+  }
 }

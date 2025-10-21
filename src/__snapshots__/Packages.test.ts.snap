@@ -155,6 +155,12 @@ exports[`Packages.build > builds all packages 1`] = `
           "src": "./index.ts",
           "types": "./dist/index.d.ts",
         },
+        "./config": "./dist/config.json",
+        "./foo": {
+          "default": "./dist/foo.js",
+          "src": "./foo.ts",
+          "types": "./dist/foo.d.ts",
+        },
       },
       "main": "./dist/index.js",
       "module": "./dist/index.js",
@@ -188,6 +194,7 @@ exports[`Packages.build > builds all packages 1`] = `
       "include": [
         "/repos/basic/cli.ts",
         "/repos/basic/index.ts",
+        "/repos/basic/foo.ts",
       ],
     },
   },

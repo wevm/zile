@@ -24,20 +24,22 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
 
   await checkInput({ cwd, outDir })
 
-  const entries = getEntries({ cwd, pkgJson })
+  const { assets, sources } = getEntries({ cwd, pkgJson })
 
   if (!link) {
-    const result = await transpile({ cwd, entries, tsgo })
+    const result = await transpile({ cwd, sources, tsgo })
     tsConfig = result.tsConfig
   }
+
+  await copyAssets({ assets, cwd, outDir })
 
   if (link) {
     await fs.rm(outDir, { recursive: true }).catch(() => {})
     await fs.mkdir(outDir, { recursive: true })
   }
 
-  const sourceDir = getSourceDir({ cwd, entries })
-  const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir })
+  const sourceDir = getSourceDir({ cwd, sources })
+  const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir, assets })
 
   await writePackageJson(cwd, packageJson)
 
@@ -151,6 +153,34 @@ export declare namespace checkPackageJson {
 }
 
 /**
+ * Copies asset files to the output directory.
+ *
+ * @param options - Options for copying assets.
+ * @returns Promise that resolves when assets are copied.
+ */
+export async function copyAssets(options: copyAssets.Options): Promise<void> {
+  const { assets, cwd, outDir } = options
+
+  for (const asset of assets) {
+    const relativePath = path.relative(cwd, asset)
+    const destPath = path.resolve(outDir, relativePath)
+    await fs.mkdir(path.dirname(destPath), { recursive: true })
+    await fs.copyFile(asset, destPath)
+  }
+}
+
+export declare namespace copyAssets {
+  type Options = {
+    /** Array of absolute paths to asset files. */
+    assets: string[]
+    /** Working directory. */
+    cwd: string
+    /** Output directory. */
+    outDir: string
+  }
+}
+
+/**
  * Decorates the package.json file to include publish-specific fields.
  *
  * @param pkgJson - Package.json file to transform.
@@ -161,11 +191,12 @@ export async function decoratePackageJson(
   pkgJson: PackageJson,
   options: decoratePackageJson.Options,
 ) {
-  const { cwd, link, outDir, sourceDir } = options
+  const { assets, cwd, link, outDir, sourceDir } = options
 
   const relativeOutDir = `./${path.relative(cwd, outDir)}`
   const relativeSourceDir = `./${path.relative(cwd, sourceDir)}`
 
+  const outAsset = (name: string) => `./${path.join(relativeOutDir, path.relative(cwd, name))}`
   const outFile = (name: string, ext: string = '') =>
     './' +
     path.join(
@@ -260,7 +291,12 @@ export async function decoratePackageJson(
           // }
           if (typeof value === 'string') {
             if (value.startsWith(relativeOutDir)) return [key, value]
-            if (!/\.(m|c)?[jt]sx?$/.test(value)) return [key, value]
+            // Handle asset files (non-source files)
+            if (!/\.(m|c)?[jt]sx?$/.test(value)) {
+              const absolutePath = path.resolve(cwd, value)
+              if (assets.includes(absolutePath)) return [key, outAsset(absolutePath)]
+              return [key, value]
+            }
             if (link) linkExports(value)
             return [
               key,
@@ -290,7 +326,15 @@ export async function decoratePackageJson(
             typeof value.src === 'string'
           ) {
             if (value.src.startsWith(relativeOutDir)) return [key, value]
-            if (!/\.(m|c)?[jt]sx?$/.test(value.src)) return [key, value]
+            // Handle asset files (non-source files)
+            if (!/\.(m|c)?[jt]sx?$/.test(value.src)) {
+              if (link) return [key, value]
+              const absolutePath = path.resolve(cwd, value.src)
+              if (assets.includes(absolutePath)) {
+                return [key, { ...value, default: outAsset(absolutePath) }]
+              }
+              return [key, value]
+            }
             if (link) linkExports(value.src)
             return [
               key,
@@ -326,6 +370,8 @@ export async function decoratePackageJson(
 
 export declare namespace decoratePackageJson {
   type Options = {
+    /** Array of absolute paths to asset files. */
+    assets: string[]
     /** Working directory. */
     cwd: string
     /** Whether to link output files to source files for development. */
@@ -341,17 +387,18 @@ export declare namespace decoratePackageJson {
  * Gets entry files from package.json exports field or main field.
  *
  * @param options - Options for getting entry files.
- * @returns Array of absolute paths to entry files.
+ * @returns Array of absolute paths to asset files and source files.
  */
-export function getEntries(options: getEntries.Options): string[] {
+export function getEntries(options: getEntries.Options): getEntries.ReturnType {
   const { cwd, pkgJson } = options
 
-  const entries: string[] = []
+  const assets: string[] = []
+  const sources: string[] = []
 
   if (pkgJson.bin) {
-    if (typeof pkgJson.bin === 'string') entries.push(path.resolve(cwd, pkgJson.bin))
+    if (typeof pkgJson.bin === 'string') sources.push(path.resolve(cwd, pkgJson.bin))
     else
-      entries.push(
+      sources.push(
         ...(Object.entries(pkgJson.bin)
           .map(([key, value]) =>
             // biome-ignore lint/style/noNonNullAssertion: _
@@ -361,21 +408,26 @@ export function getEntries(options: getEntries.Options): string[] {
       )
   }
 
-  if (pkgJson.exports)
-    entries.push(
-      ...Object.values(pkgJson.exports)
-        .map((entry) => {
-          if (typeof entry === 'string') return entry
-          if (typeof entry === 'object' && entry && 'src' in entry && typeof entry.src === 'string')
-            return entry.src
-          throw new Error('`exports` field in package.json must have a `src` field')
-        })
-        .map((entry) => path.resolve(cwd, entry))
-        .filter((entry) => /\.(m|c)?[jt]sx?$/.test(entry)),
-    )
-  else if (pkgJson.main) entries.push(path.resolve(cwd, pkgJson.main))
+  if (pkgJson.exports) {
+    for (const entry of Object.values(pkgJson.exports)) {
+      let entryPath: string
+      if (typeof entry === 'string') entryPath = entry
+      else if (
+        typeof entry === 'object' &&
+        entry &&
+        'src' in entry &&
+        typeof entry.src === 'string'
+      )
+        entryPath = entry.src
+      else throw new Error('`exports` field in package.json must have a `src` field')
 
-  return entries
+      const absolutePath = path.resolve(cwd, entryPath)
+      if (/\.(m|c)?[jt]sx?$/.test(absolutePath)) sources.push(absolutePath)
+      else assets.push(absolutePath)
+    }
+  } else if (pkgJson.main) sources.push(path.resolve(cwd, pkgJson.main))
+
+  return { assets, sources }
 }
 
 export declare namespace getEntries {
@@ -384,6 +436,13 @@ export declare namespace getEntries {
     cwd: string
     /** Package.json file. */
     pkgJson: PackageJson
+  }
+
+  type ReturnType = {
+    /** Array of absolute paths to asset files. */
+    assets: string[]
+    /** Array of absolute paths to source files. */
+    sources: string[]
   }
 }
 
@@ -394,12 +453,12 @@ export declare namespace getEntries {
  * @returns Source directory.
  */
 export function getSourceDir(options: getSourceDir.Options): string {
-  const { cwd = process.cwd(), entries } = options
+  const { cwd = process.cwd(), sources } = options
 
-  if (entries.length === 0) return path.resolve(cwd, 'src')
+  if (sources.length === 0) return path.resolve(cwd, 'src')
 
   // Get directories of all entries
-  const dirs = entries.map((entry) => path.dirname(entry))
+  const dirs = sources.map((source) => path.dirname(source))
 
   // Split each directory into segments
   const segments = dirs.map((dir) => dir.split(path.sep))
@@ -422,8 +481,8 @@ export declare namespace getSourceDir {
   type Options = {
     /** Working directory. */
     cwd?: string | undefined
-    /** Entry files. */
-    entries: string[]
+    /** Source files. */
+    sources: string[]
   }
 }
 
@@ -483,7 +542,7 @@ export declare namespace readTsconfigJson {
  * @returns Transpilation artifacts.
  */
 export async function transpile(options: transpile.Options): Promise<transpile.ReturnType> {
-  const { cwd = process.cwd(), entries, project = './tsconfig.json', tsgo } = options
+  const { cwd = process.cwd(), sources, project = './tsconfig.json', tsgo } = options
 
   const tsConfigJson = await readTsconfigJson({ cwd, project })
   const tsconfigPath = path.resolve(cwd, project)
@@ -520,7 +579,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
   const tsConfig = {
     compilerOptions,
     exclude: tsConfigJson.exclude ?? [],
-    include: [...(tsConfigJson.include ?? []), ...entries] as string[],
+    include: [...(tsConfigJson.include ?? []), ...sources] as string[],
   } as const
 
   const tmpProject = path.resolve(cwd, 'tsconfig.tmp.json')
@@ -550,8 +609,8 @@ export declare namespace transpile {
   type Options = {
     /** Working directory of the package to transpile. @default process.cwd() */
     cwd?: string | undefined
-    /** Entry files to include in the transpilation. */
-    entries: string[]
+    /** Source files to include in the transpilation. */
+    sources: string[]
     /** Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json' */
     project?: string | undefined
     /** Whether to use tsgo for transpilation. @default false */
@@ -573,7 +632,11 @@ export declare namespace transpile {
 export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   const content = packageJsonCache.get(cwd)
   const indent = content ? detectIndent(content) : '  '
-  await fs.writeFile(path.resolve(cwd, 'package.json'), JSON.stringify(pkgJson, null, indent), 'utf-8')
+  await fs.writeFile(
+    path.resolve(cwd, 'package.json'),
+    JSON.stringify(pkgJson, null, indent),
+    'utf-8',
+  )
 }
 
 /**
@@ -585,7 +648,7 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
  */
 export function detectIndent(content: string): string {
   const lines = content.split('\n')
-  
+
   for (const line of lines) {
     const match = line.match(/^(\s+)/)
     if (match) {
@@ -596,7 +659,7 @@ export function detectIndent(content: string): string {
       return indent
     }
   }
-  
+
   // Default to 2 spaces if we can't detect
   return '  '
 }

@@ -29,6 +29,10 @@ describe('Packages.find', () => {
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
         "/src/internal",
+        "/examples/monorepo",
+        "/examples/monorepo/packages/foo",
+        "/examples/monorepo/packages/bar",
+        "/examples/basic",
       ]
     `)
   })
@@ -172,6 +176,10 @@ describe('Packages.find', () => {
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
         "/src/internal",
+        "/examples/monorepo",
+        "/examples/monorepo/packages/foo",
+        "/examples/monorepo/packages/bar",
+        "/examples/basic",
       ]
     `)
   })

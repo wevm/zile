@@ -10,6 +10,8 @@ basic v0.0.0
 
 (ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
 
+(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
+
 
 "basic"
 
@@ -17,6 +19,24 @@ node16 (from ESM): 🟢 (ESM)
 bundler: 🟢 
 node10: (ignored) 🟢 
 node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"basic/foo"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"basic/config"
+
+node16 (from ESM): 🟢 (JSON)
+bundler: 🟢 (JSON)
+node10: (ignored) 💀 Resolution failed
+node16 (from CJS): (ignored) 🟢 (JSON)
 
 ***********************************
 ",
@@ -58,16 +78,22 @@ exports[`'/basic': Package.build > default > output 1`] = `
     "basic.src": "./cli.ts"
   },
   "main": "./dist/index.js",
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "src": "./index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
-  }
+    },
+    "./foo": {
+      "src": "./foo.ts",
+      "types": "./dist/foo.d.ts",
+      "default": "./dist/foo.js"
+    },
+    "./config": "./dist/config.json"
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }
 
 
@@ -76,6 +102,7 @@ exports[`'/basic': Package.build > default > output 1`] = `
 │   ├── cli.d.ts.map
 │   ├── cli.js
 │   ├── cli.js.map
+│   ├── config.json
 │   ├── foo.d.ts
 │   ├── foo.d.ts.map
 │   ├── foo.js
@@ -85,6 +112,7 @@ exports[`'/basic': Package.build > default > output 1`] = `
 │   ├── index.js
 │   └── index.js.map
 ├── cli.ts
+├── config.json
 ├── foo.ts
 ├── index.ts
 ├── package.json
@@ -104,6 +132,12 @@ exports[`'/basic': Package.build > default > result 1`] = `
         "default": "./dist/index.js",
         "src": "./index.ts",
         "types": "./dist/index.d.ts",
+      },
+      "./config": "./dist/config.json",
+      "./foo": {
+        "default": "./dist/foo.js",
+        "src": "./foo.ts",
+        "types": "./dist/foo.d.ts",
       },
     },
     "main": "./dist/index.js",
@@ -138,6 +172,7 @@ exports[`'/basic': Package.build > default > result 1`] = `
     "include": [
       "/repos/basic/cli.ts",
       "/repos/basic/index.ts",
+      "/repos/basic/foo.ts",
     ],
   },
 }
@@ -172,23 +207,32 @@ exports[`'/basic': Package.build > link > output 1`] = `
     "basic.src": "./cli.ts"
   },
   "main": "./dist/index.js",
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "src": "./index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
-  }
+    },
+    "./foo": {
+      "src": "./foo.ts",
+      "types": "./dist/foo.d.ts",
+      "default": "./dist/foo.js"
+    },
+    "./config": "./dist/config.json"
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }
 
 
 ├── dist
+│   ├── foo.d.ts -> ../foo.ts
+│   ├── foo.js -> ../foo.ts
 │   ├── index.d.ts -> ../index.ts
 │   └── index.js -> ../index.ts
 ├── cli.ts
+├── config.json
 ├── foo.ts
 ├── index.ts
 ├── package.json
@@ -208,6 +252,12 @@ exports[`'/basic': Package.build > link > result 1`] = `
         "default": "./dist/index.js",
         "src": "./index.ts",
         "types": "./dist/index.d.ts",
+      },
+      "./config": "./dist/config.json",
+      "./foo": {
+        "default": "./dist/foo.js",
+        "src": "./foo.ts",
+        "types": "./dist/foo.d.ts",
       },
     },
     "main": "./dist/index.js",

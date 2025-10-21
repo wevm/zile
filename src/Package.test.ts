@@ -77,7 +77,7 @@ describe('Package.getSourceDir', () => {
   test('common', async () => {
     {
       const result = Package.getSourceDir({
-        entries: [
+        sources: [
           path.resolve(process.cwd(), 'src/index.ts'),
           path.resolve(process.cwd(), 'src/foo.ts'),
           path.resolve(process.cwd(), 'src/nested/dir/index.ts'),
@@ -89,7 +89,7 @@ describe('Package.getSourceDir', () => {
 
     {
       const result = Package.getSourceDir({
-        entries: [
+        sources: [
           path.resolve(process.cwd(), 'src/index.ts'),
           path.resolve(process.cwd(), 'foo.ts'),
           path.resolve(process.cwd(), 'bar/nested/dir/index.ts'),
