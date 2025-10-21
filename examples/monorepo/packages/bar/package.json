@@ -2,23 +2,10 @@
   "name": "@scope/bar",
   "version": "0.0.0",
   "type": "module",
-  "bin": {
-    "@scope/bar": "./dist/cli.js",
-    "@scope/bar.src": "./cli.ts"
-  },
-  "main": "./dist/index.js",
+  "bin": "./cli.ts",
+  "main": "./index.ts",
   "scripts": {
     "build": "zile",
     "dev": "zile dev"
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "src": "./index.ts",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
   }
 }
