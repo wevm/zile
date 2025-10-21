@@ -32,10 +32,7 @@ export declare namespace run {
   }
 }
 
-// Run the CLI if this module is executed directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  run({ args: process.argv }).catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
-}
+run({ args: process.argv }).catch((error) => {
+  console.error(error)
+  process.exit(1)
+})
