@@ -433,14 +433,15 @@ export declare namespace getSourceDir {
  * @param cwd - Working directory to read the package.json file from.
  * @returns Parsed package.json file as an object.
  */
-const packageJsonCache: Map<string, PackageJson> = new Map()
+const packageJsonCache: Map<string, string> = new Map()
 export async function readPackageJson(options: readPackageJson.Options) {
   const { cwd } = options
 
-  if (packageJsonCache.has(cwd)) return packageJsonCache.get(cwd) as PackageJson
-  const packageJson = await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8').then(JSON.parse)
-  packageJsonCache.set(cwd, packageJson)
-  return packageJson
+  // biome-ignore lint/style/noNonNullAssertion: _
+  if (packageJsonCache.has(cwd)) return JSON.parse(packageJsonCache.get(cwd)!)
+  const content = await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8')
+  packageJsonCache.set(cwd, content)
+  return JSON.parse(content)
 }
 
 export declare namespace readPackageJson {
@@ -570,7 +571,34 @@ export declare namespace transpile {
  * @param pkgJson - Package.json file to write.
  */
 export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
-  await fs.writeFile(path.resolve(cwd, 'package.json'), JSON.stringify(pkgJson, null, 2), 'utf-8')
+  const content = packageJsonCache.get(cwd)
+  const indent = content ? detectIndent(content) : '  '
+  await fs.writeFile(path.resolve(cwd, 'package.json'), JSON.stringify(pkgJson, null, indent), 'utf-8')
+}
+
+/**
+ * Detects the indentation used in a JSON string.
+ *
+ * @param content - JSON string content.
+ * @returns Detected indentation string (e.g., '  ', '    ', '\t').
+ * @internal
+ */
+export function detectIndent(content: string): string {
+  const lines = content.split('\n')
+  
+  for (const line of lines) {
+    const match = line.match(/^(\s+)/)
+    if (match) {
+      const indent = match[1]
+      // If it starts with a tab, use tabs
+      if (indent[0] === '\t') return '\t'
+      // Otherwise return the spaces found
+      return indent
+    }
+  }
+  
+  // Default to 2 spaces if we can't detect
+  return '  '
 }
 
 /**

@@ -100,3 +100,62 @@ describe('Package.getSourceDir', () => {
     }
   })
 })
+
+describe('Package.detectIndent', () => {
+  test('detects 2 spaces', () => {
+    const content = `{
+  "name": "test",
+  "version": "1.0.0"
+}`
+    expect(Package.detectIndent(content)).toBe('  ')
+  })
+
+  test('detects 4 spaces', () => {
+    const content = `{
+    "name": "test",
+    "version": "1.0.0"
+}`
+    expect(Package.detectIndent(content)).toBe('    ')
+  })
+
+  test('detects tabs', () => {
+    const content = `{
+\t"name": "test",
+\t"version": "1.0.0"
+}`
+    expect(Package.detectIndent(content)).toBe('\t')
+  })
+
+  test('detects mixed indentation (tabs first)', () => {
+    const content = `{
+\t  "name": "test",
+\t  "version": "1.0.0"
+}`
+    expect(Package.detectIndent(content)).toBe('\t')
+  })
+
+  test('returns default for empty file', () => {
+    expect(Package.detectIndent('')).toBe('  ')
+  })
+
+  test('returns default for file with no indentation', () => {
+    const content = `{"name":"test","version":"1.0.0"}`
+    expect(Package.detectIndent(content)).toBe('  ')
+  })
+
+  test('handles Windows line endings', () => {
+    const content = `{\r\n  "name": "test",\r\n  "version": "1.0.0"\r\n}`
+    expect(Package.detectIndent(content)).toBe('  ')
+  })
+
+  test('detects indentation from first indented line', () => {
+    const content = `{
+"name": "test",
+  "version": "1.0.0",
+    "nested": {
+      "value": true
+    }
+}`
+    expect(Package.detectIndent(content)).toBe('  ')
+  })
+})
