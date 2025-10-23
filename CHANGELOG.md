@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.7
+
+### Patch Changes
+
+- [`8ad7938`](https://github.com/wevm/zile/commit/8ad79389303d44559cbb9c4c84bf80b5256575ef) Thanks [@jxom](https://github.com/jxom)! - Preserved EOF newlines.
+
 ## 0.0.6
 
 ### Patch Changes
