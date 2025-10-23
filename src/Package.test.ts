@@ -1,3 +1,4 @@
+import * as crypto from 'node:crypto'
 import * as fs from 'node:fs/promises'
 import path from 'node:path'
 import { checkOutput, setupRepos, tree } from '../test/utils.js'
@@ -157,5 +158,58 @@ describe('Package.detectIndent', () => {
     }
 }`
     expect(Package.detectIndent(content)).toBe('  ')
+  })
+})
+
+describe('Package.writePackageJson', () => {
+  test('preserves trailing newline when present', async () => {
+    const tmpDir = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
+    await fs.mkdir(tmpDir, { recursive: true })
+    
+    const pkgPath = path.resolve(tmpDir, 'package.json')
+    const contentWithNewline = `{\n  "name": "test",\n  "version": "1.0.0"\n}\n`
+    await fs.writeFile(pkgPath, contentWithNewline, 'utf-8')
+    
+    const pkgJson = await Package.readPackageJson({ cwd: tmpDir })
+    pkgJson.version = '1.0.1'
+    await Package.writePackageJson(tmpDir, pkgJson)
+    
+    const result = await fs.readFile(pkgPath, 'utf-8')
+    expect(result.endsWith('\n')).toBe(true)
+    
+    await fs.rm(tmpDir, { recursive: true })
+  })
+
+  test('preserves no trailing newline when absent', async () => {
+    const tmpDir = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
+    await fs.mkdir(tmpDir, { recursive: true })
+    
+    const pkgPath = path.resolve(tmpDir, 'package.json')
+    const contentWithoutNewline = `{\n  "name": "test",\n  "version": "1.0.0"\n}`
+    await fs.writeFile(pkgPath, contentWithoutNewline, 'utf-8')
+    
+    const pkgJson = await Package.readPackageJson({ cwd: tmpDir })
+    pkgJson.version = '1.0.1'
+    await Package.writePackageJson(tmpDir, pkgJson)
+    
+    const result = await fs.readFile(pkgPath, 'utf-8')
+    expect(result.endsWith('\n')).toBe(false)
+    expect(result.endsWith('}\n')).toBe(false)
+    expect(result.endsWith('}')).toBe(true)
+    
+    await fs.rm(tmpDir, { recursive: true })
+  })
+
+  test('defaults to trailing newline when no cache exists', async () => {
+    const tmpDir = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
+    await fs.mkdir(tmpDir, { recursive: true })
+    
+    const pkgJson = { name: 'test', version: '1.0.0' }
+    await Package.writePackageJson(tmpDir, pkgJson)
+    
+    const result = await fs.readFile(path.resolve(tmpDir, 'package.json'), 'utf-8')
+    expect(result.endsWith('\n')).toBe(true)
+    
+    await fs.rm(tmpDir, { recursive: true })
   })
 })

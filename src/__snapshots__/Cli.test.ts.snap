@@ -48,6 +48,7 @@ exports[`'/basic': Cli.run > default > output 1`] = `
 }
 
 
+
 ├── dist
 │   ├── cli.d.ts
 │   ├── cli.d.ts.map
@@ -119,6 +120,7 @@ exports[`'/basic': Cli.run > link > output 1`] = `
 }
 
 
+
 ├── dist
 │   ├── foo.d.ts -> ../foo.ts
 │   ├── foo.js -> ../foo.ts
@@ -173,6 +175,7 @@ exports[`'/basic-object-exports': Cli.run > default > output 1`] = `
 }
 
 
+
 ├── dist
 │   ├── foo.d.ts
 │   ├── foo.d.ts.map
@@ -225,6 +228,7 @@ exports[`'/basic-object-exports': Cli.run > link > output 1`] = `
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts"
 }
+
 
 
 ├── dist
@@ -285,6 +289,7 @@ exports[`'/multiple-entrypoint': Cli.run > default > output 1`] = `
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts"
 }
+
 
 
 ├── dist
@@ -361,6 +366,7 @@ exports[`'/multiple-entrypoint': Cli.run > link > output 1`] = `
 }
 
 
+
 ├── dist
 │   ├── nested
 │   │   └── dir
@@ -421,6 +427,7 @@ exports[`'/single-entrypoint': Cli.run > default > output 1`] = `
 }
 
 
+
 ├── dist
 │   ├── foo.d.ts
 │   ├── foo.d.ts.map
@@ -473,6 +480,7 @@ exports[`'/single-entrypoint': Cli.run > link > output 1`] = `
     }
   }
 }
+
 
 
 ├── dist

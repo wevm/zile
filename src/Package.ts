@@ -489,7 +489,7 @@ export declare namespace getSourceDir {
 /**
  * Reads the package.json file from the given working directory.
  *
- * @param cwd - Working directory to read the package.json file from.
+ * @param options - Options for reading the package.json file.
  * @returns Parsed package.json file as an object.
  */
 const packageJsonCache: Map<string, string> = new Map()
@@ -632,11 +632,12 @@ export declare namespace transpile {
 export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   const content = packageJsonCache.get(cwd)
   const indent = content ? detectIndent(content) : '  '
-  await fs.writeFile(
-    path.resolve(cwd, 'package.json'),
-    JSON.stringify(pkgJson, null, indent),
-    'utf-8',
-  )
+  const hasTrailingNewline = content ? content.endsWith('\n') : true
+  
+  let output = JSON.stringify(pkgJson, null, indent)
+  if (hasTrailingNewline) output += '\n'
+  
+  await fs.writeFile(path.resolve(cwd, 'package.json'), output, 'utf-8')
 }
 
 /**
