@@ -456,7 +456,7 @@ export async function decoratePackageJson(
                 key,
                 {
                   ...value,
-                  types: [outFile(value.src, '.ts'), outFile(value.src, '.d.ts')],
+                  types: outFile(value.src, '.d.ts'),
                   default: outFile(value.src, '.js'),
                 },
               ]
@@ -673,6 +673,12 @@ export declare namespace readPackageJson {
 const tsconfigJsonCache: Map<string, TsConfigJson> = new Map()
 export async function readTsconfigJson(options: readTsconfigJson.Options): Promise<TsConfigJson> {
   const { cwd, project = './tsconfig.json' } = options
+  // check if the tsconfig.json file exists
+  if (!fsSync.statSync(path.resolve(cwd, project)).isFile()) {
+    throw new Error(
+      `tsconfig.json file not found at ${path.resolve(cwd, project)}. I need one in the root of the package.`,
+    )
+  }
   if (tsconfigJsonCache.has(cwd)) return tsconfigJsonCache.get(cwd) as TsConfigJson
   const result = await Tsconfig.parse(path.resolve(cwd, project))
   tsconfigJsonCache.set(cwd, result.tsconfig)
@@ -786,10 +792,8 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   const content = packageJsonCache.get(cwd)
   const indent = content ? detectIndent(content) : '  '
   const hasTrailingNewline = content ? content.endsWith('\n') : true
-  
   let output = JSON.stringify(pkgJson, null, indent)
   if (hasTrailingNewline) output += '\n'
-  
   await fs.writeFile(path.resolve(cwd, 'package.json'), output, 'utf-8')
 }
 
@@ -865,7 +869,12 @@ export function getPackageManager(params: { cwd: string; packageJson: PackageJso
     if (fsSync.existsSync(path.resolve(params.cwd, lockfile)))
       return lockfiles[lockfile as keyof typeof lockfiles]
   }
-  throw new Error('No lockfile found')
+  // check for `node_modules/.pnpm`, `node_modules/.yarn`, `node_modules/.npm`
+  const manager = packageManager.find((manager) =>
+    fsSync.existsSync(path.resolve(params.cwd, `node_modules/.${manager}`)),
+  )
+  if (manager) return manager
+  throw new Error('No package manager found')
 }
 
 export function readPackageJsonSync(cwd: string): PackageJson {
