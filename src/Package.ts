@@ -232,10 +232,7 @@ export async function decoratePackageJson(
       // pnpm: keep top-level bin as source, put built in publishConfig
       if (typeof bin === 'string') {
         if (!bin.startsWith(relativeOutDir))
-          publishBin = {
-            // biome-ignore lint/style/noNonNullAssertion: _
-            [pkgJson.name!]: outFile(bin, '.js'),
-          }
+          publishBin = outFile(bin, '.js')
       } else {
         publishBin = Object.fromEntries(
           Object.entries(bin).map((entry) => {
