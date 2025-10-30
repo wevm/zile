@@ -7,6 +7,23 @@ import type { PackageJson, TsConfigJson } from 'type-fest'
 
 export type { PackageJson, TsConfigJson }
 
+export const packageManager = ['bun', 'npm', 'pnpm', 'yarn'] as const
+export type PackageManager = (typeof packageManager)[number]
+
+const lockfiles = {
+  'bun.lock': 'bun',
+  'bun.lockb': 'bun',
+  'package-lock.json': 'npm',
+  'pnpm-lock.yaml': 'pnpm',
+  'yarn.lock': 'yarn',
+} as const satisfies Record<string, PackageManager>
+
+/**
+ * if package manager is pnpm:
+ * - it points top-level `main`, `module`, and `types` to ts source files,
+ * - it uses "publishConfig" for these fields: https://pnpm.io/package_json#publishconfig
+ */
+
 /**
  * Builds a package.
  *
@@ -193,6 +210,9 @@ export async function decoratePackageJson(
 ) {
   const { assets, cwd, link, outDir, sourceDir } = options
 
+  const packageManager = getPackageManager({ cwd, packageJson: pkgJson })
+  const isPnpm = packageManager.startsWith('pnpm')
+
   const relativeOutDir = `./${path.relative(cwd, outDir)}`
   const relativeSourceDir = `./${path.relative(cwd, sourceDir)}`
 
@@ -205,27 +225,47 @@ export async function decoratePackageJson(
     )
 
   let bin = pkgJson.bin
+  let publishBin: PackageJson['bin'] | undefined
+
   if (bin) {
-    if (typeof bin === 'string') {
-      if (!bin.startsWith(relativeOutDir))
-        bin = {
-          // biome-ignore lint/style/noNonNullAssertion: _
-          [pkgJson.name!]: outFile(bin, '.js'),
-          // biome-ignore lint/style/useTemplate: _
-          // biome-ignore lint/style/noNonNullAssertion: _
-          [pkgJson.name! + '.src']: bin,
-        }
+    if (isPnpm) {
+      // pnpm: keep top-level bin as source, put built in publishConfig
+      if (typeof bin === 'string') {
+        if (!bin.startsWith(relativeOutDir))
+          publishBin = outFile(bin, '.js')
+      } else {
+        publishBin = Object.fromEntries(
+          Object.entries(bin).map((entry) => {
+            const [key, value] = entry
+            if (!value) throw new Error(`\`bin.${key}\` field must have a value`)
+            return [key, outFile(value, '.js')]
+          }),
+        )
+      }
+      // Keep bin as original source for top-level
     } else {
-      bin = Object.fromEntries(
-        Object.entries(bin).flatMap((entry) => {
-          const [key, value] = entry
-          if (!value) throw new Error(`\`bin.${key}\` field must have a value`)
-          return [
-            [key.replace('.src', ''), outFile(value, '.js')],
-            [key, value],
-          ]
-        }),
-      )
+      // Non-pnpm: transform top-level bin
+      if (typeof bin === 'string') {
+        if (!bin.startsWith(relativeOutDir))
+          bin = {
+            // biome-ignore lint/style/noNonNullAssertion: _
+            [pkgJson.name!]: outFile(bin, '.js'),
+            // biome-ignore lint/style/useTemplate: _
+            // biome-ignore lint/style/noNonNullAssertion: _
+            [pkgJson.name! + '.src']: bin,
+          }
+      } else {
+        bin = Object.fromEntries(
+          Object.entries(bin).flatMap((entry) => {
+            const [key, value] = entry
+            if (!value) throw new Error(`\`bin.${key}\` field must have a value`)
+            return [
+              [key.replace('.src', ''), outFile(value, '.js')],
+              [key, value],
+            ]
+          }),
+        )
+      }
     }
   }
 
@@ -252,120 +292,230 @@ export async function decoratePackageJson(
     }
   }
 
-  type Exports = {
-    [key: string]: {
-      src: string
-      types: string
-      default: string
+  type Exports<PkgManager extends PackageManager = PackageManager> = PkgManager extends 'pnpm'
+    ? {
+        [key: string]: string
+      }
+    : {
+        [key: string]: {
+          src: string
+          types: string
+          default: string
+        }
+      }
+
+  type PublishConfig = {
+    access?: 'public' | 'restricted'
+    tag?: string
+    registry?: string
+    bin?: {
+      [key: string]: string
+    }
+    main?: string
+    module?: string
+    types?: string
+    browser?: string
+    esnext?: string
+    es2015?: string
+    unpkg?: string
+    'umd:main'?: string
+    typesVersions?: {
+      [key: string]: string
+    }
+    cpu?: string
+    os?: string
+    exports?: {
+      [key: string]:
+        | string
+        | {
+            src?: string
+            types?: string
+            default?: string
+          }
     }
   }
-  const exports = Object.fromEntries(
-    exps
-      ? Object.entries(exps).map(([key, value]) => {
-          function linkExports(entry: string) {
-            try {
-              const destJsAbsolute = path.resolve(cwd, outFile(entry, '.js'))
-              const destDtsAbsolute = path.resolve(cwd, outFile(entry, '.d.ts'))
-              const dir = path.dirname(destJsAbsolute)
 
-              if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
+  function processExports(forPublishConfig: boolean) {
+    return Object.fromEntries(
+      exps
+        ? Object.entries(exps).map(([key, value]) => {
+            function linkExports(entry: string) {
+              try {
+                const destJsAbsolute = path.resolve(cwd, outFile(entry, '.js'))
+                const destDtsAbsolute = path.resolve(cwd, outFile(entry, '.d.ts'))
+                const dir = path.dirname(destJsAbsolute)
 
-              const srcAbsolute = path.resolve(cwd, entry)
-              const srcRelativeJs = path.relative(path.dirname(destJsAbsolute), srcAbsolute)
-              const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
+                if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
 
-              fsSync.symlinkSync(srcRelativeJs, destJsAbsolute, 'file')
-              fsSync.symlinkSync(srcRelativeDts, destDtsAbsolute, 'file')
-            } catch {}
-          }
+                const srcAbsolute = path.resolve(cwd, entry)
+                const srcRelativeJs = path.relative(path.dirname(destJsAbsolute), srcAbsolute)
+                const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
 
-          // Transform single `package.json#exports` entrypoints. They
-          // must point to the source file. Otherwise, an error is thrown.
-          //
-          // "./utils": "./src/utils.ts"
-          // ↓ ↓ ↓
-          // "./utils": {
-          //   "src": "./src/utils.ts",
-          //   "types": "./dist/utils.js",
-          //   "default": "./dist/utils.d.ts"
-          // }
-          if (typeof value === 'string') {
-            if (value.startsWith(relativeOutDir)) return [key, value]
-            // Handle asset files (non-source files)
-            if (!/\.(m|c)?[jt]sx?$/.test(value)) {
-              const absolutePath = path.resolve(cwd, value)
-              if (assets.includes(absolutePath)) return [key, outAsset(absolutePath)]
-              return [key, value]
+                fsSync.symlinkSync(srcRelativeJs, destJsAbsolute, 'file')
+                fsSync.symlinkSync(srcRelativeDts, destDtsAbsolute, 'file')
+              } catch {}
             }
-            if (link) linkExports(value)
-            return [
-              key,
-              {
-                src: value,
-                types: outFile(value, '.d.ts'),
-                default: outFile(value, '.js'),
-              },
-            ]
-          }
 
-          // Transform object-like `package.json#exports` entrypoints. They
-          // must include a `src` field pointing to the source file, otherwise
-          // an error is thrown.
-          //
-          // "./utils": "./src/utils.ts"
-          // ↓ ↓ ↓
-          // "./utils": {
-          //   "src": "./src/utils.ts",
-          //   "types": "./dist/utils.js",
-          //   "default": "./dist/utils.d.ts"
-          // }
-          if (
-            typeof value === 'object' &&
-            value &&
-            'src' in value &&
-            typeof value.src === 'string'
-          ) {
-            if (value.src.startsWith(relativeOutDir)) return [key, value]
-            // Handle asset files (non-source files)
-            if (!/\.(m|c)?[jt]sx?$/.test(value.src)) {
-              if (link) return [key, value]
-              const absolutePath = path.resolve(cwd, value.src)
-              if (assets.includes(absolutePath)) {
-                return [key, { ...value, default: outAsset(absolutePath) }]
+            // Transform single `package.json#exports` entrypoints. They
+            // must point to the source file. Otherwise, an error is thrown.
+            //
+            // "./utils": "./src/utils.ts"
+            // ↓ ↓ ↓
+            // "./utils": {
+            //   "src": "./src/utils.ts",
+            //   "types": ["./utils.ts", "./dist/utils.d.ts"],
+            //   "default": "./dist/utils.js"
+            // }
+            if (typeof value === 'string') {
+              if (value.startsWith(relativeOutDir)) return [key, value]
+              // Handle asset files (non-source files)
+              if (!/\.(m|c)?[jt]sx?$/.test(value)) {
+                const absolutePath = path.resolve(cwd, value)
+                if (assets.includes(absolutePath)) return [key, outAsset(absolutePath)]
+                return [key, value]
               }
-              return [key, value]
+              if (link) linkExports(value)
+
+              // pnpm: for publishConfig, return built exports; for top-level, keep source
+              if (isPnpm) {
+                if (forPublishConfig) {
+                  return [
+                    key,
+                    {
+                      src: value,
+                      types: outFile(value, '.d.ts'),
+                      default: outFile(value, '.js'),
+                    },
+                  ]
+                }
+                // Keep top-level as source string
+                return [key, value]
+              }
+
+              // Non-pnpm: transform to object format
+              return [
+                key,
+                {
+                  src: value,
+                  types: [outFile(value, '.ts'), outFile(value, '.d.ts')],
+                  default: outFile(value, '.js'),
+                },
+              ]
             }
-            if (link) linkExports(value.src)
-            return [
-              key,
-              {
-                ...value,
-                types: outFile(value.src, '.d.ts'),
-                default: outFile(value.src, '.js'),
-              },
-            ]
-          }
-          throw new Error('`exports` field in package.json must be an object with a `src` field')
-        })
-      : [],
-  ) as Exports
 
-  const root = exports['.']
+            // Transform object-like `package.json#exports` entrypoints. They
+            // must include a `src` field pointing to the source file, otherwise
+            // an error is thrown.
+            //
+            // "./utils": "./src/utils.ts"
+            // ↓ ↓ ↓
+            // "./utils": {
+            //   "src": "./src/utils.ts",
+            //   "types": ["./utils.ts", "./dist/utils.d.ts"],
+            //   "default": "./dist/utils.js"
+            // }
+            if (
+              typeof value === 'object' &&
+              value &&
+              'src' in value &&
+              typeof value.src === 'string'
+            ) {
+              if (value.src.startsWith(relativeOutDir)) return [key, value]
+              // Handle asset files (non-source files)
+              if (!/\.(m|c)?[jt]sx?$/.test(value.src)) {
+                if (link) return [key, value]
+                const absolutePath = path.resolve(cwd, value.src)
+                if (assets.includes(absolutePath)) {
+                  return [key, { ...value, default: outAsset(absolutePath) }]
+                }
+                return [key, value]
+              }
+              if (link) linkExports(value.src)
 
-  return {
+              // pnpm: for publishConfig, return built exports; for top-level, return source string
+              if (isPnpm) {
+                if (forPublishConfig) {
+                  return [
+                    key,
+                    {
+                      ...value,
+                      types: outFile(value.src, '.d.ts'),
+                      default: outFile(value.src, '.js'),
+                    },
+                  ]
+                }
+                // Keep top-level as source string
+                return [key, value.src]
+              }
+
+              // Non-pnpm: transform with built paths
+              return [
+                key,
+                {
+                  ...value,
+                  types: outFile(value.src, '.d.ts'),
+                  default: outFile(value.src, '.js'),
+                },
+              ]
+            }
+            throw new Error('`exports` field in package.json must be an object with a `src` field')
+          })
+        : [],
+    ) as Exports
+  }
+
+  const exports = processExports(false)
+  const publishExports = isPnpm ? processExports(true) : undefined
+
+  const root = typeof exports['.'] === 'object' ? exports['.'] : undefined
+  const publishRoot =
+    publishExports && typeof publishExports['.'] === 'object' ? publishExports['.'] : undefined
+
+  // For pnpm: keep top-level main/module/types as source (from original or from exports string)
+  const topLevelMain = isPnpm && typeof exports['.'] === 'string' ? exports['.'] : undefined
+
+  const result = {
     ...pkgJson,
     type: pkgJson.type ?? 'module',
     sideEffects: pkgJson.sideEffects ?? false,
     ...(bin ? { bin } : {}),
-    ...(root
-      ? {
-          main: root.default,
-          module: root.default,
-          types: root.types,
-        }
-      : {}),
+    ...(isPnpm
+      ? topLevelMain
+        ? {
+            main: topLevelMain,
+            module: topLevelMain,
+            types: topLevelMain,
+          }
+        : {}
+      : root
+        ? {
+            main: root.default,
+            module: root.default,
+            types: root.types,
+          }
+        : {}),
     exports,
   } as PackageJson
+
+  // Add publishConfig for pnpm
+  // Preserve existing publishConfig fields (access, tag, registry, etc.)
+  if (isPnpm && (publishBin || publishExports || publishRoot)) {
+    const existingPublishConfig = pkgJson.publishConfig ?? {}
+    result.publishConfig = {
+      ...existingPublishConfig, // Preserve existing fields like access, tag, registry
+      ...(publishBin ? { bin: publishBin } : {}),
+      ...(publishRoot
+        ? {
+            main: publishRoot.default,
+            module: publishRoot.default,
+            types: publishRoot.types,
+          }
+        : {}),
+      ...(publishExports ? { exports: publishExports } : {}),
+    } as PublishConfig
+  }
+
+  return result
 }
 
 export declare namespace decoratePackageJson {
@@ -520,6 +670,12 @@ export declare namespace readPackageJson {
 const tsconfigJsonCache: Map<string, TsConfigJson> = new Map()
 export async function readTsconfigJson(options: readTsconfigJson.Options): Promise<TsConfigJson> {
   const { cwd, project = './tsconfig.json' } = options
+  // check if the tsconfig.json file exists
+  if (!fsSync.statSync(path.resolve(cwd, project)).isFile()) {
+    throw new Error(
+      `tsconfig.json file not found at ${path.resolve(cwd, project)}. I need one in the root of the package.`,
+    )
+  }
   if (tsconfigJsonCache.has(cwd)) return tsconfigJsonCache.get(cwd) as TsConfigJson
   const result = await Tsconfig.parse(path.resolve(cwd, project))
   tsconfigJsonCache.set(cwd, result.tsconfig)
@@ -633,10 +789,8 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   const content = packageJsonCache.get(cwd)
   const indent = content ? detectIndent(content) : '  '
   const hasTrailingNewline = content ? content.endsWith('\n') : true
-  
   let output = JSON.stringify(pkgJson, null, indent)
   if (hasTrailingNewline) output += '\n'
-  
   await fs.writeFile(path.resolve(cwd, 'package.json'), output, 'utf-8')
 }
 
@@ -698,4 +852,29 @@ declare namespace findTsc {
     /** Working directory to start searching from. @default import.meta.dirname */
     cwd?: string | undefined
   }
+}
+
+export function getPackageManager(params: { cwd: string; packageJson: PackageJson }): string {
+  const packageJson = params.packageJson ?? readPackageJsonSync(params.cwd)
+  if (packageJson.packageManager) {
+    const parts = packageJson.packageManager.split('@')
+    if (parts.length > 1) return parts[0] as keyof typeof lockfiles
+    return parts[0] as keyof typeof lockfiles
+  }
+
+  for (const lockfile in lockfiles) {
+    if (fsSync.existsSync(path.resolve(params.cwd, lockfile)))
+      return lockfiles[lockfile as keyof typeof lockfiles]
+  }
+  // check for `node_modules/.pnpm`, `node_modules/.yarn`, `node_modules/.npm`
+  const manager = packageManager.find((manager) =>
+    fsSync.existsSync(path.resolve(params.cwd, `node_modules/.${manager}`)),
+  )
+  if (manager) return manager
+  throw new Error('No package manager found')
+}
+
+export function readPackageJsonSync(cwd: string): PackageJson {
+  const content = fsSync.readFileSync(path.resolve(cwd, 'package.json'), 'utf-8')
+  return JSON.parse(content)
 }
