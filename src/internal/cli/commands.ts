@@ -141,7 +141,7 @@ export async function createNew(command: Command) {
         const spinner = clack.spinner()
         spinner.start('Creating project')
 
-        const templatePath = path.join(import.meta.dirname, '../../template')
+        const templatePath = path.join(import.meta.dirname, '../../../template')
 
         // Recursively copy
         function cp(src: string, dest: string): void {
