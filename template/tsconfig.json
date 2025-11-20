@@ -7,9 +7,9 @@
     "moduleResolution": "nodenext",
     "target": "esnext",
     "paths": {
-      "zile": ["./src/index.ts"]
+      "replace-me": ["./src/index.ts"]
     },
-    "types": ["vitest/globals"],
+    "types": ["node", "vitest/globals"],
 
     // Other Outputs
     "sourceMap": true,

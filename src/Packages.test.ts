@@ -137,7 +137,8 @@ describe('Packages.find', () => {
     })
 
     expect(result.length).toBeGreaterThan(0)
-    expect(path.isAbsolute(result[0])).toBe(true)
+    // biome-ignore lint/style/noNonNullAssertion: _
+    expect(path.isAbsolute(result[0]!)).toBe(true)
   })
 
   it('uses process.cwd() when no cwd provided', async () => {

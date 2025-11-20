@@ -20,6 +20,7 @@ export async function run(options: run.Options): Promise<void> {
   commands.build(cli.command('dev', 'Resolve package exports to source for development'), {
     link: true,
   })
+  commands.createNew(cli.command('new', 'Create a new zile project'))
   commands.preparePublish(cli.command('publish:prepare', 'Prepare package for publishing'))
   commands.postPublish(cli.command('publish:post', 'Post-process package after publishing'))
 

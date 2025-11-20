@@ -368,6 +368,7 @@ Commands:
   [root]           
   build            Build package
   dev              Resolve package exports to source for development
+  new              Create a new zile project
   publish:prepare  Prepare package for publishing
   publish:post     Post-process package after publishing
 
@@ -375,6 +376,7 @@ For more info, run any command with the `--help` flag:
   $ zile --help
   $ zile build --help
   $ zile dev --help
+  $ zile new --help
   $ zile publish:prepare --help
   $ zile publish:post --help
 
@@ -384,7 +386,7 @@ Options:
   --project <path>          Path to tsconfig.json file, relative to the working directory. 
   --tsgo                    Use tsgo for transpilation 
   -v, --version             Display version number 
-  -h, --help                Display this message
+  -h, --help                Display this message 
 ```
 
 ## License

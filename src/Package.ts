@@ -468,13 +468,15 @@ export function getSourceDir(options: getSourceDir.Options): string {
   const minLength = Math.min(...segments.map((s) => s.length))
 
   for (let i = 0; i < minLength; i++) {
-    const segment = segments[0][i]
+    // biome-ignore lint/style/noNonNullAssertion: _
+    const segment = segments[0]![i]!
     if (segments.every((s) => s[i] === segment)) commonSegments.push(segment)
     else break
   }
 
   const commonPath = commonSegments.join(path.sep)
-  return path.resolve(cwd, path.relative(cwd, commonPath).split(path.sep)[0])
+  // biome-ignore lint/style/noNonNullAssertion: _
+  return path.resolve(cwd, path.relative(cwd, commonPath).split(path.sep)[0]!)
 }
 
 export declare namespace getSourceDir {
@@ -565,7 +567,8 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     ...tsConfigJson.compilerOptions,
     composite: false,
     declaration: true,
-    declarationDir: tsConfigJson.compilerOptions?.declarationDir,
+    // biome-ignore lint/style/noNonNullAssertion: _
+    declarationDir: tsConfigJson.compilerOptions?.declarationDir!,
     declarationMap: true,
     emitDeclarationOnly: false,
     esModuleInterop: true,
@@ -653,7 +656,8 @@ export function detectIndent(content: string): string {
   for (const line of lines) {
     const match = line.match(/^(\s+)/)
     if (match) {
-      const indent = match[1]
+      // biome-ignore lint/style/noNonNullAssertion: _
+      const indent = match[1]!
       // If it starts with a tab, use tabs
       if (indent[0] === '\t') return '\t'
       // Otherwise return the spaces found

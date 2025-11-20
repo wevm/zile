@@ -1,5 +1,7 @@
+import * as child_process from 'node:child_process'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import * as clack from '@clack/prompts'
 import type { Command } from 'cac'
 import * as Package from '../../Package.js'
 
@@ -94,5 +96,147 @@ export declare namespace postPublish {
   type CommandOptions = {
     /** Working directory to publish from */
     cwd?: string | undefined
+  }
+}
+
+export async function createNew(command: Command) {
+  return command
+    .option('--pnpm', 'Use pnpm as package manager')
+    .option('--bun', 'Use bun as package manager')
+    .action(async (options: createNew.CommandOptions) => {
+      clack.intro('Create a new zile project')
+
+      try {
+        // Determine package manager from flags
+        let packageManager = 'npm' // default
+        if (options.pnpm) packageManager = 'pnpm'
+        else if (options.bun) packageManager = 'bun'
+
+        // Get package name and directory in single prompt
+        const packageName = await clack.text({
+          message: 'Package name',
+          placeholder: 'my-package',
+          validate: (value: string | undefined) => {
+            if (!value) return 'Package name is required'
+            if (!/^(?:@[a-z0-9-*~][a-z0-9-*._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(value))
+              return 'Invalid package name. Must be lowercase, can contain hyphens, and optionally scoped with @org/'
+          },
+        })
+
+        if (clack.isCancel(packageName)) {
+          clack.cancel('Operation cancelled')
+          process.exit(0)
+        }
+
+        const targetDir = packageName
+        const targetPath = path.resolve(process.cwd(), targetDir)
+
+        // Check if directory exists
+        if (fs.existsSync(targetPath)) {
+          clack.cancel(`Directory ${targetDir} already exists`)
+          process.exit(1)
+        }
+
+        // Start spinner for file operations
+        const spinner = clack.spinner()
+        spinner.start('Creating project')
+
+        const templatePath = path.join(import.meta.dirname, '../../../template')
+
+        // Recursively copy
+        function cp(src: string, dest: string): void {
+          // Create destination directory
+          fs.mkdirSync(dest, { recursive: true })
+
+          // Read source directory
+          const entries = fs.readdirSync(src, { withFileTypes: true })
+
+          for (const entry of entries) {
+            const srcPath = path.join(src, entry.name)
+            const destName = entry.name.startsWith('~') ? entry.name.slice(1) : entry.name
+            const destPath = path.join(dest, destName)
+
+            if (entry.isDirectory()) cp(srcPath, destPath)
+            else fs.copyFileSync(srcPath, destPath)
+          }
+        }
+        cp(templatePath, targetPath)
+
+        // Replace "replace-me" in all files
+        function replace(dir: string) {
+          const entries = fs.readdirSync(dir, { withFileTypes: true })
+
+          for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name)
+
+            if (entry.isDirectory()) replace(fullPath)
+            else
+              try {
+                const content = fs.readFileSync(fullPath, 'utf-8')
+                const updated = content.replace(/replace-me/g, packageName as string)
+                if (content !== updated) fs.writeFileSync(fullPath, updated, 'utf-8')
+              } catch {}
+          }
+        }
+        replace(targetPath)
+
+        // Add packageManager to package.json (before [!start-pkg] marker)
+        const packageJsonPath = path.join(targetPath, 'package.json')
+        const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf-8')
+        const packageJson = JSON.parse(packageJsonContent)
+
+        // Fetch latest version of the package manager
+        const { version } = await fetch(`https://registry.npmjs.org/${packageManager}/latest`).then(
+          (response) => response.json(),
+        )
+
+        // Find keys and insert packageManager before [!start-pkg]
+        const keys = Object.keys(packageJson)
+        const markerIndex = keys.indexOf('[!start-pkg]')
+
+        // Create new object with packageManager before marker
+        const newPackageJson: Record<string, unknown> = {}
+        for (let i = 0; i < keys.length; i++) {
+          if (i === markerIndex) newPackageJson.packageManager = `${packageManager}@${version}`
+          // biome-ignore lint/style/noNonNullAssertion: _
+          newPackageJson[keys[i]!] = packageJson[keys[i]!]
+        }
+
+        fs.writeFileSync(packageJsonPath, `${JSON.stringify(newPackageJson, null, 2)}\n`, 'utf-8')
+
+        // Initialize git
+        spinner.message('Initializing git repository')
+        try {
+          child_process.execSync('git init', { cwd: targetPath, stdio: 'ignore' })
+          child_process.execSync('git add .', { cwd: targetPath, stdio: 'ignore' })
+          child_process.execSync('git commit -m "Initial commit"', {
+            cwd: targetPath,
+            stdio: 'ignore',
+          })
+        } catch {}
+
+        spinner.stop('Project created successfully')
+
+        clack.outro(`
+Next steps:
+  cd ${targetDir}
+  ${packageManager} install     # Install dependencies
+  ${packageManager} run build   # Builds and transpiles the package
+  ${packageManager} run dev     # Create symlinks for development 
+  ${packageManager} run test    # Run tests
+        `)
+      } catch (error) {
+        clack.cancel('Failed to create project')
+        throw error
+      }
+    })
+}
+
+export declare namespace createNew {
+  type CommandOptions = {
+    /** Use pnpm as package manager */
+    pnpm?: boolean | undefined
+    /** Use bun as package manager */
+    bun?: boolean | undefined
   }
 }

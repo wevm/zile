@@ -153,7 +153,8 @@ export async function tree(dir: string, prefix = ''): Promise<string> {
 
   let result = prefix === '' ? '\n' : ''
   for (let i = 0; i < sorted.length; i++) {
-    const entry = sorted[i]
+    // biome-ignore lint/style/noNonNullAssertion: _
+    const entry = sorted[i]!
     const isLast = i === sorted.length - 1
     const connector = isLast ? '└── ' : '├── '
     const newPrefix = isLast ? '    ' : '│   '
