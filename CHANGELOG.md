@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.8
+
+### Patch Changes
+
+- [`89ae49a`](https://github.com/wevm/zile/commit/89ae49aa3876f6a09bf50efb04da91fba9537fe4) Thanks [@jxom](https://github.com/jxom)! - Added support for `[!start-pkg]` marker in `package.json`.
+
 ## 0.0.7
 
 ### Patch Changes
