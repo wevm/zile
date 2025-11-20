@@ -7,6 +7,7 @@ export default defineConfig({
       zile: path.resolve(import.meta.dirname, 'src'),
     },
     environment: 'node',
+    exclude: ['**/node_modules/**', 'template'],
     globals: true,
     globalSetup: path.resolve(import.meta.dirname, 'test/setup.global.ts'),
     setupFiles: [path.resolve(import.meta.dirname, 'test/setup.ts')],
