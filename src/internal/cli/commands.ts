@@ -107,10 +107,20 @@ export async function createNew(command: Command) {
       clack.intro('Create a new zile project')
 
       try {
-        // Determine package manager from flags
-        let packageManager = 'npm' // default
+        // Determine package manager from flags or detect from invocation
+        let packageManager = 'npm'
         if (options.pnpm) packageManager = 'pnpm'
         else if (options.bun) packageManager = 'bun'
+        else {
+          // Auto-detect from how the command was invoked
+          const userAgent = process.env.npm_config_user_agent || ''
+          const execPath = process.env.npm_execpath || ''
+          
+          if (userAgent.includes('pnpm') || execPath.includes('pnpm')) packageManager = 'pnpm'
+          else if (userAgent.includes('bun') || execPath.includes('bun')) packageManager = 'bun'
+          else if (userAgent.includes('yarn') || execPath.includes('yarn')) packageManager = 'yarn'
+          else if (userAgent.includes('npm') || execPath.includes('npm')) packageManager = 'npm'
+        }
 
         // Get package name and directory in single prompt
         const packageName = await clack.text({
@@ -235,9 +245,11 @@ Next steps:
 
 export declare namespace createNew {
   type CommandOptions = {
-    /** Use pnpm as package manager */
-    pnpm?: boolean | undefined
     /** Use bun as package manager */
     bun?: boolean | undefined
+    /** Use npm as package manager */
+    npm?: boolean | undefined
+    /** Use pnpm as package manager */
+    pnpm?: boolean | undefined
   }
 }
