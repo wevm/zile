@@ -1,0 +1,14 @@
+name: 'Install dependencies'
+description: 'Prepare repository and all dependencies'
+
+runs:
+  using: 'composite'
+  steps:{setupStep}
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24.5'
+
+    - name: Install dependencies
+      shell: bash
+      run: {pm} install

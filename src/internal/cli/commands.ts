@@ -172,9 +172,23 @@ export async function createNew(command: Command) {
         }
         cp(templatePath, targetPath)
 
-        // Replace "replace-me" in all files
+        // Replace "replace-me" and package manager placeholders in all files
         function replace(dir: string) {
           const entries = fs.readdirSync(dir, { withFileTypes: true })
+
+          // Determine pmx (package executor) based on package manager
+          const pmx = packageManager === 'npm' ? 'npx'
+            : packageManager === 'pnpm' ? 'pnpx'
+            : packageManager === 'bun' ? 'bunx'
+            : packageManager === 'yarn' ? 'yarn dlx'
+            : 'npx'
+
+          // Determine setup step based on package manager
+          let setupStep = ''
+          if (packageManager === 'pnpm') 
+            setupStep = `\n    - name: Set up pnpm\n      uses: pnpm/action-setup@v4\n`
+          else if (packageManager === 'bun')
+            setupStep = `\n    - name: Set up Bun\n      uses: oven-sh/setup-bun@v2\n`
 
           for (const entry of entries) {
             const fullPath = path.join(dir, entry.name)
@@ -183,7 +197,10 @@ export async function createNew(command: Command) {
             else
               try {
                 const content = fs.readFileSync(fullPath, 'utf-8')
-                const updated = content.replace(/replace-me/g, packageName as string)
+                let updated = content.replace(/replace-me/g, packageName as string)
+                updated = updated.replace(/\{pm\}/g, packageManager)
+                updated = updated.replace(/\{pmx\}/g, pmx)
+                updated = updated.replace(/\{setupStep\}/g, setupStep)
                 if (content !== updated) fs.writeFileSync(fullPath, updated, 'utf-8')
               } catch {}
           }
