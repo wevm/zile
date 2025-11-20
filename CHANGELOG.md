@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.13
+
+### Patch Changes
+
+- [`9aec722`](https://github.com/wevm/zile/commit/9aec72280f4cbba5f809ca40d0b1ca394942b42a) Thanks [@jxom](https://github.com/jxom)! - Added GitHub Actions to `zile new`
+
 ## 0.0.12
 
 ### Patch Changes
