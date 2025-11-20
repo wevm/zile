@@ -48,7 +48,15 @@ Zile is an opinionated zero-config tool for transpiling TypeScript libraries bas
 - **Binary/CLI Support**: Supports CLI tools with automatic handling of `package.json#bin`
 - **Auto-generated `package.json`**: Zile will auto-generate a valid `package.json` file to distribute to package registries
 
-## Getting Started
+## Quick Setup (New Projects)
+
+Run `npx zile new` to create a new Zile project, with opinionated defaults:
+
+```bash
+npx zile new
+```
+
+## Manual Setup (Existing Projects)
 
 ### 1. Install
 
