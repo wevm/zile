@@ -141,7 +141,7 @@ export async function createNew(command: Command) {
         const spinner = clack.spinner()
         spinner.start('Creating project')
 
-        const templatePath = path.join(import.meta.dirname, '../../../template')
+        const templatePath = path.join(import.meta.dirname, '../../template')
 
         // Recursively copy
         function cp(src: string, dest: string): void {
@@ -226,8 +226,9 @@ Next steps:
   ${packageManager} run test    # Run tests
         `)
       } catch (error) {
-        clack.cancel('Failed to create project')
-        throw error
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        clack.cancel(`Failed to create project: ${errorMessage}`)
+        process.exit(1)
       }
     })
 }

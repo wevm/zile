@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "bun src/Cli.ts",
+    "build": "bun src/Cli.ts && cp -r template dist/template",
     "changeset:publish": "bun src/Cli.ts publish:prepare && changeset publish && bun src/Cli.ts publish:post",
     "changeset:version": "changeset version",
     "check": "biome check --fix --unsafe",
