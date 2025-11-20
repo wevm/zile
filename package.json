@@ -29,7 +29,8 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "template"
   ],
   "sideEffects": false,
   "main": "./dist/index.js",
