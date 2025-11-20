@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.9
+
+### Patch Changes
+
+- [`89c1ef3`](https://github.com/wevm/zile/commit/89c1ef34600df38f8170c7c57b87e2a562cf540e) Thanks [@jxom](https://github.com/jxom)! - Added `zile new`.
+
 ## 0.0.8
 
 ### Patch Changes
