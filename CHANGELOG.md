@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.10
+
+### Patch Changes
+
+- [`f9db445`](https://github.com/wevm/zile/commit/f9db4450d122e4842f737ffbd9fd92fdf968438c) Thanks [@jxom](https://github.com/jxom)! - Fixed `template/` folder.
+
 ## 0.0.9
 
 ### Patch Changes
