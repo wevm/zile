@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.12
+
+### Patch Changes
+
+- [`9b77949`](https://github.com/wevm/zile/commit/9b77949d74b94c5272b3527388981bc33b276421) Thanks [@jxom](https://github.com/jxom)! - Inferred default package manager for `zile new`.
+
 ## 0.0.11
 
 ### Patch Changes
