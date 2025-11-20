@@ -1,3 +1,5 @@
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import type { Command } from 'cac'
 import * as Package from '../../Package.js'
 
@@ -33,5 +35,64 @@ export declare namespace build {
     project?: string | undefined
     /** Use tsgo for transpilation */
     tsgo?: boolean | undefined
+  }
+}
+
+export async function preparePublish(command: Command) {
+  return command
+    .option('--cwd <directory>', 'Working directory to publish from')
+    .action(async (options: preparePublish.CommandOptions) => {
+      const { cwd = process.cwd() } = options
+
+      console.log(`→ Preparing package at ${cwd}`)
+
+      // Build the package
+      await Package.build({ cwd })
+
+      // Get the package.json path
+      const packageJsonPath = path.join(cwd, './package.json')
+
+      // Copy package.json to a temporary file
+      fs.copyFileSync(packageJsonPath, packageJsonPath.replace('.json', '.tmp.json'))
+
+      // Read package.json as text to find the marker position
+      const content = fs.readFileSync(packageJsonPath, 'utf-8')
+      const data = JSON.parse(content)
+
+      // Find all keys that appear before "[!start-pkg]" in the file
+      const keys = Object.keys(data)
+      const markerIndex = keys.indexOf('[!start-pkg]')
+
+      // Remove all keys up to and including the marker
+      const keysToRemove = keys.slice(0, markerIndex + 1)
+      for (const key of keysToRemove) delete data[key]
+
+      // Write back to package.json
+      fs.writeFileSync(packageJsonPath, `${JSON.stringify(data, null, 2)}\n`, 'utf-8')
+
+      console.log(`✔︎ Package at ${cwd} prepared successfully`)
+    })
+}
+
+export declare namespace preparePublish {
+  type CommandOptions = build.CommandOptions
+}
+
+export async function postPublish(command: Command) {
+  return command
+    .option('--cwd <directory>', 'Working directory to publish from')
+    .action(async (options: postPublish.CommandOptions) => {
+      const { cwd = process.cwd() } = options
+
+      const packageJsonPath = path.join(cwd, './package.json')
+      const tmpPackageJsonPath = path.join(cwd, './package.tmp.json')
+      if (fs.existsSync(tmpPackageJsonPath)) fs.renameSync(tmpPackageJsonPath, packageJsonPath)
+    })
+}
+
+export declare namespace postPublish {
+  type CommandOptions = {
+    /** Working directory to publish from */
+    cwd?: string | undefined
   }
 }

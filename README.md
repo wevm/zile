@@ -305,6 +305,37 @@ Zile also sets these fields if not already present:
 - **`type`**: Set to `"module"` (ESM-only)
 - **`sideEffects`**: Set to `false`
 
+### `[!start-pkg]`
+
+The `[!start-pkg]` comment marker allows you to control which fields from your `package.json` are included when publishing.
+
+When using `zile publish:prepare`, only fields that appear **after** the `[!start-pkg]` comment will be picked for the published package. This is useful for excluding development-only fields (like `devDependencies`, `scripts`, or workspace configurations) from the published package.
+
+#### Example
+
+```diff
+{
+  "scripts": {
+    "build": "zile build",
+    "publish": "zile publish:prepare && npm publish && zile publish:post",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
++ "[!start-pkg]": "",
+  "name": "my-pkg",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "some-lib": "^1.0.0"
+  }
+}
+```
+
+In this example, when running `zile publish:prepare`, only the fields after `[!start-pkg]` (type, main, and dependencies) will be included in the published package. The scripts and devDependencies will be excluded.
+
 ## `tsconfig.json` Reference
 
 Since `tsc` is used under the hood, Zile also uses fields in your `tsconfig.json` file to determine the output directory and particular settings for transpilation.
@@ -334,14 +365,18 @@ Usage:
   $ zile [root]
 
 Commands:
-  [root]  
-  build   Build package
-  dev     Resolve package exports to source for development
+  [root]           
+  build            Build package
+  dev              Resolve package exports to source for development
+  publish:prepare  Prepare package for publishing
+  publish:post     Post-process package after publishing
 
 For more info, run any command with the `--help` flag:
   $ zile --help
   $ zile build --help
   $ zile dev --help
+  $ zile publish:prepare --help
+  $ zile publish:post --help
 
 Options:
   --cwd <directory>         Working directory to build 

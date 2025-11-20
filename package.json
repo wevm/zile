@@ -1,18 +1,31 @@
 {
+  "scripts": {
+    "build": "bun src/Cli.ts",
+    "changeset:publish": "bun src/Cli.ts publish:prepare && changeset publish && bun src/Cli.ts publish:post",
+    "changeset:version": "changeset version",
+    "check": "biome check --fix --unsafe",
+    "check:types": "tsc -b",
+    "test": "vitest --watch=false"
+  },
+  "packageManager": "bun@1.3.2",
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.2",
+    "@biomejs/biome": "^2.2.5",
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.7",
+    "@types/node": "^24.7.1",
+    "publint": "0.3.14",
+    "typescript": "^5.9.3",
+    "type-fest": "^5.0.1",
+    "vitest": "^3.2.4"
+  },
+  "[!start-pkg]": "",
   "name": "zile",
   "type": "module",
   "version": "0.0.7",
   "license": "MIT",
   "bin": {
     "zile": "./dist/Cli.js"
-  },
-  "scripts": {
-    "build": "bun src/Cli.ts",
-    "changeset:publish": "bun run build && changeset publish",
-    "changeset:version": "changeset version",
-    "check": "biome check --fix --unsafe",
-    "check:types": "tsc -b",
-    "test": "vitest --watch=false"
   },
   "files": [
     "dist",
@@ -29,7 +42,6 @@
       "default": "./dist/index.js"
     }
   },
-  "packageManager": "bun@1.3",
   "dependencies": {
     "cac": "6.7.14",
     "tsconfck": "3.1.6"
@@ -45,17 +57,6 @@
     "typescript": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@arethetypeswrong/cli": "0.18.2",
-    "@biomejs/biome": "^2.2.5",
-    "@changesets/changelog-github": "^0.5.0",
-    "@changesets/cli": "^2.27.7",
-    "@types/node": "^24.7.1",
-    "publint": "0.3.14",
-    "typescript": "^5.9.3",
-    "type-fest": "^5.0.1",
-    "vitest": "^3.2.4"
   },
   "repository": "wevm/zile"
 }

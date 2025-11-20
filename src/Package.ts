@@ -633,10 +633,10 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   const content = packageJsonCache.get(cwd)
   const indent = content ? detectIndent(content) : '  '
   const hasTrailingNewline = content ? content.endsWith('\n') : true
-  
+
   let output = JSON.stringify(pkgJson, null, indent)
   if (hasTrailingNewline) output += '\n'
-  
+
   await fs.writeFile(path.resolve(cwd, 'package.json'), output, 'utf-8')
 }
 
