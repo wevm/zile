@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.11
+
+### Patch Changes
+
+- [`7a7f1d8`](https://github.com/wevm/zile/commit/7a7f1d87a8d7bb231e6e1c2fc96472d303151006) Thanks [@jxom](https://github.com/jxom)! - Modified npm `files`.
+
 ## 0.0.10
 
 ### Patch Changes
