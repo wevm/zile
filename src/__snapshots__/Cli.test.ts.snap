@@ -122,6 +122,8 @@ exports[`'/basic': Cli.run > link > output 1`] = `
 
 
 ├── dist
+│   ├── cli.d.ts -> ../cli.ts
+│   ├── cli.js -> ../cli.ts
 │   ├── foo.d.ts -> ../foo.ts
 │   ├── foo.js -> ../foo.ts
 │   ├── index.d.ts -> ../index.ts

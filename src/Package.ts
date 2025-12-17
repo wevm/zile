@@ -39,6 +39,8 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
   }
 
   const sourceDir = getSourceDir({ cwd, sources })
+
+  if (link) await linkSourceFiles({ cwd, outDir, sourceDir, sources })
   const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir, assets })
 
   await writePackageJson(cwd, packageJson)
@@ -262,23 +264,6 @@ export async function decoratePackageJson(
   const exports = Object.fromEntries(
     exps
       ? Object.entries(exps).map(([key, value]) => {
-          function linkExports(entry: string) {
-            try {
-              const destJsAbsolute = path.resolve(cwd, outFile(entry, '.js'))
-              const destDtsAbsolute = path.resolve(cwd, outFile(entry, '.d.ts'))
-              const dir = path.dirname(destJsAbsolute)
-
-              if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
-
-              const srcAbsolute = path.resolve(cwd, entry)
-              const srcRelativeJs = path.relative(path.dirname(destJsAbsolute), srcAbsolute)
-              const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
-
-              fsSync.symlinkSync(srcRelativeJs, destJsAbsolute, 'file')
-              fsSync.symlinkSync(srcRelativeDts, destDtsAbsolute, 'file')
-            } catch {}
-          }
-
           // Transform single `package.json#exports` entrypoints. They
           // must point to the source file. Otherwise, an error is thrown.
           //
@@ -297,7 +282,6 @@ export async function decoratePackageJson(
               if (assets.includes(absolutePath)) return [key, outAsset(absolutePath)]
               return [key, value]
             }
-            if (link) linkExports(value)
             return [
               key,
               {
@@ -335,7 +319,6 @@ export async function decoratePackageJson(
               }
               return [key, value]
             }
-            if (link) linkExports(value.src)
             return [
               key,
               {
@@ -380,6 +363,68 @@ export declare namespace decoratePackageJson {
     outDir: string
     /** Source directory. */
     sourceDir: string
+  }
+}
+
+/**
+ * Links source files to output directory for development mode.
+ *
+ * @param options - Options for linking source files.
+ */
+// biome-ignore lint/correctness/noUnusedVariables: _
+async function linkSourceFiles(options: linkSourceFiles.Options): Promise<void> {
+  const { cwd, outDir, sourceDir, sources } = options
+
+  const relativeSourceDir = path.relative(cwd, sourceDir)
+  const sourceFiles: string[] = []
+
+  async function collectFiles(dir: string): Promise<void> {
+    const entries = await fs.readdir(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name)
+      if (entry.isDirectory()) await collectFiles(fullPath)
+      else if (/\.(m|c)?[jt]sx?$/.test(entry.name)) sourceFiles.push(fullPath)
+    }
+  }
+
+  // Collect source files from sourceDir if it exists and is a directory
+  if (sourceDir !== cwd && fsSync.existsSync(sourceDir) && fsSync.statSync(sourceDir).isDirectory())
+    await collectFiles(sourceDir)
+
+  // Also add any root-level sources (e.g., ./index.ts)
+  for (const source of sources) if (!sourceFiles.includes(source)) sourceFiles.push(source)
+
+  // Create symlinks for each source file
+  for (const sourceFile of sourceFiles) {
+    let relativePath = path.relative(cwd, sourceFile)
+    // Strip the sourceDir prefix if applicable
+    if (relativeSourceDir && relativePath.startsWith(relativeSourceDir + path.sep))
+      relativePath = relativePath.slice(relativeSourceDir.length + 1)
+
+    const destJs = path.resolve(outDir, relativePath.replace(/\.(m|c)?[jt]sx?$/, '.js'))
+    const destDts = path.resolve(outDir, relativePath.replace(/\.(m|c)?[jt]sx?$/, '.d.ts'))
+
+    const dir = path.dirname(destJs)
+    if (!fsSync.existsSync(dir)) await fs.mkdir(dir, { recursive: true })
+
+    const srcRelativeJs = path.relative(path.dirname(destJs), sourceFile)
+    const srcRelativeDts = path.relative(path.dirname(destDts), sourceFile)
+
+    try {
+      fsSync.symlinkSync(srcRelativeJs, destJs, 'file')
+    } catch {}
+    try {
+      fsSync.symlinkSync(srcRelativeDts, destDts, 'file')
+    } catch {}
+  }
+}
+
+declare namespace linkSourceFiles {
+  type Options = {
+    cwd: string
+    outDir: string
+    sourceDir: string
+    sources: string[]
   }
 }
 
@@ -455,28 +500,30 @@ export declare namespace getEntries {
 export function getSourceDir(options: getSourceDir.Options): string {
   const { cwd = process.cwd(), sources } = options
 
-  if (sources.length === 0) return path.resolve(cwd, 'src')
+  if (sources.length === 0) return cwd
 
-  // Get directories of all entries
-  const dirs = sources.map((source) => path.dirname(source))
+  // Filter to only sources in subdirectories (not root-level files)
+  const subdirSources = sources.filter((source) => {
+    const rel = path.relative(cwd, path.dirname(source))
+    return rel !== '' && !rel.startsWith('..')
+  })
 
-  // Split each directory into segments
-  const segments = dirs.map((dir) => dir.split(path.sep))
+  // If no subdirectory sources, return cwd (no prefix to strip)
+  if (subdirSources.length === 0) return cwd
 
-  // Find common segments
-  const commonSegments: string[] = []
-  const minLength = Math.min(...segments.map((s) => s.length))
-
-  for (let i = 0; i < minLength; i++) {
+  // Get first directory segment for each subdirectory source
+  const firstSegments = subdirSources.map((source) => {
+    const rel = path.relative(cwd, source)
     // biome-ignore lint/style/noNonNullAssertion: _
-    const segment = segments[0]![i]!
-    if (segments.every((s) => s[i] === segment)) commonSegments.push(segment)
-    else break
-  }
+    return rel.split(path.sep)[0]!
+  })
 
-  const commonPath = commonSegments.join(path.sep)
+  // Find the common first segment
   // biome-ignore lint/style/noNonNullAssertion: _
-  return path.resolve(cwd, path.relative(cwd, commonPath).split(path.sep)[0]!)
+  const firstSegment = firstSegments[0]!
+  if (firstSegments.every((s) => s === firstSegment)) return path.resolve(cwd, firstSegment)
+
+  return cwd
 }
 
 export declare namespace getSourceDir {
