@@ -243,6 +243,182 @@ exports[`'/basic-object-exports': Cli.run > link > output 1`] = `
 
 exports[`'/basic-object-exports': Cli.run > link > types-target 1`] = `"../index.ts"`;
 
+exports[`'/dts-exports': Cli.run > default > main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/dts-exports': Cli.run > default > output 1`] = `
+"{
+  "name": "dts-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports': Cli.run > default > types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/dts-exports': Cli.run > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/dts-exports': Cli.run > link > output 1`] = `
+"{
+  "name": "dts-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts -> ../src/globals.d.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports': Cli.run > link > types-target 1`] = `"../src/index.ts"`;
+
+exports[`'/dts-exports-object': Cli.run > default > main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/dts-exports-object': Cli.run > default > output 1`] = `
+"{
+  "name": "dts-exports-object",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports-object': Cli.run > default > types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/dts-exports-object': Cli.run > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/dts-exports-object': Cli.run > link > output 1`] = `
+"{
+  "name": "dts-exports-object",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts -> ../src/globals.d.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports-object': Cli.run > link > types-target 1`] = `"../src/index.ts"`;
+
 exports[`'/multiple-entrypoint': Cli.run > default > main 1`] = `
 "import { bar as bar1, foo as foo1 } from './foo.js';
 export function foo(options = {}) {

@@ -25,21 +25,22 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
   await checkInput({ cwd, outDir })
 
   const { assets, sources } = getEntries({ cwd, pkgJson })
+  const sourceDir = getSourceDir({ cwd, sources })
 
   if (!link) {
     const result = await transpile({ cwd, sources, tsgo })
     tsConfig = result.tsConfig
   }
 
-  await copyAssets({ assets, cwd, outDir })
+  await copyAssets({ assets, cwd, outDir, sourceDir })
 
   if (link) {
     await fs.rm(outDir, { recursive: true }).catch(() => {})
     await fs.mkdir(outDir, { recursive: true })
   }
 
-  const sourceDir = getSourceDir({ cwd, sources })
   const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir, assets })
+
 
   await writePackageJson(cwd, packageJson)
 
@@ -159,10 +160,11 @@ export declare namespace checkPackageJson {
  * @returns Promise that resolves when assets are copied.
  */
 export async function copyAssets(options: copyAssets.Options): Promise<void> {
-  const { assets, cwd, outDir } = options
+  const { assets, cwd, outDir, sourceDir } = options
+  const relativeSourceDir = path.relative(cwd, sourceDir)
 
   for (const asset of assets) {
-    const relativePath = path.relative(cwd, asset)
+    const relativePath = path.relative(cwd, asset).replace(`${relativeSourceDir}/`, '')
     const destPath = path.resolve(outDir, relativePath)
     await fs.mkdir(path.dirname(destPath), { recursive: true })
     await fs.copyFile(asset, destPath)
@@ -177,6 +179,8 @@ export declare namespace copyAssets {
     cwd: string
     /** Output directory. */
     outDir: string
+    /** Source directory. */
+    sourceDir: string
   }
 }
 
@@ -196,7 +200,8 @@ export async function decoratePackageJson(
   const relativeOutDir = `./${path.relative(cwd, outDir)}`
   const relativeSourceDir = `./${path.relative(cwd, sourceDir)}`
 
-  const outAsset = (name: string) => `./${path.join(relativeOutDir, path.relative(cwd, name))}`
+  const outAsset = (name: string) =>
+    `./${path.join(relativeOutDir, path.relative(cwd, name).replace(`${relativeSourceDir.slice(2)}/`, ''))}`
   const outFile = (name: string, ext: string = '') =>
     './' +
     path.join(
@@ -279,6 +284,20 @@ export async function decoratePackageJson(
             } catch {}
           }
 
+          function linkDtsExport(entry: string) {
+            try {
+              const destDtsAbsolute = path.resolve(cwd, outAsset(path.resolve(cwd, entry)))
+              const dir = path.dirname(destDtsAbsolute)
+
+              if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
+
+              const srcAbsolute = path.resolve(cwd, entry)
+              const srcRelativeDts = path.relative(path.dirname(destDtsAbsolute), srcAbsolute)
+
+              fsSync.symlinkSync(srcRelativeDts, destDtsAbsolute, 'file')
+            } catch {}
+          }
+
           // Transform single `package.json#exports` entrypoints. They
           // must point to the source file. Otherwise, an error is thrown.
           //
@@ -291,6 +310,14 @@ export async function decoratePackageJson(
           // }
           if (typeof value === 'string') {
             if (value.startsWith(relativeOutDir)) return [key, value]
+            // Handle .d.ts files (type definitions only, no JS output)
+            if (/\.d\.[mc]?ts$/.test(value)) {
+              const absolutePath = path.resolve(cwd, value)
+              if (link) linkDtsExport(value)
+              if (assets.includes(absolutePath))
+                return [key, { types: outAsset(absolutePath), src: value }]
+              return [key, { types: outAsset(absolutePath), src: value }]
+            }
             // Handle asset files (non-source files)
             if (!/\.(m|c)?[jt]sx?$/.test(value)) {
               const absolutePath = path.resolve(cwd, value)
@@ -326,6 +353,14 @@ export async function decoratePackageJson(
             typeof value.src === 'string'
           ) {
             if (value.src.startsWith(relativeOutDir)) return [key, value]
+            // Handle .d.ts files (type definitions only, no JS output)
+            if (/\.d\.[mc]?ts$/.test(value.src)) {
+              const absolutePath = path.resolve(cwd, value.src)
+              if (link) linkDtsExport(value.src)
+              if (assets.includes(absolutePath))
+                return [key, { types: outAsset(absolutePath), src: value.src }]
+              return [key, { types: outAsset(absolutePath), src: value.src }]
+            }
             // Handle asset files (non-source files)
             if (!/\.(m|c)?[jt]sx?$/.test(value.src)) {
               if (link) return [key, value]
@@ -422,7 +457,9 @@ export function getEntries(options: getEntries.Options): getEntries.ReturnType {
       else throw new Error('`exports` field in package.json must have a `src` field')
 
       const absolutePath = path.resolve(cwd, entryPath)
-      if (/\.(m|c)?[jt]sx?$/.test(absolutePath)) sources.push(absolutePath)
+      // .d.ts files are type definitions (assets), not source files to transpile
+      if (/\.d\.[mc]?ts$/.test(absolutePath)) assets.push(absolutePath)
+      else if (/\.(m|c)?[jt]sx?$/.test(absolutePath)) sources.push(absolutePath)
       else assets.push(absolutePath)
     }
   } else if (pkgJson.main) sources.push(path.resolve(cwd, pkgJson.main))
