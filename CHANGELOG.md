@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.14
+
+### Patch Changes
+
+- [#17](https://github.com/wevm/zile/pull/17) [`becec00`](https://github.com/wevm/zile/commit/becec00d422cdcf155dee4c8fa6bdfd964b8f7e7) Thanks [@jxom](https://github.com/jxom)! - Fixed `.d.ts` generation.
+
 ## 0.0.13
 
 ### Patch Changes
