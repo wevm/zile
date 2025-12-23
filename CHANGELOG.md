@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.15
+
+### Patch Changes
+
+- [`cb384f0`](https://github.com/wevm/zile/commit/cb384f0d1bbf38b55429d6942174f20b79d18131) Thanks [@jxom](https://github.com/jxom)! - Added support for wildcard exports.
+
 ## 0.0.14
 
 ### Patch Changes
