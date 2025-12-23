@@ -31,13 +31,13 @@ exports[`'/basic': Cli.run > default > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "src": "./index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./index.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "src": "./foo.ts",
       "types": "./dist/foo.d.ts",
+      "src": "./foo.ts",
       "default": "./dist/foo.js"
     },
     "./config": "./dist/config.json"
@@ -103,13 +103,13 @@ exports[`'/basic': Cli.run > link > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "src": "./index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./index.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "src": "./foo.ts",
       "types": "./dist/foo.d.ts",
+      "src": "./foo.ts",
       "default": "./dist/foo.js"
     },
     "./config": "./dist/config.json"
@@ -163,8 +163,8 @@ exports[`'/basic-object-exports': Cli.run > default > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "src": "./index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./index.ts",
       "default": "./dist/index.js"
     }
   },
@@ -218,8 +218,8 @@ exports[`'/basic-object-exports': Cli.run > link > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "src": "./index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./index.ts",
       "default": "./dist/index.js"
     }
   },
@@ -256,8 +256,8 @@ exports[`'/dts-exports': Cli.run > default > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "src": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -301,8 +301,8 @@ exports[`'/dts-exports': Cli.run > link > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "src": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -344,8 +344,8 @@ exports[`'/dts-exports-object': Cli.run > default > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "src": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -389,8 +389,8 @@ exports[`'/dts-exports-object': Cli.run > link > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "src": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -445,18 +445,18 @@ exports[`'/multiple-entrypoint': Cli.run > default > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "src": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "src": "./src/foo.ts",
       "types": "./dist/foo.d.ts",
+      "src": "./src/foo.ts",
       "default": "./dist/foo.js"
     },
     "./nested/dir": {
-      "src": "./src/nested/dir/bar.ts",
       "types": "./dist/nested/dir/bar.d.ts",
+      "src": "./src/nested/dir/bar.ts",
       "default": "./dist/nested/dir/bar.js"
     }
   },
@@ -520,18 +520,18 @@ exports[`'/multiple-entrypoint': Cli.run > link > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "src": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "src": "./src/foo.ts",
       "types": "./dist/foo.d.ts",
+      "src": "./src/foo.ts",
       "default": "./dist/foo.js"
     },
     "./nested/dir": {
-      "src": "./src/nested/dir/bar.ts",
       "types": "./dist/nested/dir/bar.d.ts",
+      "src": "./src/nested/dir/bar.ts",
       "default": "./dist/nested/dir/bar.js"
     }
   },
@@ -595,8 +595,8 @@ exports[`'/single-entrypoint': Cli.run > default > output 1`] = `
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "src": "./index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./index.ts",
       "default": "./dist/index.js"
     }
   }
@@ -650,8 +650,8 @@ exports[`'/single-entrypoint': Cli.run > link > output 1`] = `
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "src": "./index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./index.ts",
       "default": "./dist/index.js"
     }
   }
@@ -670,3 +670,102 @@ exports[`'/single-entrypoint': Cli.run > link > output 1`] = `
 `;
 
 exports[`'/single-entrypoint': Cli.run > link > types-target 1`] = `"../index.ts"`;
+
+exports[`'/wildcard-exports': Cli.run > default > main 1`] = `
+"export const name = 'wildcard-exports';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/wildcard-exports': Cli.run > default > output 1`] = `
+"{
+  "name": "wildcard-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/*.d.ts",
+      "src": "./utils/*",
+      "default": "./dist/utils/*.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── utils
+│   │   ├── format.d.ts
+│   │   ├── format.d.ts.map
+│   │   ├── format.js
+│   │   ├── format.js.map
+│   │   ├── helper.d.ts
+│   │   ├── helper.d.ts.map
+│   │   ├── helper.js
+│   │   └── helper.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── utils
+│   ├── format.ts
+│   └── helper.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/wildcard-exports': Cli.run > default > types 1`] = `
+"export declare const name = "wildcard-exports";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/wildcard-exports': Cli.run > link > main-target 1`] = `"../index.ts"`;
+
+exports[`'/wildcard-exports': Cli.run > link > output 1`] = `
+"{
+  "name": "wildcard-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/*.d.ts",
+      "src": "./utils/*",
+      "default": "./dist/utils/*.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── index.d.ts -> ../index.ts
+│   └── index.js -> ../index.ts
+├── utils
+│   ├── format.ts
+│   └── helper.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/wildcard-exports': Cli.run > link > types-target 1`] = `"../index.ts"`;

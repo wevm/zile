@@ -24,7 +24,7 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
 
   await checkInput({ cwd, outDir })
 
-  const { assets, sources } = getEntries({ cwd, pkgJson })
+  const { assets, sources } = await getEntries({ cwd, pkgJson })
   const sourceDir = getSourceDir({ cwd, sources })
 
   if (!link) {
@@ -126,6 +126,8 @@ export async function checkPackageJson(
 
   if (pkgJson.exports) {
     for (const [key, entry] of Object.entries(pkgJson.exports)) {
+      // Skip wildcard exports (they are validated differently)
+      if (key.includes('*')) continue
       if (typeof entry === 'string' && !exists(entry))
         throw new Error(`\`${entry}\` does not exist on \`package.json#exports["${key}"]\``)
       if (
@@ -133,6 +135,7 @@ export async function checkPackageJson(
         entry &&
         'src' in entry &&
         typeof entry.src === 'string' &&
+        !entry.src.includes('*') &&
         !exists(entry.src)
       )
         throw new Error(`\`${entry.src}\` does not exist on \`package.json#exports["${key}"].src\``)
@@ -298,6 +301,39 @@ export async function decoratePackageJson(
             } catch {}
           }
 
+          // Handle wildcard exports - pass through as-is with transformed paths
+          if (key.includes('*')) {
+            if (typeof value === 'string') {
+              const src = value
+              return [
+                key,
+                {
+                  types: outFile(src, '.d.ts'),
+                  src,
+                  default: outFile(src, '.js'),
+                },
+              ]
+            }
+            if (
+              typeof value === 'object' &&
+              value &&
+              'src' in value &&
+              typeof value.src === 'string'
+            ) {
+              const { src, ...rest } = value
+              return [
+                key,
+                {
+                  types: outFile(src, '.d.ts'),
+                  src,
+                  ...rest,
+                  default: outFile(src, '.js'),
+                },
+              ]
+            }
+            return [key, value]
+          }
+
           // Transform single `package.json#exports` entrypoints. They
           // must point to the source file. Otherwise, an error is thrown.
           //
@@ -328,8 +364,8 @@ export async function decoratePackageJson(
             return [
               key,
               {
-                src: value,
                 types: outFile(value, '.d.ts'),
+                src: value,
                 default: outFile(value, '.js'),
               },
             ]
@@ -342,9 +378,9 @@ export async function decoratePackageJson(
           // "./utils": "./src/utils.ts"
           // ↓ ↓ ↓
           // "./utils": {
+          //   "types": "./dist/utils.d.ts",
           //   "src": "./src/utils.ts",
-          //   "types": "./dist/utils.js",
-          //   "default": "./dist/utils.d.ts"
+          //   "default": "./dist/utils.js",
           // }
           if (
             typeof value === 'object' &&
@@ -371,12 +407,14 @@ export async function decoratePackageJson(
               return [key, value]
             }
             if (link) linkExports(value.src)
+            const { src, ...rest } = value
             return [
               key,
               {
-                ...value,
-                types: outFile(value.src, '.d.ts'),
-                default: outFile(value.src, '.js'),
+                types: outFile(src, '.d.ts'),
+                src,
+                ...rest,
+                default: outFile(src, '.js'),
               },
             ]
           }
@@ -424,7 +462,7 @@ export declare namespace decoratePackageJson {
  * @param options - Options for getting entry files.
  * @returns Array of absolute paths to asset files and source files.
  */
-export function getEntries(options: getEntries.Options): getEntries.ReturnType {
+export async function getEntries(options: getEntries.Options): Promise<getEntries.ReturnType> {
   const { cwd, pkgJson } = options
 
   const assets: string[] = []
@@ -444,7 +482,7 @@ export function getEntries(options: getEntries.Options): getEntries.ReturnType {
   }
 
   if (pkgJson.exports) {
-    for (const entry of Object.values(pkgJson.exports)) {
+    for (const [key, entry] of Object.entries(pkgJson.exports)) {
       let entryPath: string
       if (typeof entry === 'string') entryPath = entry
       else if (
@@ -455,6 +493,18 @@ export function getEntries(options: getEntries.Options): getEntries.ReturnType {
       )
         entryPath = entry.src
       else throw new Error('`exports` field in package.json must have a `src` field')
+
+      // Handle wildcard exports - expand the pattern to find actual files
+      if (key.includes('*') || entryPath.includes('*')) {
+        const globPattern = entryPath.replace(/^\.\/?/, '')
+        for await (const file of fs.glob(globPattern, { cwd })) {
+          const absolutePath = path.resolve(cwd, file)
+          if (/\.d\.[mc]?ts$/.test(absolutePath)) assets.push(absolutePath)
+          else if (/\.(m|c)?[jt]sx?$/.test(absolutePath)) sources.push(absolutePath)
+          else assets.push(absolutePath)
+        }
+        continue
+      }
 
       const absolutePath = path.resolve(cwd, entryPath)
       // .d.ts files are type definitions (assets), not source files to transpile

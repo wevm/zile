@@ -1,0 +1,21 @@
+{
+  "name": "wildcard-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/*.d.ts",
+      "src": "./utils/*",
+      "default": "./dist/utils/*.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
