@@ -499,6 +499,7 @@ export async function getEntries(options: getEntries.Options): Promise<getEntrie
         const globPattern = entryPath
           .replace(/^\.\/?/, '')
           .replace(/\/\*$/, '/**/*')
+          .replace(/\/\*\./, '/**/*.')
         for await (const file of fs.glob(globPattern, { cwd })) {
           const absolutePath = path.resolve(cwd, file)
           const stat = await fs.stat(absolutePath)
