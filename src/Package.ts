@@ -496,9 +496,13 @@ export async function getEntries(options: getEntries.Options): Promise<getEntrie
 
       // Handle wildcard exports - expand the pattern to find actual files
       if (key.includes('*') || entryPath.includes('*')) {
-        const globPattern = entryPath.replace(/^\.\/?/, '')
+        const globPattern = entryPath
+          .replace(/^\.\/?/, '')
+          .replace(/\/\*$/, '/**/*')
         for await (const file of fs.glob(globPattern, { cwd })) {
           const absolutePath = path.resolve(cwd, file)
+          const stat = await fs.stat(absolutePath)
+          if (stat.isDirectory()) continue
           if (/\.d\.[mc]?ts$/.test(absolutePath)) assets.push(absolutePath)
           else if (/\.(m|c)?[jt]sx?$/.test(absolutePath)) sources.push(absolutePath)
           else assets.push(absolutePath)

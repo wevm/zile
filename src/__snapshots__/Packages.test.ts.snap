@@ -49,6 +49,8 @@ exports[`Packages.build > builds all packages 1`] = `
         "/repos/wildcard-exports/index.ts",
         "/repos/wildcard-exports/utils/format.ts",
         "/repos/wildcard-exports/utils/helper.ts",
+        "/repos/wildcard-exports/utils/nested/deep.ts",
+        "/repos/wildcard-exports/utils/nested/even/deeper/bottom.ts",
       ],
     },
   },

@@ -1529,6 +1529,17 @@ exports[`'/wildcard-exports': Package.build > default > output 1`] = `
 
 ├── dist
 │   ├── utils
+│   │   ├── nested
+│   │   │   ├── even
+│   │   │   │   └── deeper
+│   │   │   │       ├── bottom.d.ts
+│   │   │   │       ├── bottom.d.ts.map
+│   │   │   │       ├── bottom.js
+│   │   │   │       └── bottom.js.map
+│   │   │   ├── deep.d.ts
+│   │   │   ├── deep.d.ts.map
+│   │   │   ├── deep.js
+│   │   │   └── deep.js.map
 │   │   ├── format.d.ts
 │   │   ├── format.d.ts.map
 │   │   ├── format.js
@@ -1542,6 +1553,11 @@ exports[`'/wildcard-exports': Package.build > default > output 1`] = `
 │   ├── index.js
 │   └── index.js.map
 ├── utils
+│   ├── nested
+│   │   ├── even
+│   │   │   └── deeper
+│   │   │       └── bottom.ts
+│   │   └── deep.ts
 │   ├── format.ts
 │   └── helper.ts
 ├── index.ts
@@ -1598,6 +1614,8 @@ exports[`'/wildcard-exports': Package.build > default > result 1`] = `
       "/repos/wildcard-exports/index.ts",
       "/repos/wildcard-exports/utils/format.ts",
       "/repos/wildcard-exports/utils/helper.ts",
+      "/repos/wildcard-exports/utils/nested/deep.ts",
+      "/repos/wildcard-exports/utils/nested/even/deeper/bottom.ts",
     ],
   },
 }
@@ -1639,6 +1657,11 @@ exports[`'/wildcard-exports': Package.build > link > output 1`] = `
 │   ├── index.d.ts -> ../index.ts
 │   └── index.js -> ../index.ts
 ├── utils
+│   ├── nested
+│   │   ├── even
+│   │   │   └── deeper
+│   │   │       └── bottom.ts
+│   │   └── deep.ts
 │   ├── format.ts
 │   └── helper.ts
 ├── index.ts
