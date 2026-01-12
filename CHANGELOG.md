@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.16
+
+### Patch Changes
+
+- [`eddcda1`](https://github.com/wevm/zile/commit/eddcda13b866248afc47b7cd26d1fc60fd665f5d) Thanks [@jxom](https://github.com/jxom)! - Fixed deep nested exports.
+
 ## 0.0.15
 
 ### Patch Changes
