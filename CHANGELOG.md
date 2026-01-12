@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.17
+
+### Patch Changes
+
+- [`37783c9`](https://github.com/wevm/zile/commit/37783c96c48ec645ccfce94aae79846ee44e5fc0) Thanks [@jxom](https://github.com/jxom)! - Fixed wildcard exports.
+
 ## 0.0.16
 
 ### Patch Changes
