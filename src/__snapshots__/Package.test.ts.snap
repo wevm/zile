@@ -501,6 +501,216 @@ exports[`'/basic-object-exports': Package.build > link > result 1`] = `
 
 exports[`'/basic-object-exports': Package.build > link > types-target 1`] = `"../index.ts"`;
 
+exports[`'/bin-with-src': Package.build > default > check 1`] = `
+{
+  "output": {
+    "attw": "
+bin-with-src v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+
+"bin-with-src"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+",
+    "publint": "Running publint v0.3.14 for bin-with-src...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+",
+  },
+}
+`;
+
+exports[`'/bin-with-src': Package.build > default > main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/bin-with-src': Package.build > default > output 1`] = `
+"{
+  "name": "bin-with-src",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "bin-with-src": "./dist/cli.js",
+    "bin-with-src.src": "./src/cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.d.ts
+│   ├── cli.d.ts.map
+│   ├── cli.js
+│   ├── cli.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── cli.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/bin-with-src': Package.build > default > result 1`] = `
+{
+  "packageJson": {
+    "bin": {
+      "bin-with-src": "./dist/cli.js",
+      "bin-with-src.src": "./src/cli.ts",
+    },
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "bin-with-src",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "noEmit": false,
+      "outDir": "dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "ESNext",
+    },
+    "exclude": [],
+    "include": [
+      "src",
+      "/repos/bin-with-src/src/cli.ts",
+      "/repos/bin-with-src/src/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`'/bin-with-src': Package.build > default > types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/bin-with-src': Package.build > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/bin-with-src': Package.build > link > output 1`] = `
+"{
+  "name": "bin-with-src",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "bin-with-src": "./dist/cli.js",
+    "bin-with-src.src": "./src/cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── cli.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/bin-with-src': Package.build > link > result 1`] = `
+{
+  "packageJson": {
+    "bin": {
+      "bin-with-src": "./dist/cli.js",
+      "bin-with-src.src": "./src/cli.ts",
+    },
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "bin-with-src",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "declaration": true,
+      "declarationMap": true,
+      "esModuleInterop": true,
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "outDir": "dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "ESNext",
+    },
+    "include": [
+      "src",
+    ],
+  },
+}
+`;
+
+exports[`'/bin-with-src': Package.build > link > types-target 1`] = `"../src/index.ts"`;
+
 exports[`'/dts-exports': Package.build > default > check 1`] = `
 {
   "output": {

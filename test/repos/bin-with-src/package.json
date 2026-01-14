@@ -1,0 +1,13 @@
+{
+  "name": "bin-with-src",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "bin-with-src": "./dist/cli.js",
+    "bin-with-src.src": "./src/cli.ts"
+  },
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
