@@ -20,7 +20,9 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
     readPackageJson({ cwd }),
     readTsconfigJson({ cwd, project }),
   ])
-  const outDir = tsConfig.compilerOptions?.outDir ?? path.resolve(cwd, 'dist')
+  const outDir = tsConfig.compilerOptions?.outDir
+    ? path.resolve(cwd, tsConfig.compilerOptions.outDir)
+    : path.resolve(cwd, 'dist')
 
   await checkInput({ cwd, outDir })
 
@@ -228,9 +230,11 @@ export async function decoratePackageJson(
         Object.entries(bin).flatMap((entry) => {
           const [key, value] = entry
           if (!value) throw new Error(`\`bin.${key}\` field must have a value`)
+          // Skip entries that already point to output dir or are .src entries
+          if (key.endsWith('.src') || value.startsWith(relativeOutDir)) return [[key, value]]
           return [
-            [key.replace('.src', ''), outFile(value, '.js')],
-            [key, value],
+            [key, outFile(value, '.js')],
+            [`${key}.src`, value],
           ]
         }),
       )
