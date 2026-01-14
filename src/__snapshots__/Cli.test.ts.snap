@@ -1,21 +1,178 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`/single-entrypoint: Cli.run default: output 1`] = `
+exports[`'/basic': Cli.run > default > main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/basic': Cli.run > default > output 1`] = `
 "{
-  "name": "single-entrypoint",
+  "name": "basic",
   "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
+  },
   "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "types": "./dist/foo.d.ts",
+      "src": "./foo.ts",
+      "default": "./dist/foo.js"
+    },
+    "./config": "./dist/config.json"
+  },
   "sideEffects": false,
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.d.ts
+│   ├── cli.d.ts.map
+│   ├── cli.js
+│   ├── cli.js.map
+│   ├── config.json
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── cli.ts
+├── config.json
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/basic': Cli.run > default > types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/basic': Cli.run > link > main-target 1`] = `"../index.ts"`;
+
+exports[`'/basic': Cli.run > link > output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "types": "./dist/foo.d.ts",
+      "src": "./foo.ts",
+      "default": "./dist/foo.js"
+    },
+    "./config": "./dist/config.json"
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.js -> ../cli.ts
+│   ├── foo.d.ts -> ../foo.ts
+│   ├── foo.js -> ../foo.ts
+│   ├── index.d.ts -> ../index.ts
+│   └── index.js -> ../index.ts
+├── cli.ts
+├── config.json
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/basic': Cli.run > link > types-target 1`] = `"../index.ts"`;
+
+exports[`'/basic-object-exports': Cli.run > default > main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/basic-object-exports': Cli.run > default > output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "src": "./index.ts",
       "default": "./dist/index.js"
     }
-  }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }
 
 
@@ -36,7 +193,325 @@ exports[`/single-entrypoint: Cli.run default: output 1`] = `
 "
 `;
 
-exports[`/single-entrypoint: Cli.run default: main 1`] = `
+exports[`'/basic-object-exports': Cli.run > default > types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/basic-object-exports': Cli.run > link > main-target 1`] = `"../index.ts"`;
+
+exports[`'/basic-object-exports': Cli.run > link > output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── index.d.ts -> ../index.ts
+│   └── index.js -> ../index.ts
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/basic-object-exports': Cli.run > link > types-target 1`] = `"../index.ts"`;
+
+exports[`'/bin-with-src': Cli.run > default > main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/bin-with-src': Cli.run > default > output 1`] = `
+"{
+  "name": "bin-with-src",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "bin-with-src": "./dist/cli.js",
+    "bin-with-src.src": "./src/cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.d.ts
+│   ├── cli.d.ts.map
+│   ├── cli.js
+│   ├── cli.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── cli.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/bin-with-src': Cli.run > default > types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/bin-with-src': Cli.run > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/bin-with-src': Cli.run > link > output 1`] = `
+"{
+  "name": "bin-with-src",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "bin-with-src": "./dist/cli.js",
+    "bin-with-src.src": "./src/cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.js -> ../src/cli.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── cli.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/bin-with-src': Cli.run > link > types-target 1`] = `"../src/index.ts"`;
+
+exports[`'/dts-exports': Cli.run > default > main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/dts-exports': Cli.run > default > output 1`] = `
+"{
+  "name": "dts-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports': Cli.run > default > types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/dts-exports': Cli.run > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/dts-exports': Cli.run > link > output 1`] = `
+"{
+  "name": "dts-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts -> ../src/globals.d.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports': Cli.run > link > types-target 1`] = `"../src/index.ts"`;
+
+exports[`'/dts-exports-object': Cli.run > default > main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/dts-exports-object': Cli.run > default > output 1`] = `
+"{
+  "name": "dts-exports-object",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports-object': Cli.run > default > types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/dts-exports-object': Cli.run > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/dts-exports-object': Cli.run > link > output 1`] = `
+"{
+  "name": "dts-exports-object",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts -> ../src/globals.d.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/dts-exports-object': Cli.run > link > types-target 1`] = `"../src/index.ts"`;
+
+exports[`'/multiple-entrypoint': Cli.run > default > main 1`] = `
 "import { bar as bar1, foo as foo1 } from './foo.js';
 export function foo(options = {}) {
     foo1(options);
@@ -55,58 +530,7 @@ export function bar(options = {}) {
 //# sourceMappingURL=index.js.map"
 `;
 
-exports[`/single-entrypoint: Cli.run default: types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`/single-entrypoint: Cli.run link: output 1`] = `
-"{
-  "name": "single-entrypoint",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    }
-  }
-}
-
-
-
-├── dist
-│   ├── index.d.ts -> ../index.ts
-│   └── index.js -> ../index.ts
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/single-entrypoint: Cli.run link: main-target 1`] = `"../index.ts"`;
-
-exports[`/single-entrypoint: Cli.run link: types-target 1`] = `"../index.ts"`;
-
-exports[`/multiple-entrypoint: Cli.run default: output 1`] = `
+exports[`'/multiple-entrypoint': Cli.run > default > output 1`] = `
 "{
   "name": "multiple-entrypoint",
   "version": "0.0.0",
@@ -162,26 +586,7 @@ exports[`/multiple-entrypoint: Cli.run default: output 1`] = `
 "
 `;
 
-exports[`/multiple-entrypoint: Cli.run default: main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`/multiple-entrypoint: Cli.run default: types 1`] = `
+exports[`'/multiple-entrypoint': Cli.run > default > types 1`] = `
 "export declare function foo(options?: foo.Options): void;
 export declare namespace foo {
     type Options = {
@@ -198,7 +603,9 @@ export declare namespace bar {
 //# sourceMappingURL=index.d.ts.map"
 `;
 
-exports[`/multiple-entrypoint: Cli.run link: output 1`] = `
+exports[`'/multiple-entrypoint': Cli.run > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/multiple-entrypoint': Cli.run > link > output 1`] = `
 "{
   "name": "multiple-entrypoint",
   "version": "0.0.0",
@@ -248,11 +655,120 @@ exports[`/multiple-entrypoint: Cli.run link: output 1`] = `
 "
 `;
 
-exports[`/multiple-entrypoint: Cli.run link: main-target 1`] = `"../src/index.ts"`;
+exports[`'/multiple-entrypoint': Cli.run > link > types-target 1`] = `"../src/index.ts"`;
 
-exports[`/multiple-entrypoint: Cli.run link: types-target 1`] = `"../src/index.ts"`;
+exports[`'/single-entrypoint': Cli.run > default > main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
 
-exports[`/wildcard-exports: Cli.run default: output 1`] = `
+exports[`'/single-entrypoint': Cli.run > default > output 1`] = `
+"{
+  "name": "single-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}
+
+
+
+├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/single-entrypoint': Cli.run > default > types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/single-entrypoint': Cli.run > link > main-target 1`] = `"../index.ts"`;
+
+exports[`'/single-entrypoint': Cli.run > link > output 1`] = `
+"{
+  "name": "single-entrypoint",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}
+
+
+
+├── dist
+│   ├── index.d.ts -> ../index.ts
+│   └── index.js -> ../index.ts
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/single-entrypoint': Cli.run > link > types-target 1`] = `"../index.ts"`;
+
+exports[`'/wildcard-exports': Cli.run > default > main 1`] = `
+"export const name = 'wildcard-exports';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/wildcard-exports': Cli.run > default > output 1`] = `
 "{
   "name": "wildcard-exports",
   "version": "0.0.0",
@@ -316,17 +832,14 @@ exports[`/wildcard-exports: Cli.run default: output 1`] = `
 "
 `;
 
-exports[`/wildcard-exports: Cli.run default: main 1`] = `
-"export const name = 'wildcard-exports';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`/wildcard-exports: Cli.run default: types 1`] = `
+exports[`'/wildcard-exports': Cli.run > default > types 1`] = `
 "export declare const name = "wildcard-exports";
 //# sourceMappingURL=index.d.ts.map"
 `;
 
-exports[`/wildcard-exports: Cli.run link: output 1`] = `
+exports[`'/wildcard-exports': Cli.run > link > main-target 1`] = `"../index.ts"`;
+
+exports[`'/wildcard-exports': Cli.run > link > output 1`] = `
 "{
   "name": "wildcard-exports",
   "version": "0.0.0",
@@ -368,517 +881,4 @@ exports[`/wildcard-exports: Cli.run link: output 1`] = `
 "
 `;
 
-exports[`/wildcard-exports: Cli.run link: main-target 1`] = `"../index.ts"`;
-
-exports[`/wildcard-exports: Cli.run link: types-target 1`] = `"../index.ts"`;
-
-exports[`/dts-exports: Cli.run default: output 1`] = `
-"{
-  "name": "dts-exports",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/dts-exports: Cli.run default: main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`/dts-exports: Cli.run default: types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`/dts-exports: Cli.run link: output 1`] = `
-"{
-  "name": "dts-exports",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts -> ../src/globals.d.ts
-│   ├── index.d.ts -> ../src/index.ts
-│   └── index.js -> ../src/index.ts
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/dts-exports: Cli.run link: main-target 1`] = `"../src/index.ts"`;
-
-exports[`/dts-exports: Cli.run link: types-target 1`] = `"../src/index.ts"`;
-
-exports[`/dts-exports-object: Cli.run default: output 1`] = `
-"{
-  "name": "dts-exports-object",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/dts-exports-object: Cli.run default: main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`/dts-exports-object: Cli.run default: types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`/dts-exports-object: Cli.run link: output 1`] = `
-"{
-  "name": "dts-exports-object",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts -> ../src/globals.d.ts
-│   ├── index.d.ts -> ../src/index.ts
-│   └── index.js -> ../src/index.ts
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/dts-exports-object: Cli.run link: main-target 1`] = `"../src/index.ts"`;
-
-exports[`/dts-exports-object: Cli.run link: types-target 1`] = `"../src/index.ts"`;
-
-exports[`/basic: Cli.run default: output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "basic": "./dist/cli.js",
-    "basic.src": "./cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    },
-    "./foo": {
-      "types": "./dist/foo.d.ts",
-      "src": "./foo.ts",
-      "default": "./dist/foo.js"
-    },
-    "./config": "./dist/config.json"
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── cli.d.ts
-│   ├── cli.d.ts.map
-│   ├── cli.js
-│   ├── cli.js.map
-│   ├── config.json
-│   ├── foo.d.ts
-│   ├── foo.d.ts.map
-│   ├── foo.js
-│   ├── foo.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── cli.ts
-├── config.json
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/basic: Cli.run default: main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`/basic: Cli.run default: types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`/basic: Cli.run link: output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "basic": "./dist/cli.js",
-    "basic.src": "./cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    },
-    "./foo": {
-      "types": "./dist/foo.d.ts",
-      "src": "./foo.ts",
-      "default": "./dist/foo.js"
-    },
-    "./config": "./dist/config.json"
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── cli.js -> ../cli.ts
-│   ├── foo.d.ts -> ../foo.ts
-│   ├── foo.js -> ../foo.ts
-│   ├── index.d.ts -> ../index.ts
-│   └── index.js -> ../index.ts
-├── cli.ts
-├── config.json
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/basic: Cli.run link: main-target 1`] = `"../index.ts"`;
-
-exports[`/basic: Cli.run link: types-target 1`] = `"../index.ts"`;
-
-exports[`/basic-object-exports: Cli.run default: output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── foo.d.ts
-│   ├── foo.d.ts.map
-│   ├── foo.js
-│   ├── foo.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/basic-object-exports: Cli.run default: main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`/basic-object-exports: Cli.run default: types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`/basic-object-exports: Cli.run link: output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── index.d.ts -> ../index.ts
-│   └── index.js -> ../index.ts
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/basic-object-exports: Cli.run link: main-target 1`] = `"../index.ts"`;
-
-exports[`/basic-object-exports: Cli.run link: types-target 1`] = `"../index.ts"`;
-
-exports[`/bin-with-src: Cli.run default: output 1`] = `
-"{
-  "name": "bin-with-src",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "bin-with-src": "./dist/cli.js",
-    "bin-with-src.src": "./src/cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── cli.d.ts
-│   ├── cli.d.ts.map
-│   ├── cli.js
-│   ├── cli.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── cli.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/bin-with-src: Cli.run default: main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`/bin-with-src: Cli.run default: types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`/bin-with-src: Cli.run link: output 1`] = `
-"{
-  "name": "bin-with-src",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "bin-with-src": "./dist/cli.js",
-    "bin-with-src.src": "./src/cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── cli.js -> ../src/cli.ts
-│   ├── index.d.ts -> ../src/index.ts
-│   └── index.js -> ../src/index.ts
-├── src
-│   ├── cli.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`/bin-with-src: Cli.run link: main-target 1`] = `"../src/index.ts"`;
-
-exports[`/bin-with-src: Cli.run link: types-target 1`] = `"../src/index.ts"`;
+exports[`'/wildcard-exports': Cli.run > link > types-target 1`] = `"../index.ts"`;
