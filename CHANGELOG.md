@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.19
+
+### Patch Changes
+
+- [#24](https://github.com/wevm/zile/pull/24) [`f36f2bd`](https://github.com/wevm/zile/commit/f36f2bdba93d09c2540029105f97a206279735e8) Thanks [@jxom](https://github.com/jxom)! - Added symlink creation for bin entries in link mode.
+
 ## 0.0.18
 
 ### Patch Changes
