@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.18
+
+### Patch Changes
+
+- [#22](https://github.com/wevm/zile/pull/22) [`3e53cda`](https://github.com/wevm/zile/commit/3e53cda17fa9ceab4f0b102760d3cc3460b113f4) Thanks [@jxom](https://github.com/jxom)! - Fixed bin object processing to support entries with `.src` suffix and entries already pointing to output directory. Also fixed `outDir` resolution from tsconfig to properly resolve relative paths.
+
 ## 0.0.17
 
 ### Patch Changes
