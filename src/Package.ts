@@ -226,6 +226,7 @@ export async function decoratePackageJson(
           [pkgJson.name! + '.src']: bin,
         }
     } else {
+      const originalBin = bin
       bin = Object.fromEntries(
         Object.entries(bin).flatMap((entry) => {
           const [key, value] = entry
@@ -238,6 +239,27 @@ export async function decoratePackageJson(
           ]
         }),
       )
+      // Create symlinks for bin entries in link mode
+      if (link) {
+        for (const [key, value] of Object.entries(bin)) {
+          if (!key.endsWith('.src') && value.startsWith(relativeOutDir)) {
+            // Find corresponding .src entry
+            const srcKey = `${key}.src`
+            const srcValue = originalBin[srcKey] ?? bin[srcKey]
+            if (srcValue) {
+              try {
+                const destAbsolute = path.resolve(cwd, value)
+                const dir = path.dirname(destAbsolute)
+                if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
+                const srcAbsolute = path.resolve(cwd, srcValue)
+                const srcRelative = path.relative(dir, srcAbsolute)
+                if (fsSync.existsSync(destAbsolute)) fsSync.unlinkSync(destAbsolute)
+                fsSync.symlinkSync(srcRelative, destAbsolute, 'file')
+              } catch {}
+            }
+          }
+        }
+      }
     }
   }
 

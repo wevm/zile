@@ -1,149 +1,20 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`'/basic': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-basic v0.0.0
+exports[`/error-exports-string-not-exists: Package.build default: error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#exports["."]\`]`;
 
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
-
-
-"basic"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"basic/foo"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"basic/config"
-
-node16 (from ESM): 🟢 (JSON)
-bundler: 🟢 (JSON)
-node10: (ignored) 💀 Resolution failed
-node16 (from CJS): (ignored) 🟢 (JSON)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for basic...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/basic': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/basic': Package.build > default > output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "basic": "./dist/cli.js",
-    "basic.src": "./cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    },
-    "./foo": {
-      "types": "./dist/foo.d.ts",
-      "src": "./foo.ts",
-      "default": "./dist/foo.js"
-    },
-    "./config": "./dist/config.json"
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── cli.d.ts
-│   ├── cli.d.ts.map
-│   ├── cli.js
-│   ├── cli.js.map
-│   ├── config.json
-│   ├── foo.d.ts
-│   ├── foo.d.ts.map
-│   ├── foo.js
-│   ├── foo.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── cli.ts
-├── config.json
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/basic': Package.build > default > result 1`] = `
+exports[`/single-entrypoint: Package.build default: result 1`] = `
 {
   "packageJson": {
-    "bin": {
-      "basic": "./dist/cli.js",
-      "basic.src": "./cli.ts",
-    },
     "exports": {
       ".": {
         "default": "./dist/index.js",
         "src": "./index.ts",
         "types": "./dist/index.d.ts",
       },
-      "./config": "./dist/config.json",
-      "./foo": {
-        "default": "./dist/foo.js",
-        "src": "./foo.ts",
-        "types": "./dist/foo.d.ts",
-      },
     },
     "main": "./dist/index.js",
     "module": "./dist/index.js",
-    "name": "basic",
+    "name": "single-entrypoint",
     "sideEffects": false,
     "type": "module",
     "types": "./dist/index.d.ts",
@@ -162,7 +33,7 @@ exports[`'/basic': Package.build > default > result 1`] = `
       "moduleDetection": "force",
       "moduleResolution": "nodenext",
       "noEmit": false,
-      "outDir": "/repos/basic/dist",
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/single-entrypoint/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -171,134 +42,25 @@ exports[`'/basic': Package.build > default > result 1`] = `
     },
     "exclude": [],
     "include": [
-      "/repos/basic/cli.ts",
-      "/repos/basic/index.ts",
-      "/repos/basic/foo.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/single-entrypoint/index.ts",
     ],
   },
 }
 `;
 
-exports[`'/basic': Package.build > default > types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/basic': Package.build > link > main-target 1`] = `"../index.ts"`;
-
-exports[`'/basic': Package.build > link > output 1`] = `
-"{
-  "name": "basic",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "basic": "./dist/cli.js",
-    "basic.src": "./cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    },
-    "./foo": {
-      "types": "./dist/foo.d.ts",
-      "src": "./foo.ts",
-      "default": "./dist/foo.js"
-    },
-    "./config": "./dist/config.json"
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── foo.d.ts -> ../foo.ts
-│   ├── foo.js -> ../foo.ts
-│   ├── index.d.ts -> ../index.ts
-│   └── index.js -> ../index.ts
-├── cli.ts
-├── config.json
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/basic': Package.build > link > result 1`] = `
-{
-  "packageJson": {
-    "bin": {
-      "basic": "./dist/cli.js",
-      "basic.src": "./cli.ts",
-    },
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./index.ts",
-        "types": "./dist/index.d.ts",
-      },
-      "./config": "./dist/config.json",
-      "./foo": {
-        "default": "./dist/foo.js",
-        "src": "./foo.ts",
-        "types": "./dist/foo.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "basic",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "verbatimModuleSyntax": true,
-    },
-  },
-}
-`;
-
-exports[`'/basic': Package.build > link > types-target 1`] = `"../index.ts"`;
-
-exports[`'/basic-object-exports': Package.build > default > check 1`] = `
+exports[`/single-entrypoint: Package.build default: check 1`] = `
 {
   "output": {
-    "attw": "
-basic v0.0.0
+    "attw": 
+"
+single-entrypoint v0.0.0
 
  (ignoring resolutions: 'node10', 'node16-cjs')
 
 (ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
 
 
-"basic"
+"single-entrypoint"
 
 node16 (from ESM): 🟢 (ESM)
 bundler: 🟢 
@@ -306,51 +68,35 @@ node10: (ignored) 🟢
 node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
 
 ***********************************
-",
-    "publint": "Running publint v0.3.14 for basic...
+"
+,
+    "publint": 
+"Running publint v0.3.14 for single-entrypoint...
 Packing files with \`bun pack\`...
 Linting...
 All good!
-",
+"
+,
   },
 }
 `;
 
-exports[`'/basic-object-exports': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/basic-object-exports': Package.build > default > output 1`] = `
+exports[`/single-entrypoint: Package.build default: output 1`] = `
 "{
-  "name": "basic",
+  "name": "single-entrypoint",
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/index.js",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "src": "./index.ts",
       "default": "./dist/index.js"
     }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  }
 }
 
 
@@ -371,53 +117,26 @@ exports[`'/basic-object-exports': Package.build > default > output 1`] = `
 "
 `;
 
-exports[`'/basic-object-exports': Package.build > default > result 1`] = `
-{
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./index.ts",
-        "types": "./dist/index.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "basic",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "composite": false,
-      "declaration": true,
-      "declarationDir": undefined,
-      "declarationMap": true,
-      "emitDeclarationOnly": false,
-      "esModuleInterop": true,
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": false,
-      "outDir": "/repos/basic-object-exports/dist",
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "strict": true,
-      "target": "es2021",
-      "verbatimModuleSyntax": true,
-    },
-    "exclude": [],
-    "include": [
-      "/repos/basic-object-exports/index.ts",
-    ],
-  },
+exports[`/single-entrypoint: Package.build default: main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
 }
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
 `;
 
-exports[`'/basic-object-exports': Package.build > default > types 1`] = `
+exports[`/single-entrypoint: Package.build default: types 1`] = `
 "export declare function foo(options?: foo.Options): void;
 export declare namespace foo {
     type Options = {
@@ -434,24 +153,55 @@ export declare namespace bar {
 //# sourceMappingURL=index.d.ts.map"
 `;
 
-exports[`'/basic-object-exports': Package.build > link > main-target 1`] = `"../index.ts"`;
+exports[`/single-entrypoint: Package.build link: result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "single-entrypoint",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+  },
+}
+`;
 
-exports[`'/basic-object-exports': Package.build > link > output 1`] = `
+exports[`/single-entrypoint: Package.build link: output 1`] = `
 "{
-  "name": "basic",
+  "name": "single-entrypoint",
   "version": "0.0.0",
   "type": "module",
+  "main": "./dist/index.js",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "src": "./index.ts",
       "default": "./dist/index.js"
     }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  }
 }
 
 
@@ -466,335 +216,11 @@ exports[`'/basic-object-exports': Package.build > link > output 1`] = `
 "
 `;
 
-exports[`'/basic-object-exports': Package.build > link > result 1`] = `
-{
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./index.ts",
-        "types": "./dist/index.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "basic",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "verbatimModuleSyntax": true,
-    },
-  },
-}
-`;
+exports[`/single-entrypoint: Package.build link: main-target 1`] = `"../index.ts"`;
 
-exports[`'/basic-object-exports': Package.build > link > types-target 1`] = `"../index.ts"`;
+exports[`/single-entrypoint: Package.build link: types-target 1`] = `"../index.ts"`;
 
-exports[`'/bin-with-src': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-bin-with-src v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-
-"bin-with-src"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for bin-with-src...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/bin-with-src': Package.build > default > main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/bin-with-src': Package.build > default > output 1`] = `
-"{
-  "name": "bin-with-src",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "bin-with-src": "./dist/cli.js",
-    "bin-with-src.src": "./src/cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── cli.d.ts
-│   ├── cli.d.ts.map
-│   ├── cli.js
-│   ├── cli.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── cli.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/bin-with-src': Package.build > default > result 1`] = `
-{
-  "packageJson": {
-    "bin": {
-      "bin-with-src": "./dist/cli.js",
-      "bin-with-src.src": "./src/cli.ts",
-    },
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "bin-with-src",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "composite": false,
-      "declaration": true,
-      "declarationDir": undefined,
-      "declarationMap": true,
-      "emitDeclarationOnly": false,
-      "esModuleInterop": true,
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "noEmit": false,
-      "outDir": "dist",
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "strict": true,
-      "target": "ESNext",
-    },
-    "exclude": [],
-    "include": [
-      "src",
-      "/repos/bin-with-src/src/cli.ts",
-      "/repos/bin-with-src/src/index.ts",
-    ],
-  },
-}
-`;
-
-exports[`'/bin-with-src': Package.build > default > types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/bin-with-src': Package.build > link > main-target 1`] = `"../src/index.ts"`;
-
-exports[`'/bin-with-src': Package.build > link > output 1`] = `
-"{
-  "name": "bin-with-src",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "bin-with-src": "./dist/cli.js",
-    "bin-with-src.src": "./src/cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── index.d.ts -> ../src/index.ts
-│   └── index.js -> ../src/index.ts
-├── src
-│   ├── cli.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/bin-with-src': Package.build > link > result 1`] = `
-{
-  "packageJson": {
-    "bin": {
-      "bin-with-src": "./dist/cli.js",
-      "bin-with-src.src": "./src/cli.ts",
-    },
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "bin-with-src",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "declaration": true,
-      "declarationMap": true,
-      "esModuleInterop": true,
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "outDir": "dist",
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "strict": true,
-      "target": "ESNext",
-    },
-    "include": [
-      "src",
-    ],
-  },
-}
-`;
-
-exports[`'/bin-with-src': Package.build > link > types-target 1`] = `"../src/index.ts"`;
-
-exports[`'/dts-exports': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-dts-exports v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
-
-
-"dts-exports"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"dts-exports/globals"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 💀 Resolution failed
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for dts-exports...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/dts-exports': Package.build > default > main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/dts-exports': Package.build > default > output 1`] = `
-"{
-  "name": "dts-exports",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/dts-exports': Package.build > default > result 1`] = `
+exports[`/multiple-entrypoint: Package.build default: result 1`] = `
 {
   "packageJson": {
     "exports": {
@@ -803,14 +229,20 @@ exports[`'/dts-exports': Package.build > default > result 1`] = `
         "src": "./src/index.ts",
         "types": "./dist/index.d.ts",
       },
-      "./globals": {
-        "src": "./src/globals.d.ts",
-        "types": "./dist/globals.d.ts",
+      "./foo": {
+        "default": "./dist/foo.js",
+        "src": "./src/foo.ts",
+        "types": "./dist/foo.d.ts",
+      },
+      "./nested/dir": {
+        "default": "./dist/nested/dir/bar.js",
+        "src": "./src/nested/dir/bar.ts",
+        "types": "./dist/nested/dir/bar.d.ts",
       },
     },
     "main": "./dist/index.js",
     "module": "./dist/index.js",
-    "name": "dts-exports",
+    "name": "multiple-entrypoint",
     "sideEffects": false,
     "type": "module",
     "types": "./dist/index.d.ts",
@@ -829,7 +261,7 @@ exports[`'/dts-exports': Package.build > default > result 1`] = `
       "moduleDetection": "force",
       "moduleResolution": "nodenext",
       "noEmit": false,
-      "outDir": "/repos/dts-exports/dist",
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/multiple-entrypoint/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -838,331 +270,19 @@ exports[`'/dts-exports': Package.build > default > result 1`] = `
     },
     "exclude": [],
     "include": [
-      "/repos/dts-exports/src/index.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/multiple-entrypoint/src/index.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/multiple-entrypoint/src/foo.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/multiple-entrypoint/src/nested/dir/bar.ts",
     ],
   },
 }
 `;
 
-exports[`'/dts-exports': Package.build > default > types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/dts-exports': Package.build > link > main-target 1`] = `"../src/index.ts"`;
-
-exports[`'/dts-exports': Package.build > link > output 1`] = `
-"{
-  "name": "dts-exports",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts -> ../src/globals.d.ts
-│   ├── index.d.ts -> ../src/index.ts
-│   └── index.js -> ../src/index.ts
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/dts-exports': Package.build > link > result 1`] = `
-{
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-      },
-      "./globals": {
-        "src": "./src/globals.d.ts",
-        "types": "./dist/globals.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "dts-exports",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "verbatimModuleSyntax": true,
-    },
-  },
-}
-`;
-
-exports[`'/dts-exports': Package.build > link > types-target 1`] = `"../src/index.ts"`;
-
-exports[`'/dts-exports-object': Package.build > default > check 1`] = `
+exports[`/multiple-entrypoint: Package.build default: check 1`] = `
 {
   "output": {
-    "attw": "
-dts-exports-object v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
-
-
-"dts-exports-object"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"dts-exports-object/globals"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 💀 Resolution failed
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for dts-exports-object...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/dts-exports-object': Package.build > default > main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/dts-exports-object': Package.build > default > output 1`] = `
-"{
-  "name": "dts-exports-object",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
+    "attw": 
 "
-`;
-
-exports[`'/dts-exports-object': Package.build > default > result 1`] = `
-{
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-      },
-      "./globals": {
-        "src": "./src/globals.d.ts",
-        "types": "./dist/globals.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "dts-exports-object",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "composite": false,
-      "declaration": true,
-      "declarationDir": undefined,
-      "declarationMap": true,
-      "emitDeclarationOnly": false,
-      "esModuleInterop": true,
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": false,
-      "outDir": "/repos/dts-exports-object/dist",
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "strict": true,
-      "target": "es2021",
-      "verbatimModuleSyntax": true,
-    },
-    "exclude": [],
-    "include": [
-      "/repos/dts-exports-object/src/index.ts",
-    ],
-  },
-}
-`;
-
-exports[`'/dts-exports-object': Package.build > default > types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/dts-exports-object': Package.build > link > main-target 1`] = `"../src/index.ts"`;
-
-exports[`'/dts-exports-object': Package.build > link > output 1`] = `
-"{
-  "name": "dts-exports-object",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts -> ../src/globals.d.ts
-│   ├── index.d.ts -> ../src/index.ts
-│   └── index.js -> ../src/index.ts
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/dts-exports-object': Package.build > link > result 1`] = `
-{
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-      },
-      "./globals": {
-        "src": "./src/globals.d.ts",
-        "types": "./dist/globals.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "dts-exports-object",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "verbatimModuleSyntax": true,
-    },
-  },
-}
-`;
-
-exports[`'/dts-exports-object': Package.build > link > types-target 1`] = `"../src/index.ts"`;
-
-exports[`'/error-bin-object-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent-cli.ts\` does not exist on \`package.json#bin.cli\`]`;
-
-exports[`'/error-bin-string-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#bin\`]`;
-
-exports[`'/error-exports-object-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#exports["."].src\`]`;
-
-exports[`'/error-exports-string-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#exports["."]\`]`;
-
-exports[`'/error-main-not-exists': Package.build > default > error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#main\`]`;
-
-exports[`'/error-missing-entry-fields': Package.build > default > error 1`] = `[Error: package.json must have an \`exports\`, \`main\`, or \`bin\` field]`;
-
-exports[`'/error-module-resolution': Package.build > default > error 1`] = `
-"/repos/error-module-resolution/tsconfig.json has invalid configuration:
-  - "module" must be "nodenext". Found: "preserve"
-  - "moduleResolution" must be "nodenext". Found: "bundler""
-`;
-
-exports[`'/multiple-entrypoint': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
 multiple-entrypoint v0.0.0
 
  (ignoring resolutions: 'node10', 'node16-cjs')
@@ -1198,36 +318,20 @@ node10: (ignored) 💀 Resolution failed
 node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
 
 ***********************************
-",
-    "publint": "Running publint v0.3.14 for multiple-entrypoint...
+"
+,
+    "publint": 
+"Running publint v0.3.14 for multiple-entrypoint...
 Packing files with \`bun pack\`...
 Linting...
 All good!
-",
+"
+,
   },
 }
 `;
 
-exports[`'/multiple-entrypoint': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/multiple-entrypoint': Package.build > default > output 1`] = `
+exports[`/multiple-entrypoint: Package.build default: output 1`] = `
 "{
   "name": "multiple-entrypoint",
   "version": "0.0.0",
@@ -1283,7 +387,43 @@ exports[`'/multiple-entrypoint': Package.build > default > output 1`] = `
 "
 `;
 
-exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
+exports[`/multiple-entrypoint: Package.build default: main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/multiple-entrypoint: Package.build default: types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/multiple-entrypoint: Package.build link: result 1`] = `
 {
   "packageJson": {
     "exports": {
@@ -1313,54 +453,20 @@ exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
   },
   "tsConfig": {
     "compilerOptions": {
-      "composite": false,
-      "declaration": true,
-      "declarationDir": undefined,
-      "declarationMap": true,
-      "emitDeclarationOnly": false,
-      "esModuleInterop": true,
       "isolatedModules": true,
       "module": "nodenext",
       "moduleDetection": "force",
       "moduleResolution": "nodenext",
-      "noEmit": false,
-      "outDir": "/repos/multiple-entrypoint/dist",
+      "noEmit": true,
       "skipLibCheck": true,
-      "sourceMap": true,
       "strict": true,
-      "target": "es2021",
       "verbatimModuleSyntax": true,
     },
-    "exclude": [],
-    "include": [
-      "/repos/multiple-entrypoint/src/index.ts",
-      "/repos/multiple-entrypoint/src/foo.ts",
-      "/repos/multiple-entrypoint/src/nested/dir/bar.ts",
-    ],
   },
 }
 `;
 
-exports[`'/multiple-entrypoint': Package.build > default > types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/multiple-entrypoint': Package.build > link > main-target 1`] = `"../src/index.ts"`;
-
-exports[`'/multiple-entrypoint': Package.build > link > output 1`] = `
+exports[`/multiple-entrypoint: Package.build link: output 1`] = `
 "{
   "name": "multiple-entrypoint",
   "version": "0.0.0",
@@ -1410,136 +516,11 @@ exports[`'/multiple-entrypoint': Package.build > link > output 1`] = `
 "
 `;
 
-exports[`'/multiple-entrypoint': Package.build > link > result 1`] = `
-{
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-      },
-      "./foo": {
-        "default": "./dist/foo.js",
-        "src": "./src/foo.ts",
-        "types": "./dist/foo.d.ts",
-      },
-      "./nested/dir": {
-        "default": "./dist/nested/dir/bar.js",
-        "src": "./src/nested/dir/bar.ts",
-        "types": "./dist/nested/dir/bar.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "multiple-entrypoint",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "verbatimModuleSyntax": true,
-    },
-  },
-}
-`;
+exports[`/multiple-entrypoint: Package.build link: main-target 1`] = `"../src/index.ts"`;
 
-exports[`'/multiple-entrypoint': Package.build > link > types-target 1`] = `"../src/index.ts"`;
+exports[`/multiple-entrypoint: Package.build link: types-target 1`] = `"../src/index.ts"`;
 
-exports[`'/single-entrypoint': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-single-entrypoint v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-
-"single-entrypoint"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for single-entrypoint...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/single-entrypoint': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/single-entrypoint': Package.build > default > output 1`] = `
-"{
-  "name": "single-entrypoint",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    }
-  }
-}
-
-
-
-├── dist
-│   ├── foo.d.ts
-│   ├── foo.d.ts.map
-│   ├── foo.js
-│   ├── foo.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/single-entrypoint': Package.build > default > result 1`] = `
+exports[`/wildcard-exports: Package.build default: result 1`] = `
 {
   "packageJson": {
     "exports": {
@@ -1548,10 +529,15 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
         "src": "./index.ts",
         "types": "./dist/index.d.ts",
       },
+      "./utils/*": {
+        "default": "./dist/utils/*.js",
+        "src": "./utils/*",
+        "types": "./dist/utils/*.d.ts",
+      },
     },
     "main": "./dist/index.js",
     "module": "./dist/index.js",
-    "name": "single-entrypoint",
+    "name": "wildcard-exports",
     "sideEffects": false,
     "type": "module",
     "types": "./dist/index.d.ts",
@@ -1570,7 +556,7 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
       "moduleDetection": "force",
       "moduleResolution": "nodenext",
       "noEmit": false,
-      "outDir": "/repos/single-entrypoint/dist",
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/wildcard-exports/dist",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -1579,100 +565,21 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
     },
     "exclude": [],
     "include": [
-      "/repos/single-entrypoint/index.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/wildcard-exports/index.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/wildcard-exports/utils/helper.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/wildcard-exports/utils/format.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/wildcard-exports/utils/nested/deep.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/wildcard-exports/utils/nested/even/deeper/bottom.ts",
     ],
   },
 }
 `;
 
-exports[`'/single-entrypoint': Package.build > default > types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/single-entrypoint': Package.build > link > main-target 1`] = `"../index.ts"`;
-
-exports[`'/single-entrypoint': Package.build > link > output 1`] = `
-"{
-  "name": "single-entrypoint",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./index.ts",
-      "default": "./dist/index.js"
-    }
-  }
-}
-
-
-
-├── dist
-│   ├── index.d.ts -> ../index.ts
-│   └── index.js -> ../index.ts
-├── foo.ts
-├── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
-exports[`'/single-entrypoint': Package.build > link > result 1`] = `
-{
-  "packageJson": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "src": "./index.ts",
-        "types": "./dist/index.d.ts",
-      },
-    },
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "name": "single-entrypoint",
-    "sideEffects": false,
-    "type": "module",
-    "types": "./dist/index.d.ts",
-    "version": "0.0.0",
-  },
-  "tsConfig": {
-    "compilerOptions": {
-      "isolatedModules": true,
-      "module": "nodenext",
-      "moduleDetection": "force",
-      "moduleResolution": "nodenext",
-      "noEmit": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "verbatimModuleSyntax": true,
-    },
-  },
-}
-`;
-
-exports[`'/single-entrypoint': Package.build > link > types-target 1`] = `"../index.ts"`;
-
-exports[`'/wildcard-exports': Package.build > default > check 1`] = `
+exports[`/wildcard-exports: Package.build default: check 1`] = `
 {
   "output": {
-    "attw": "
+    "attw": 
+"
 wildcard-exports v0.0.0
 
  (ignoring resolutions: 'node10', 'node16-cjs')
@@ -1697,22 +604,20 @@ node10: (ignored) (wildcard)
 node16 (from CJS): (ignored) (wildcard)
 
 ***********************************
-",
-    "publint": "Running publint v0.3.14 for wildcard-exports...
+"
+,
+    "publint": 
+"Running publint v0.3.14 for wildcard-exports...
 Packing files with \`bun pack\`...
 Linting...
 All good!
-",
+"
+,
   },
 }
 `;
 
-exports[`'/wildcard-exports': Package.build > default > main 1`] = `
-"export const name = 'wildcard-exports';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/wildcard-exports': Package.build > default > output 1`] = `
+exports[`/wildcard-exports: Package.build default: output 1`] = `
 "{
   "name": "wildcard-exports",
   "version": "0.0.0",
@@ -1776,7 +681,17 @@ exports[`'/wildcard-exports': Package.build > default > output 1`] = `
 "
 `;
 
-exports[`'/wildcard-exports': Package.build > default > result 1`] = `
+exports[`/wildcard-exports: Package.build default: main 1`] = `
+"export const name = 'wildcard-exports';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/wildcard-exports: Package.build default: types 1`] = `
+"export declare const name = "wildcard-exports";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/wildcard-exports: Package.build link: result 1`] = `
 {
   "packageJson": {
     "exports": {
@@ -1801,44 +716,20 @@ exports[`'/wildcard-exports': Package.build > default > result 1`] = `
   },
   "tsConfig": {
     "compilerOptions": {
-      "composite": false,
-      "declaration": true,
-      "declarationDir": undefined,
-      "declarationMap": true,
-      "emitDeclarationOnly": false,
-      "esModuleInterop": true,
       "isolatedModules": true,
       "module": "nodenext",
       "moduleDetection": "force",
       "moduleResolution": "nodenext",
-      "noEmit": false,
-      "outDir": "/repos/wildcard-exports/dist",
+      "noEmit": true,
       "skipLibCheck": true,
-      "sourceMap": true,
       "strict": true,
-      "target": "es2021",
       "verbatimModuleSyntax": true,
     },
-    "exclude": [],
-    "include": [
-      "/repos/wildcard-exports/index.ts",
-      "/repos/wildcard-exports/utils/format.ts",
-      "/repos/wildcard-exports/utils/helper.ts",
-      "/repos/wildcard-exports/utils/nested/deep.ts",
-      "/repos/wildcard-exports/utils/nested/even/deeper/bottom.ts",
-    ],
   },
 }
 `;
 
-exports[`'/wildcard-exports': Package.build > default > types 1`] = `
-"export declare const name = "wildcard-exports";
-//# sourceMappingURL=index.d.ts.map"
-`;
-
-exports[`'/wildcard-exports': Package.build > link > main-target 1`] = `"../index.ts"`;
-
-exports[`'/wildcard-exports': Package.build > link > output 1`] = `
+exports[`/wildcard-exports: Package.build link: output 1`] = `
 "{
   "name": "wildcard-exports",
   "version": "0.0.0",
@@ -1880,24 +771,169 @@ exports[`'/wildcard-exports': Package.build > link > output 1`] = `
 "
 `;
 
-exports[`'/wildcard-exports': Package.build > link > result 1`] = `
+exports[`/wildcard-exports: Package.build link: main-target 1`] = `"../index.ts"`;
+
+exports[`/wildcard-exports: Package.build link: types-target 1`] = `"../index.ts"`;
+
+exports[`/dts-exports: Package.build default: result 1`] = `
 {
   "packageJson": {
     "exports": {
       ".": {
         "default": "./dist/index.js",
-        "src": "./index.ts",
+        "src": "./src/index.ts",
         "types": "./dist/index.d.ts",
       },
-      "./utils/*": {
-        "default": "./dist/utils/*.js",
-        "src": "./utils/*",
-        "types": "./dist/utils/*.d.ts",
+      "./globals": {
+        "src": "./src/globals.d.ts",
+        "types": "./dist/globals.d.ts",
       },
     },
     "main": "./dist/index.js",
     "module": "./dist/index.js",
-    "name": "wildcard-exports",
+    "name": "dts-exports",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/dts-exports/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2021",
+      "verbatimModuleSyntax": true,
+    },
+    "exclude": [],
+    "include": [
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/dts-exports/src/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`/dts-exports: Package.build default: check 1`] = `
+{
+  "output": {
+    "attw": 
+"
+dts-exports v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
+
+
+"dts-exports"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"dts-exports/globals"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 💀 Resolution failed
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+"
+,
+    "publint": 
+"Running publint v0.3.14 for dts-exports...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
+`;
+
+exports[`/dts-exports: Package.build default: output 1`] = `
+"{
+  "name": "dts-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/dts-exports: Package.build default: main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/dts-exports: Package.build default: types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/dts-exports: Package.build link: result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+      "./globals": {
+        "src": "./src/globals.d.ts",
+        "types": "./dist/globals.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "dts-exports",
     "sideEffects": false,
     "type": "module",
     "types": "./dist/index.d.ts",
@@ -1918,4 +954,999 @@ exports[`'/wildcard-exports': Package.build > link > result 1`] = `
 }
 `;
 
-exports[`'/wildcard-exports': Package.build > link > types-target 1`] = `"../index.ts"`;
+exports[`/dts-exports: Package.build link: output 1`] = `
+"{
+  "name": "dts-exports",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts -> ../src/globals.d.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/dts-exports: Package.build link: main-target 1`] = `"../src/index.ts"`;
+
+exports[`/dts-exports: Package.build link: types-target 1`] = `"../src/index.ts"`;
+
+exports[`/error-exports-object-not-exists: Package.build default: error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#exports["."].src\`]`;
+
+exports[`/dts-exports-object: Package.build default: result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+      "./globals": {
+        "src": "./src/globals.d.ts",
+        "types": "./dist/globals.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "dts-exports-object",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/dts-exports-object/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2021",
+      "verbatimModuleSyntax": true,
+    },
+    "exclude": [],
+    "include": [
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/dts-exports-object/src/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`/dts-exports-object: Package.build default: check 1`] = `
+{
+  "output": {
+    "attw": 
+"
+dts-exports-object v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
+
+
+"dts-exports-object"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"dts-exports-object/globals"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 💀 Resolution failed
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+"
+,
+    "publint": 
+"Running publint v0.3.14 for dts-exports-object...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
+`;
+
+exports[`/dts-exports-object: Package.build default: output 1`] = `
+"{
+  "name": "dts-exports-object",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/dts-exports-object: Package.build default: main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/dts-exports-object: Package.build default: types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/dts-exports-object: Package.build link: result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+      "./globals": {
+        "src": "./src/globals.d.ts",
+        "types": "./dist/globals.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "dts-exports-object",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+  },
+}
+`;
+
+exports[`/dts-exports-object: Package.build link: output 1`] = `
+"{
+  "name": "dts-exports-object",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./globals": {
+      "types": "./dist/globals.d.ts",
+      "src": "./src/globals.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── globals.d.ts -> ../src/globals.d.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── globals.d.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/dts-exports-object: Package.build link: main-target 1`] = `"../src/index.ts"`;
+
+exports[`/dts-exports-object: Package.build link: types-target 1`] = `"../src/index.ts"`;
+
+exports[`/basic: Package.build default: result 1`] = `
+{
+  "packageJson": {
+    "bin": {
+      "basic": "./dist/cli.js",
+      "basic.src": "./cli.ts",
+    },
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./index.ts",
+        "types": "./dist/index.d.ts",
+      },
+      "./config": "./dist/config.json",
+      "./foo": {
+        "default": "./dist/foo.js",
+        "src": "./foo.ts",
+        "types": "./dist/foo.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "basic",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/basic/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2021",
+      "verbatimModuleSyntax": true,
+    },
+    "exclude": [],
+    "include": [
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/basic/cli.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/basic/index.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/basic/foo.ts",
+    ],
+  },
+}
+`;
+
+exports[`/basic: Package.build default: check 1`] = `
+{
+  "output": {
+    "attw": 
+"
+basic v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
+
+
+"basic"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"basic/foo"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+
+"basic/config"
+
+node16 (from ESM): 🟢 (JSON)
+bundler: 🟢 (JSON)
+node10: (ignored) 💀 Resolution failed
+node16 (from CJS): (ignored) 🟢 (JSON)
+
+***********************************
+"
+,
+    "publint": 
+"Running publint v0.3.14 for basic...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
+`;
+
+exports[`/basic: Package.build default: output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "types": "./dist/foo.d.ts",
+      "src": "./foo.ts",
+      "default": "./dist/foo.js"
+    },
+    "./config": "./dist/config.json"
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.d.ts
+│   ├── cli.d.ts.map
+│   ├── cli.js
+│   ├── cli.js.map
+│   ├── config.json
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── cli.ts
+├── config.json
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/basic: Package.build default: main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/basic: Package.build default: types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/basic: Package.build link: result 1`] = `
+{
+  "packageJson": {
+    "bin": {
+      "basic": "./dist/cli.js",
+      "basic.src": "./cli.ts",
+    },
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./index.ts",
+        "types": "./dist/index.d.ts",
+      },
+      "./config": "./dist/config.json",
+      "./foo": {
+        "default": "./dist/foo.js",
+        "src": "./foo.ts",
+        "types": "./dist/foo.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "basic",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+  },
+}
+`;
+
+exports[`/basic: Package.build link: output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "basic": "./dist/cli.js",
+    "basic.src": "./cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./foo": {
+      "types": "./dist/foo.d.ts",
+      "src": "./foo.ts",
+      "default": "./dist/foo.js"
+    },
+    "./config": "./dist/config.json"
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── foo.d.ts -> ../foo.ts
+│   ├── foo.js -> ../foo.ts
+│   ├── index.d.ts -> ../index.ts
+│   └── index.js -> ../index.ts
+├── cli.ts
+├── config.json
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/basic: Package.build link: main-target 1`] = `"../index.ts"`;
+
+exports[`/basic: Package.build link: types-target 1`] = `"../index.ts"`;
+
+exports[`/basic-object-exports: Package.build default: result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "basic",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "outDir": "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/basic-object-exports/dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2021",
+      "verbatimModuleSyntax": true,
+    },
+    "exclude": [],
+    "include": [
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/basic-object-exports/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`/basic-object-exports: Package.build default: check 1`] = `
+{
+  "output": {
+    "attw": 
+"
+basic v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+
+"basic"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+"
+,
+    "publint": 
+"Running publint v0.3.14 for basic...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
+`;
+
+exports[`/basic-object-exports: Package.build default: output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── foo.d.ts
+│   ├── foo.d.ts.map
+│   ├── foo.js
+│   ├── foo.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/basic-object-exports: Package.build default: main 1`] = `
+"import { bar as bar1, foo as foo1 } from './foo.js';
+export function foo(options = {}) {
+    foo1(options);
+    console.log('Hello, foo!', options.value);
+}
+export function bar(options = {}) {
+    bar1(options);
+    console.log('Hello, bar!', options.value);
+}
+(function (bar) {
+    function baz(options = {}) {
+        console.log('Hello, baz!', options.value);
+    }
+    bar.baz = baz;
+})(bar || (bar = {}));
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/basic-object-exports: Package.build default: types 1`] = `
+"export declare function foo(options?: foo.Options): void;
+export declare namespace foo {
+    type Options = {
+        value?: string | undefined;
+    };
+}
+export declare function bar(options?: bar.Options): void;
+export declare namespace bar {
+    type Options = {
+        value?: string | undefined;
+    };
+    function baz(options?: Options): void;
+}
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/basic-object-exports: Package.build link: result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "basic",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+  },
+}
+`;
+
+exports[`/basic-object-exports: Package.build link: output 1`] = `
+"{
+  "name": "basic",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── index.d.ts -> ../index.ts
+│   └── index.js -> ../index.ts
+├── foo.ts
+├── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/basic-object-exports: Package.build link: main-target 1`] = `"../index.ts"`;
+
+exports[`/basic-object-exports: Package.build link: types-target 1`] = `"../index.ts"`;
+
+exports[`/error-bin-string-not-exists: Package.build default: error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#bin\`]`;
+
+exports[`/bin-with-src: Package.build default: result 1`] = `
+{
+  "packageJson": {
+    "bin": {
+      "bin-with-src": "./dist/cli.js",
+      "bin-with-src.src": "./src/cli.ts",
+    },
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "bin-with-src",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "noEmit": false,
+      "outDir": "dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "ESNext",
+    },
+    "exclude": [],
+    "include": [
+      "src",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/bin-with-src/src/cli.ts",
+      "/Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/bin-with-src/src/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`/bin-with-src: Package.build default: check 1`] = `
+{
+  "output": {
+    "attw": 
+"
+bin-with-src v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+
+"bin-with-src"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+"
+,
+    "publint": 
+"Running publint v0.3.14 for bin-with-src...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+"
+,
+  },
+}
+`;
+
+exports[`/bin-with-src: Package.build default: output 1`] = `
+"{
+  "name": "bin-with-src",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "bin-with-src": "./dist/cli.js",
+    "bin-with-src.src": "./src/cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.d.ts
+│   ├── cli.d.ts.map
+│   ├── cli.js
+│   ├── cli.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── cli.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/bin-with-src: Package.build default: main 1`] = `
+"export const foo = 'bar';
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`/bin-with-src: Package.build default: types 1`] = `
+"export declare const foo = "bar";
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`/bin-with-src: Package.build link: result 1`] = `
+{
+  "packageJson": {
+    "bin": {
+      "bin-with-src": "./dist/cli.js",
+      "bin-with-src.src": "./src/cli.ts",
+    },
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "bin-with-src",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "declaration": true,
+      "declarationMap": true,
+      "esModuleInterop": true,
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "outDir": "dist",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "ESNext",
+    },
+    "include": [
+      "src",
+    ],
+  },
+}
+`;
+
+exports[`/bin-with-src: Package.build link: output 1`] = `
+"{
+  "name": "bin-with-src",
+  "version": "0.0.0",
+  "type": "module",
+  "bin": {
+    "bin-with-src": "./dist/cli.js",
+    "bin-with-src.src": "./src/cli.ts"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}
+
+
+
+├── dist
+│   ├── cli.js -> ../src/cli.ts
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── cli.ts
+│   └── index.ts
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`/bin-with-src: Package.build link: main-target 1`] = `"../src/index.ts"`;
+
+exports[`/bin-with-src: Package.build link: types-target 1`] = `"../src/index.ts"`;
+
+exports[`/error-main-not-exists: Package.build default: error 1`] = `[Error: \`./non-existent.ts\` does not exist on \`package.json#main\`]`;
+
+exports[`/error-missing-entry-fields: Package.build default: error 1`] = `[Error: package.json must have an \`exports\`, \`main\`, or \`bin\` field]`;
+
+exports[`/error-module-resolution: Package.build default: error 1`] = `[Error: /Users/jakemoxey/git/zile2/test/.tmp/f12a04e9-2a0c-4840-abf4-9911fe4e62db/repos/error-module-resolution/tsconfig.json has invalid configuration:
+  - "module" must be "nodenext". Found: "preserve"
+  - "moduleResolution" must be "nodenext". Found: "bundler"]`;
+
+exports[`/error-bin-object-not-exists: Package.build default: error 1`] = `[Error: \`./non-existent-cli.ts\` does not exist on \`package.json#bin.cli\`]`;
