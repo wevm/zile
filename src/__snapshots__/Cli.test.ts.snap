@@ -122,6 +122,7 @@ exports[`'/basic': Cli.run > link > output 1`] = `
 
 
 ├── dist
+│   ├── cli.js -> ../cli.ts
 │   ├── foo.d.ts -> ../foo.ts
 │   ├── foo.js -> ../foo.ts
 │   ├── index.d.ts -> ../index.ts
@@ -321,6 +322,7 @@ exports[`'/bin-with-src': Cli.run > link > output 1`] = `
 
 
 ├── dist
+│   ├── cli.js -> ../src/cli.ts
 │   ├── index.d.ts -> ../src/index.ts
 │   └── index.js -> ../src/index.ts
 ├── src

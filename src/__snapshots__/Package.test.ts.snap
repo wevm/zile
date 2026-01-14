@@ -657,6 +657,7 @@ exports[`'/bin-with-src': Package.build > link > output 1`] = `
 
 
 ├── dist
+│   ├── cli.js -> ../src/cli.ts
 │   ├── index.d.ts -> ../src/index.ts
 │   └── index.js -> ../src/index.ts
 ├── src
