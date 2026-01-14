@@ -115,7 +115,7 @@ export async function createNew(command: Command) {
           // Auto-detect from how the command was invoked
           const userAgent = process.env.npm_config_user_agent || ''
           const execPath = process.env.npm_execpath || ''
-          
+
           if (userAgent.includes('pnpm') || execPath.includes('pnpm')) packageManager = 'pnpm'
           else if (userAgent.includes('bun') || execPath.includes('bun')) packageManager = 'bun'
           else if (userAgent.includes('yarn') || execPath.includes('yarn')) packageManager = 'yarn'
@@ -177,15 +177,20 @@ export async function createNew(command: Command) {
           const entries = fs.readdirSync(dir, { withFileTypes: true })
 
           // Determine pmx (package executor) based on package manager
-          const pmx = packageManager === 'npm' ? 'npx'
-            : packageManager === 'pnpm' ? 'pnpx'
-            : packageManager === 'bun' ? 'bunx'
-            : packageManager === 'yarn' ? 'yarn dlx'
-            : 'npx'
+          const pmx =
+            packageManager === 'npm'
+              ? 'npx'
+              : packageManager === 'pnpm'
+                ? 'pnpx'
+                : packageManager === 'bun'
+                  ? 'bunx'
+                  : packageManager === 'yarn'
+                    ? 'yarn dlx'
+                    : 'npx'
 
           // Determine setup step based on package manager
           let setupStep = ''
-          if (packageManager === 'pnpm') 
+          if (packageManager === 'pnpm')
             setupStep = `\n    - name: Set up pnpm\n      uses: pnpm/action-setup@v4\n`
           else if (packageManager === 'bun')
             setupStep = `\n    - name: Set up Bun\n      uses: oven-sh/setup-bun@v2\n`

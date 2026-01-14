@@ -43,7 +43,6 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
 
   const packageJson = await decoratePackageJson(pkgJson, { cwd, link, outDir, sourceDir, assets })
 
-
   await writePackageJson(cwd, packageJson)
 
   return { packageJson, tsConfig }
@@ -242,13 +241,13 @@ export async function decoratePackageJson(
       // Create symlinks for bin entries in link mode
       if (link) {
         for (const [key, value] of Object.entries(bin)) {
-          if (!key.endsWith('.src') && value.startsWith(relativeOutDir)) {
+          if (!key.endsWith('.src') && value?.startsWith(relativeOutDir)) {
             // Find corresponding .src entry
             const srcKey = `${key}.src`
             const srcValue = originalBin[srcKey] ?? bin[srcKey]
             if (srcValue) {
               try {
-                const destAbsolute = path.resolve(cwd, value)
+                const destAbsolute = path.resolve(cwd, value!)
                 const dir = path.dirname(destAbsolute)
                 if (!fsSync.existsSync(dir)) fsSync.mkdirSync(dir, { recursive: true })
                 const srcAbsolute = path.resolve(cwd, srcValue)
