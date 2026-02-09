@@ -693,7 +693,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     outDir: tsConfigJson.compilerOptions?.outDir ?? path.resolve(cwd, 'dist'),
     skipLibCheck: true,
     sourceMap: true,
-    target: tsConfigJson.compilerOptions?.target ?? 'es2021',
+    target: tsConfigJson.compilerOptions?.target ?? 'es2022',
   } as const satisfies TsConfigJson['compilerOptions']
 
   const tsConfig = {
