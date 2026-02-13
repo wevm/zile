@@ -616,10 +616,28 @@ export async function readPackageJson(options: readPackageJson.Options) {
   const { cwd } = options
 
   // biome-ignore lint/style/noNonNullAssertion: _
-  if (packageJsonCache.has(cwd)) return JSON.parse(packageJsonCache.get(cwd)!)
+  if (packageJsonCache.has(cwd)) return stripPreMarkerKeys(JSON.parse(packageJsonCache.get(cwd)!))
   const content = await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8')
   packageJsonCache.set(cwd, content)
-  return JSON.parse(content)
+  return stripPreMarkerKeys(JSON.parse(content))
+}
+
+/**
+ * Strips all keys that appear before (and including) the `[!start-pkg]` marker.
+ * This marker separates monorepo-only fields (scripts, devDependencies, etc.)
+ * from the publishable package fields.
+ *
+ * @param data - Parsed package.json object.
+ * @returns Package.json object with pre-marker keys removed.
+ * @internal
+ */
+export function stripPreMarkerKeys<T extends Record<string, unknown>>(data: T): T {
+  const keys = Object.keys(data)
+  const markerIndex = keys.indexOf('[!start-pkg]')
+  if (markerIndex === -1) return data
+  const keysToRemove = keys.slice(0, markerIndex + 1)
+  for (const key of keysToRemove) delete data[key]
+  return data
 }
 
 export declare namespace readPackageJson {
