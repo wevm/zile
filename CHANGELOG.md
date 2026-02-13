@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.21
+
+### Patch Changes
+
+- [`451e939`](https://github.com/wevm/zile/commit/451e939f45ec995f5edd3ca340526caa7c767f0e) Thanks [@tmm](https://github.com/tmm)! - Fixed `zile dev` command
+
 ## 0.0.20
 
 ### Patch Changes
