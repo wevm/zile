@@ -161,6 +161,48 @@ describe('Package.detectIndent', () => {
   })
 })
 
+describe('Package.stripPreMarkerKeys', () => {
+  test('strips keys before marker', () => {
+    const data = {
+      scripts: { dev: 'echo dev', postinstall: 'pnpm dev' },
+      devDependencies: { typescript: '^5' },
+      '[!start-pkg]': '',
+      name: 'my-package',
+      version: '1.0.0',
+      dependencies: { foo: '^1' },
+    }
+    const result = Package.stripPreMarkerKeys(data)
+    expect(result).toEqual({
+      name: 'my-package',
+      version: '1.0.0',
+      dependencies: { foo: '^1' },
+    })
+  })
+
+  test('returns data unchanged when no marker', () => {
+    const data = {
+      name: 'my-package',
+      version: '1.0.0',
+      scripts: { build: 'echo build' },
+    }
+    const result = Package.stripPreMarkerKeys(data)
+    expect(result).toEqual({
+      name: 'my-package',
+      version: '1.0.0',
+      scripts: { build: 'echo build' },
+    })
+  })
+
+  test('strips all keys when marker is last', () => {
+    const data = {
+      scripts: { dev: 'echo dev' },
+      '[!start-pkg]': '',
+    }
+    const result = Package.stripPreMarkerKeys(data)
+    expect(result).toEqual({})
+  })
+})
+
 describe('Package.writePackageJson', () => {
   test('preserves trailing newline when present', async () => {
     const tmpDir = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())

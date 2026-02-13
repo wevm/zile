@@ -48,29 +48,12 @@ export async function preparePublish(command: Command) {
 
       console.log(`→ Preparing package at ${cwd}`)
 
-      // Build the package
-      await Package.build({ cwd })
-
-      // Get the package.json path
+      // Copy package.json to a temporary file (before build transforms it)
       const packageJsonPath = path.join(cwd, './package.json')
-
-      // Copy package.json to a temporary file
       fs.copyFileSync(packageJsonPath, packageJsonPath.replace('.json', '.tmp.json'))
 
-      // Read package.json as text to find the marker position
-      const content = fs.readFileSync(packageJsonPath, 'utf-8')
-      const data = JSON.parse(content)
-
-      // Find all keys that appear before "[!start-pkg]" in the file
-      const keys = Object.keys(data)
-      const markerIndex = keys.indexOf('[!start-pkg]')
-
-      // Remove all keys up to and including the marker
-      const keysToRemove = keys.slice(0, markerIndex + 1)
-      for (const key of keysToRemove) delete data[key]
-
-      // Write back to package.json
-      fs.writeFileSync(packageJsonPath, `${JSON.stringify(data, null, 2)}\n`, 'utf-8')
+      // Build the package (readPackageJson strips pre-marker keys automatically)
+      await Package.build({ cwd })
 
       console.log(`✔︎ Package at ${cwd} prepared successfully`)
     })
