@@ -351,7 +351,7 @@ Since `tsc` is used under the hood, Zile also uses fields in your `tsconfig.json
 Any field in the `tsconfig.json` can be modified, and the following fields are worth noting:
 
 - **`outDir`**: Output directory. Defaults to `./dist`
-- **`target`**: Target ES version. Defaults to `es2021`
+- **`target`**: Target ES version. Defaults to `es2022`
 
 The following fields cannot be modified, and are overridden by Zile:
 
