@@ -1,5 +1,13 @@
 # zile
 
+## 0.0.20
+
+### Patch Changes
+
+- [`88da742`](https://github.com/wevm/zile/commit/88da742d9081190b0146e489a15e609438a8fe39) Thanks [@tmm](https://github.com/tmm)! - Added symlink creation for bin entries in link mode.
+
+- [`88da742`](https://github.com/wevm/zile/commit/88da742d9081190b0146e489a15e609438a8fe39) Thanks [@tmm](https://github.com/tmm)! - Fixed `readPackageJson` to strip pre-marker keys so all publish paths (including `pkg.pr.new`) produce a clean `package.json` without monorepo-only fields.
+
 ## 0.0.19
 
 ### Patch Changes
