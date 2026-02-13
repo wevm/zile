@@ -38,8 +38,8 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "src": "./src/index.ts",
       "types": "./dist/index.d.ts",
+      "src": "./src/index.ts",
       "default": "./dist/index.js"
     }
   },

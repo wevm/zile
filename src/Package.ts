@@ -772,7 +772,13 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   const indent = content ? detectIndent(content) : '  '
   const hasTrailingNewline = content ? content.endsWith('\n') : true
 
-  let output = JSON.stringify(pkgJson, null, indent)
+  // Merge decorated fields back into original package.json to preserve all fields
+  const merged = (() => {
+    if (!content) return pkgJson
+    return { ...JSON.parse(content), ...pkgJson }
+  })()
+
+  let output = JSON.stringify(merged, null, indent)
   if (hasTrailingNewline) output += '\n'
 
   await fs.writeFile(path.resolve(cwd, 'package.json'), output, 'utf-8')
