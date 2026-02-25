@@ -775,7 +775,7 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   // Merge decorated fields back into original package.json to preserve all fields
   const merged = (() => {
     if (!content) return pkgJson
-    return { ...JSON.parse(content), ...pkgJson }
+    return { ...stripPreMarkerKeys(JSON.parse(content)), ...pkgJson }
   })()
 
   let output = JSON.stringify(merged, null, indent)
