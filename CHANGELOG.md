@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.22
+
+### Patch Changes
+
+- [#30](https://github.com/wevm/zile/pull/30) [`0a54f64`](https://github.com/wevm/zile/commit/0a54f648c18432b7f7761de9cba194ce3a25a0dd) Thanks [@jxom](https://github.com/jxom)! - Fixed `publish:prepare` not omitting pre-marker keys from written `package.json`
+
 ## 0.0.21
 
 ### Patch Changes
