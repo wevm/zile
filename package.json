@@ -22,7 +22,7 @@
   "[!start-pkg]": "",
   "name": "zile",
   "type": "module",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "license": "MIT",
   "bin": {
     "zile": "./dist/Cli.js"

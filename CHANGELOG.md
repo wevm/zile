@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.23
+
+### Patch Changes
+
+- [#32](https://github.com/wevm/zile/pull/32) [`0a1eed6`](https://github.com/wevm/zile/commit/0a1eed646559c6b2c78ade38649eca079f216257) Thanks [@jxom](https://github.com/jxom)! - Fixed `zile dev` stripping pre-marker keys (scripts, devDependencies, etc.) from `package.json`
+
 ## 0.0.22
 
 ### Patch Changes
