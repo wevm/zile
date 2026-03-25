@@ -772,10 +772,19 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   const indent = content ? detectIndent(content) : '  '
   const hasTrailingNewline = content ? content.endsWith('\n') : true
 
-  // Merge decorated fields back into original package.json to preserve all fields
+  // Merge decorated fields back into original package.json to preserve all fields.
+  // Keep pre-marker keys (scripts, devDependencies, etc.) intact — they are only
+  // stripped when *reading* for build purposes, not when writing back.
   const merged = (() => {
     if (!content) return pkgJson
-    return { ...stripPreMarkerKeys(JSON.parse(content)), ...pkgJson }
+    const original = JSON.parse(content)
+    const keys = Object.keys(original)
+    const markerIndex = keys.indexOf('[!start-pkg]')
+    if (markerIndex === -1) return { ...original, ...pkgJson }
+    // Preserve everything up to and including the marker, then overlay decorated fields
+    const preMarker: Record<string, unknown> = {}
+    for (const key of keys.slice(0, markerIndex + 1)) preMarker[key] = original[key]
+    return { ...preMarker, ...pkgJson }
   })()
 
   let output = JSON.stringify(merged, null, indent)
