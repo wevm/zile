@@ -55,6 +55,13 @@ export async function preparePublish(command: Command) {
       // Build the package (readPackageJson strips pre-marker keys automatically)
       await Package.build({ cwd })
 
+      // Strip pre-marker keys from the written package.json so the published
+      // package only contains the publishable fields.
+      const builtContent = fs.readFileSync(packageJsonPath, 'utf-8')
+      const builtPkg = JSON.parse(builtContent)
+      const stripped = Package.stripPreMarkerKeys(builtPkg)
+      fs.writeFileSync(packageJsonPath, `${JSON.stringify(stripped, null, 2)}\n`, 'utf-8')
+
       console.log(`✔︎ Package at ${cwd} prepared successfully`)
     })
 }
