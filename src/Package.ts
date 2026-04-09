@@ -709,6 +709,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     esModuleInterop: true,
     noEmit: false,
     outDir: tsConfigJson.compilerOptions?.outDir ?? path.resolve(cwd, 'dist'),
+    rootDir: tsConfigJson.compilerOptions?.rootDir ?? '.',
     skipLibCheck: true,
     sourceMap: true,
     target: tsConfigJson.compilerOptions?.target ?? 'es2022',
