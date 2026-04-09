@@ -38,6 +38,7 @@ describe('Packages.find', () => {
         "/examples/monorepo/packages/foo",
         "/examples/monorepo/packages/bar",
         "/examples/basic",
+        "/dist/internal",
       ]
     `)
   })
@@ -199,6 +200,7 @@ describe('Packages.find', () => {
         "/examples/monorepo/packages/foo",
         "/examples/monorepo/packages/bar",
         "/examples/basic",
+        "/dist/internal",
       ]
     `)
   })

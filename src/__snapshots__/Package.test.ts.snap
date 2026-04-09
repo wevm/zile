@@ -163,6 +163,7 @@ exports[`'/basic': Package.build > default > result 1`] = `
       "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/basic/dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -403,6 +404,7 @@ exports[`'/basic-object-exports': Package.build > default > result 1`] = `
       "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/basic-object-exports/dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -501,81 +503,6 @@ exports[`'/basic-object-exports': Package.build > link > result 1`] = `
 
 exports[`'/basic-object-exports': Package.build > link > types-target 1`] = `"../index.ts"`;
 
-exports[`'/bin-with-src': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-bin-with-src v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-
-"bin-with-src"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for bin-with-src...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/bin-with-src': Package.build > default > main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/bin-with-src': Package.build > default > output 1`] = `
-"{
-  "name": "bin-with-src",
-  "version": "0.0.0",
-  "type": "module",
-  "bin": {
-    "bin-with-src": "./dist/cli.js",
-    "bin-with-src.src": "./src/cli.ts"
-  },
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── cli.d.ts
-│   ├── cli.d.ts.map
-│   ├── cli.js
-│   ├── cli.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── cli.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
 exports[`'/bin-with-src': Package.build > default > result 1`] = `
 {
   "packageJson": {
@@ -610,6 +537,7 @@ exports[`'/bin-with-src': Package.build > default > result 1`] = `
       "moduleResolution": "NodeNext",
       "noEmit": false,
       "outDir": "dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -623,11 +551,6 @@ exports[`'/bin-with-src': Package.build > default > result 1`] = `
     ],
   },
 }
-`;
-
-exports[`'/bin-with-src': Package.build > default > types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
 `;
 
 exports[`'/bin-with-src': Package.build > link > main-target 1`] = `"../src/index.ts"`;
@@ -712,89 +635,6 @@ exports[`'/bin-with-src': Package.build > link > result 1`] = `
 
 exports[`'/bin-with-src': Package.build > link > types-target 1`] = `"../src/index.ts"`;
 
-exports[`'/dts-exports': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-dts-exports v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
-
-
-"dts-exports"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"dts-exports/globals"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 💀 Resolution failed
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for dts-exports...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/dts-exports': Package.build > default > main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/dts-exports': Package.build > default > output 1`] = `
-"{
-  "name": "dts-exports",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
 exports[`'/dts-exports': Package.build > default > result 1`] = `
 {
   "packageJson": {
@@ -831,6 +671,7 @@ exports[`'/dts-exports': Package.build > default > result 1`] = `
       "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/dts-exports/dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -843,11 +684,6 @@ exports[`'/dts-exports': Package.build > default > result 1`] = `
     ],
   },
 }
-`;
-
-exports[`'/dts-exports': Package.build > default > types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
 `;
 
 exports[`'/dts-exports': Package.build > link > main-target 1`] = `"../src/index.ts"`;
@@ -927,89 +763,6 @@ exports[`'/dts-exports': Package.build > link > result 1`] = `
 
 exports[`'/dts-exports': Package.build > link > types-target 1`] = `"../src/index.ts"`;
 
-exports[`'/dts-exports-object': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-dts-exports-object v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
-
-
-"dts-exports-object"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"dts-exports-object/globals"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 💀 Resolution failed
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for dts-exports-object...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/dts-exports-object': Package.build > default > main 1`] = `
-"export const foo = 'bar';
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/dts-exports-object': Package.build > default > output 1`] = `
-"{
-  "name": "dts-exports-object",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./globals": {
-      "types": "./dist/globals.d.ts",
-      "src": "./src/globals.d.ts"
-    }
-  },
-  "sideEffects": false,
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── globals.d.ts
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── globals.d.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
 exports[`'/dts-exports-object': Package.build > default > result 1`] = `
 {
   "packageJson": {
@@ -1046,6 +799,7 @@ exports[`'/dts-exports-object': Package.build > default > result 1`] = `
       "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/dts-exports-object/dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -1058,11 +812,6 @@ exports[`'/dts-exports-object': Package.build > default > result 1`] = `
     ],
   },
 }
-`;
-
-exports[`'/dts-exports-object': Package.build > default > types 1`] = `
-"export declare const foo = "bar";
-//# sourceMappingURL=index.d.ts.map"
 `;
 
 exports[`'/dts-exports-object': Package.build > link > main-target 1`] = `"../src/index.ts"`;
@@ -1160,130 +909,6 @@ exports[`'/error-module-resolution': Package.build > default > error 1`] = `
   - "moduleResolution" must be "nodenext". Found: "bundler""
 `;
 
-exports[`'/multiple-entrypoint': Package.build > default > check 1`] = `
-{
-  "output": {
-    "attw": "
-multiple-entrypoint v0.0.0
-
- (ignoring resolutions: 'node10', 'node16-cjs')
-
-(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
-
-(ignored per resolution) 💀 Import failed to resolve to type declarations or JavaScript files. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/NoResolution.md
-
-
-"multiple-entrypoint"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 🟢 
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"multiple-entrypoint/foo"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 💀 Resolution failed
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-
-"multiple-entrypoint/nested/dir"
-
-node16 (from ESM): 🟢 (ESM)
-bundler: 🟢 
-node10: (ignored) 💀 Resolution failed
-node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
-
-***********************************
-",
-    "publint": "Running publint v0.3.14 for multiple-entrypoint...
-Packing files with \`bun pack\`...
-Linting...
-All good!
-",
-  },
-}
-`;
-
-exports[`'/multiple-entrypoint': Package.build > default > main 1`] = `
-"import { bar as bar1, foo as foo1 } from './foo.js';
-export function foo(options = {}) {
-    foo1(options);
-    console.log('Hello, foo!', options.value);
-}
-export function bar(options = {}) {
-    bar1(options);
-    console.log('Hello, bar!', options.value);
-}
-(function (bar) {
-    function baz(options = {}) {
-        console.log('Hello, baz!', options.value);
-    }
-    bar.baz = baz;
-})(bar || (bar = {}));
-//# sourceMappingURL=index.js.map"
-`;
-
-exports[`'/multiple-entrypoint': Package.build > default > output 1`] = `
-"{
-  "name": "multiple-entrypoint",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "src": "./src/index.ts",
-      "default": "./dist/index.js"
-    },
-    "./foo": {
-      "types": "./dist/foo.d.ts",
-      "src": "./src/foo.ts",
-      "default": "./dist/foo.js"
-    },
-    "./nested/dir": {
-      "types": "./dist/nested/dir/bar.d.ts",
-      "src": "./src/nested/dir/bar.ts",
-      "default": "./dist/nested/dir/bar.js"
-    }
-  },
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
-}
-
-
-
-├── dist
-│   ├── nested
-│   │   └── dir
-│   │       ├── bar.d.ts
-│   │       ├── bar.d.ts.map
-│   │       ├── bar.js
-│   │       └── bar.js.map
-│   ├── foo.d.ts
-│   ├── foo.d.ts.map
-│   ├── foo.js
-│   ├── foo.js.map
-│   ├── index.d.ts
-│   ├── index.d.ts.map
-│   ├── index.js
-│   └── index.js.map
-├── src
-│   ├── nested
-│   │   └── dir
-│   │       └── bar.ts
-│   ├── foo.ts
-│   └── index.ts
-├── package.json
-└── tsconfig.json
-"
-`;
-
 exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
 {
   "packageJson": {
@@ -1326,6 +951,7 @@ exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
       "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/multiple-entrypoint/dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -1340,23 +966,6 @@ exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
     ],
   },
 }
-`;
-
-exports[`'/multiple-entrypoint': Package.build > default > types 1`] = `
-"export declare function foo(options?: foo.Options): void;
-export declare namespace foo {
-    type Options = {
-        value?: string | undefined;
-    };
-}
-export declare function bar(options?: bar.Options): void;
-export declare namespace bar {
-    type Options = {
-        value?: string | undefined;
-    };
-    function baz(options?: Options): void;
-}
-//# sourceMappingURL=index.d.ts.map"
 `;
 
 exports[`'/multiple-entrypoint': Package.build > link > main-target 1`] = `"../src/index.ts"`;
@@ -1572,6 +1181,7 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
       "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/single-entrypoint/dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
@@ -1814,6 +1424,7 @@ exports[`'/wildcard-exports': Package.build > default > result 1`] = `
       "moduleResolution": "nodenext",
       "noEmit": false,
       "outDir": "/repos/wildcard-exports/dist",
+      "rootDir": ".",
       "skipLibCheck": true,
       "sourceMap": true,
       "strict": true,
