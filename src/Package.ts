@@ -30,7 +30,7 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
   const sourceDir = getSourceDir({ cwd, sources })
 
   if (!link) {
-    const result = await transpile({ cwd, sources, tsgo })
+    const result = await transpile({ cwd, sources, sourceDir, tsgo })
     tsConfig = result.tsConfig
   }
 
@@ -679,7 +679,7 @@ export declare namespace readTsconfigJson {
  * @returns Transpilation artifacts.
  */
 export async function transpile(options: transpile.Options): Promise<transpile.ReturnType> {
-  const { cwd = process.cwd(), sources, project = './tsconfig.json', tsgo } = options
+  const { cwd = process.cwd(), sources, sourceDir, project = './tsconfig.json', tsgo } = options
 
   const tsConfigJson = await readTsconfigJson({ cwd, project })
   const tsconfigPath = path.resolve(cwd, project)
@@ -709,7 +709,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     esModuleInterop: true,
     noEmit: false,
     outDir: tsConfigJson.compilerOptions?.outDir ?? path.resolve(cwd, 'dist'),
-    rootDir: tsConfigJson.compilerOptions?.rootDir ?? '.',
+    rootDir: tsConfigJson.compilerOptions?.rootDir ?? sourceDir ?? '.',
     skipLibCheck: true,
     sourceMap: true,
     target: tsConfigJson.compilerOptions?.target ?? 'es2022',
@@ -750,6 +750,8 @@ export declare namespace transpile {
     cwd?: string | undefined
     /** Source files to include in the transpilation. */
     sources: string[]
+    /** Common source directory, used as rootDir fallback. */
+    sourceDir?: string | undefined
     /** Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json' */
     project?: string | undefined
     /** Whether to use tsgo for transpilation. @default false */
