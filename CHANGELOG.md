@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.25
+
+### Patch Changes
+
+- [#36](https://github.com/wevm/zile/pull/36) [`df6abe3`](https://github.com/wevm/zile/commit/df6abe3d9997dc80ee7034058b3d8f344a8f8ff5) Thanks [@jxom](https://github.com/jxom)! - Fixed TypeScript 6 compatibility by adding `rootDir` to the generated tsconfig. Uses the computed common source directory from entry points as the default.
+
 ## 0.0.24
 
 ### Patch Changes
