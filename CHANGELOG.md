@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.26
+
+### Patch Changes
+
+- [#38](https://github.com/wevm/zile/pull/38) [`33560f0`](https://github.com/wevm/zile/commit/33560f02334bf4f49c5fd3b29dabbbcb559989c3) Thanks [@jxom](https://github.com/jxom)! - Added `zile examples:check [--fix]` to typecheck and format JSDoc examples.
+
 ## 0.0.25
 
 ### Patch Changes
