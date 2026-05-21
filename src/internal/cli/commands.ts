@@ -3,6 +3,7 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import * as clack from '@clack/prompts'
 import type { Command } from 'cac'
+import * as Examples from '../../Examples.js'
 import * as Package from '../../Package.js'
 
 export async function build(command: Command, options: build.Options = {}) {
@@ -11,13 +12,40 @@ export async function build(command: Command, options: build.Options = {}) {
     .option('--cwd <directory>', 'Working directory to build')
     .option('--includes <patterns...>', 'Glob patterns to include')
     .option('--project <path>', 'Path to tsconfig.json file, relative to the working directory.')
+    .option('--check-examples', 'Typecheck JSDoc examples before building')
     .option('--tsgo', 'Use tsgo for transpilation')
     .action(async (options1: build.CommandOptions, options2: build.CommandOptions) => {
       const {
         cwd = process.cwd(),
         project = './tsconfig.json',
+        checkExamples = false,
         tsgo = false,
       } = typeof options1 === 'object' ? options1 : options2
+
+      if (checkExamples && !link) {
+        console.log('→ Checking JSDoc examples')
+        const result = await Examples.check({ cwd, format: false, project })
+        if (result.typeErrors.length > 0) {
+          console.log('\nJSDoc example type errors:\n')
+          for (const error of result.typeErrors) {
+            if (!error.block) {
+              console.log(error.raw)
+              continue
+            }
+            const rel = path.relative(cwd, error.block.file)
+            console.log(
+              `${rel}:${error.block.startLine}  example #${error.block.index + 1}  (snippet line ${error.line}:${error.column})`,
+            )
+            console.log(`  ${error.message}\n`)
+          }
+          process.exit(1)
+        }
+        if (result.blocks.length > 0) {
+          const total = result.blocks.length
+          console.log(`✔︎ ${total} JSDoc example${total === 1 ? '' : 's'} typecheck cleanly`)
+        }
+      }
+
       console.log(`→ ${link ? 'Linking' : 'Building'} package at ${cwd}`)
       await Package.build({ cwd, link, project, tsgo })
       console.log(`✔︎ ${link ? 'Linking' : 'Building'} completed successfully`)
@@ -35,8 +63,79 @@ export declare namespace build {
     cwd?: string | undefined
     /** Path to tsconfig.json file, relative to the working directory. @default './tsconfig.json' */
     project?: string | undefined
+    /** Typecheck JSDoc examples before building. @default false */
+    checkExamples?: boolean | undefined
     /** Use tsgo for transpilation */
     tsgo?: boolean | undefined
+  }
+}
+
+export async function examplesCheck(command: Command) {
+  return command
+    .option('--cwd <directory>', 'Working directory to check')
+    .option('--source-dir <directory>', 'Directory to scan for source files. @default <cwd>/src')
+    .option('--project <path>', 'Path to tsconfig.json, relative to cwd. @default ./tsconfig.json')
+    .option('--fix', 'Write formatted snippets back into the source')
+    .action(async (options: examplesCheck.CommandOptions) => {
+      const { cwd = process.cwd(), fix = false, project = './tsconfig.json', sourceDir } = options
+
+      const result = await Examples.check({
+        cwd,
+        fix,
+        project,
+        ...(sourceDir ? { sourceDir: path.resolve(cwd, sourceDir) } : {}),
+      })
+
+      if (result.blocks.length === 0) {
+        console.log('No JSDoc examples found.')
+        return
+      }
+
+      const total = result.blocks.length
+      console.log(`Checked ${total} JSDoc example${total === 1 ? '' : 's'}.`)
+
+      if (result.typeErrors.length > 0) {
+        console.log('\nJSDoc example type errors:\n')
+        for (const error of result.typeErrors) {
+          if (!error.block) {
+            console.log(error.raw)
+            continue
+          }
+          const rel = path.relative(cwd, error.block.file)
+          console.log(
+            `${rel}:${error.block.startLine}  example #${error.block.index + 1}  (snippet line ${error.line}:${error.column})`,
+          )
+          console.log(`  ${error.message}\n`)
+        }
+      }
+
+      if (result.formatFixes.size > 0 && !fix) {
+        console.log('\nJSDoc example formatting issues:\n')
+        for (const block of result.formatFixes.keys()) {
+          const rel = path.relative(cwd, block.file)
+          console.log(`${rel}:${block.startLine}  example #${block.index + 1}`)
+          console.log('  Snippet is not formatted. Re-run with `--fix` to apply.\n')
+        }
+      } else if (result.formatFixes.size > 0 && fix) {
+        const count = result.formatFixes.size
+        console.log(`Formatted ${count} JSDoc example${count === 1 ? '' : 's'}.`)
+      }
+
+      const failures = result.typeErrors.length + (fix ? 0 : result.formatFixes.size)
+      if (failures > 0) process.exit(1)
+    })
+}
+
+export declare namespace examplesCheck {
+  type CommandOptions = {
+    /** Working directory to check */
+    cwd?: string | undefined
+    /** Write formatted snippets back into the source */
+    fix?: boolean | undefined
+    /** Path to tsconfig.json, relative to cwd. @default './tsconfig.json' */
+    project?: string | undefined
+    /** Directory to scan for source files. @default <cwd>/src */
+    sourceDir?: string | undefined
   }
 }
 

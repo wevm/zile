@@ -21,6 +21,7 @@ export async function run(options: run.Options): Promise<void> {
     link: true,
   })
   commands.createNew(cli.command('new', 'Create a new zile project'))
+  commands.examplesCheck(cli.command('examples:check', 'Typecheck and format JSDoc examples'))
   commands.preparePublish(cli.command('publish:prepare', 'Prepare package for publishing'))
   commands.postPublish(cli.command('publish:post', 'Post-process package after publishing'))
 

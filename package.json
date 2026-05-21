@@ -15,8 +15,8 @@
     "@changesets/cli": "^2.27.7",
     "@types/node": "^24.7.1",
     "publint": "0.3.14",
-    "typescript": "^5.9.3",
     "type-fest": "^5.0.1",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "[!start-pkg]": "",
@@ -46,6 +46,7 @@
   "dependencies": {
     "@clack/prompts": "^1.0.0-alpha.6",
     "cac": "6.7.14",
+    "oxfmt": "^0.51.0",
     "tsconfck": "3.1.6"
   },
   "peerDependencies": {
