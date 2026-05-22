@@ -80,13 +80,13 @@ exports[`'/basic': Package.build > default > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "types": "./dist/foo.d.ts",
       "src": "./foo.ts",
+      "types": "./dist/foo.d.ts",
       "default": "./dist/foo.js"
     },
     "./config": "./dist/config.json"
@@ -211,13 +211,13 @@ exports[`'/basic': Package.build > link > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "types": "./dist/foo.d.ts",
       "src": "./foo.ts",
+      "types": "./dist/foo.d.ts",
       "default": "./dist/foo.js"
     },
     "./config": "./dist/config.json"
@@ -343,8 +343,8 @@ exports[`'/basic-object-exports': Package.build > default > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
@@ -445,8 +445,8 @@ exports[`'/basic-object-exports': Package.build > link > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
@@ -549,8 +549,8 @@ exports[`'/bin-with-src': Package.build > default > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
@@ -647,8 +647,8 @@ exports[`'/bin-with-src': Package.build > link > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
@@ -768,8 +768,8 @@ exports[`'/dts-exports': Package.build > default > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -864,8 +864,8 @@ exports[`'/dts-exports': Package.build > link > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -984,8 +984,8 @@ exports[`'/dts-exports-object': Package.build > default > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -1080,8 +1080,8 @@ exports[`'/dts-exports-object': Package.build > link > output 1`] = `
   "main": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./globals": {
@@ -1240,18 +1240,18 @@ exports[`'/multiple-entrypoint': Package.build > default > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "types": "./dist/foo.d.ts",
       "src": "./src/foo.ts",
+      "types": "./dist/foo.d.ts",
       "default": "./dist/foo.js"
     },
     "./nested/dir": {
-      "types": "./dist/nested/dir/bar.d.ts",
       "src": "./src/nested/dir/bar.ts",
+      "types": "./dist/nested/dir/bar.d.ts",
       "default": "./dist/nested/dir/bar.js"
     }
   },
@@ -1374,18 +1374,18 @@ exports[`'/multiple-entrypoint': Package.build > link > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./foo": {
-      "types": "./dist/foo.d.ts",
       "src": "./src/foo.ts",
+      "types": "./dist/foo.d.ts",
       "default": "./dist/foo.js"
     },
     "./nested/dir": {
-      "types": "./dist/nested/dir/bar.d.ts",
       "src": "./src/nested/dir/bar.ts",
+      "types": "./dist/nested/dir/bar.d.ts",
       "default": "./dist/nested/dir/bar.js"
     }
   },
@@ -1521,8 +1521,8 @@ exports[`'/single-entrypoint': Package.build > default > output 1`] = `
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   }
@@ -1623,8 +1623,8 @@ exports[`'/single-entrypoint': Package.build > link > output 1`] = `
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   }
@@ -1727,8 +1727,8 @@ exports[`'/wildcard-exports': Package.build > default > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./utils/*": {
@@ -1854,8 +1854,8 @@ exports[`'/wildcard-exports': Package.build > link > output 1`] = `
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "src": "./index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "./utils/*": {
