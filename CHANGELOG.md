@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.27
+
+### Patch Changes
+
+- [#40](https://github.com/wevm/zile/pull/40) [`9a5a2f8`](https://github.com/wevm/zile/commit/9a5a2f82fa5b26e2e16dc4d03f9f35dc7af5cb54) Thanks [@jxom](https://github.com/jxom)! - Reordered generated `exports` entries to place `src` first so the dev-time `src` condition resolves before fallback conditions.
+
 ## 0.0.26
 
 ### Patch Changes
