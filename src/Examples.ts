@@ -379,18 +379,14 @@ function writeExamples(options: WriteExamplesOptions): Map<string, Block> {
 
     // Strip lines marked with `// [!code --]` (diff "old" lines that
     // wouldn't compile alongside their replacements) before partitioning.
-    const lines = block.code
+    const code = block.code
       .split('\n')
       .filter((line) => !codeRemovedAnnotation.test(line))
-    const imports: string[] = []
-    const body: string[] = []
-    for (const line of lines) {
-      if (/^\s*import\s/.test(line)) imports.push(line)
-      else body.push(line)
-    }
+      .join('\n')
+    const { imports, body } = partitionImports(code)
     const wrapped =
       `${imports.join('\n')}\n` +
-      `async function __example() {\n${body.join('\n')}\n}\n` +
+      `async function __example() {\n${body}\n}\n` +
       `void __example\nexport {}\n`
     fsSync.writeFileSync(path.join(checkDir, filename), wrapped)
 
@@ -417,6 +413,46 @@ function writeExamples(options: WriteExamplesOptions): Map<string, Block> {
   )
 
   return index
+}
+
+function partitionImports(code: string): { imports: readonly string[]; body: string } {
+  const sf = ts.createSourceFile(
+    '__example.ts',
+    code,
+    ts.ScriptTarget.Latest,
+    /*setParentNodes*/ true,
+    ts.ScriptKind.TS,
+  )
+  const ranges: { start: number; end: number }[] = []
+
+  for (const statement of sf.statements) {
+    if (!ts.isImportDeclaration(statement) && !ts.isImportEqualsDeclaration(statement)) continue
+    ranges.push({
+      start: statement.getStart(sf),
+      end: trailingImportEnd(code, statement.end),
+    })
+  }
+
+  if (ranges.length === 0) return { imports: [], body: code }
+
+  const imports = ranges.map((range) => code.slice(range.start, range.end).trim())
+  let body = ''
+  let offset = 0
+  for (const range of ranges) {
+    body += code.slice(offset, range.start)
+    offset = range.end
+  }
+  body += code.slice(offset)
+
+  return { imports, body }
+}
+
+function trailingImportEnd(code: string, end: number): number {
+  const lineEnd = code.indexOf('\n', end)
+  const nextLine = lineEnd === -1 ? code.length : lineEnd
+  const trailing = code.slice(end, nextLine)
+  if (/^\s*(?:;?\s*)?(?:\/\/.*)?$/.test(trailing)) return nextLine
+  return end
 }
 
 type RunTscOptions = {
