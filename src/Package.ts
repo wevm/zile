@@ -326,7 +326,9 @@ export async function decoratePackageJson(
             } catch {}
           }
 
-          // Handle wildcard exports - pass through as-is with transformed paths
+          // Handle wildcard exports - pass through as-is with transformed paths.
+          // Wildcard entries keep `types` first because publint enforces
+          // `EXPORTS_TYPES_SHOULD_BE_FIRST` strictly for wildcards.
           if (key.includes('*')) {
             if (typeof value === 'string') {
               const src = value
@@ -366,12 +368,14 @@ export async function decoratePackageJson(
           // ↓ ↓ ↓
           // "./utils": {
           //   "src": "./src/utils.ts",
-          //   "types": "./dist/utils.js",
-          //   "default": "./dist/utils.d.ts"
+          //   "types": "./dist/utils.d.ts",
+          //   "default": "./dist/utils.js"
           // }
           if (typeof value === 'string') {
             if (value.startsWith(relativeOutDir)) return [key, value]
-            // Handle .d.ts files (type definitions only, no JS output)
+            // Handle .d.ts files (type definitions only, no JS output).
+            // Keeps `types` first because publint enforces it when there
+            // is no `default` to act as the trailing condition.
             if (/\.d\.[mc]?ts$/.test(value)) {
               const absolutePath = path.resolve(cwd, value)
               if (link) linkDtsExport(value)
@@ -389,8 +393,8 @@ export async function decoratePackageJson(
             return [
               key,
               {
-                types: outFile(value, '.d.ts'),
                 src: value,
+                types: outFile(value, '.d.ts'),
                 default: outFile(value, '.js'),
               },
             ]
@@ -403,8 +407,8 @@ export async function decoratePackageJson(
           // "./utils": "./src/utils.ts"
           // ↓ ↓ ↓
           // "./utils": {
-          //   "types": "./dist/utils.d.ts",
           //   "src": "./src/utils.ts",
+          //   "types": "./dist/utils.d.ts",
           //   "default": "./dist/utils.js",
           // }
           if (
@@ -414,7 +418,9 @@ export async function decoratePackageJson(
             typeof value.src === 'string'
           ) {
             if (value.src.startsWith(relativeOutDir)) return [key, value]
-            // Handle .d.ts files (type definitions only, no JS output)
+            // Handle .d.ts files (type definitions only, no JS output).
+            // Keeps `types` first because publint enforces it when there
+            // is no `default` to act as the trailing condition.
             if (/\.d\.[mc]?ts$/.test(value.src)) {
               const absolutePath = path.resolve(cwd, value.src)
               if (link) linkDtsExport(value.src)
@@ -436,8 +442,8 @@ export async function decoratePackageJson(
             return [
               key,
               {
-                types: outFile(src, '.d.ts'),
                 src,
+                types: outFile(src, '.d.ts'),
                 ...rest,
                 default: outFile(src, '.js'),
               },
