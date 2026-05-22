@@ -8,11 +8,7 @@ const zileRoot = path.resolve(import.meta.dirname, '..')
 async function setupProject(files: Record<string, string>): Promise<string> {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'zile-examples-'))
   // Reuse zile's own typescript install via a symlinked node_modules.
-  await fs.symlink(
-    path.join(zileRoot, 'node_modules'),
-    path.join(tmp, 'node_modules'),
-    'dir',
-  )
+  await fs.symlink(path.join(zileRoot, 'node_modules'), path.join(tmp, 'node_modules'), 'dir')
   await fs.writeFile(
     path.join(tmp, 'tsconfig.json'),
     JSON.stringify({
@@ -192,6 +188,32 @@ describe('Examples.check directives', () => {
         ' * const value: number = 1',
         ' * void resolve',
         ' * void value',
+        ' * ```',
+        ' */',
+        'export const v = 0',
+        '',
+      ].join('\n'),
+    })
+    try {
+      const result = await Examples.check({ cwd, format: false })
+      expect(result.typeErrors).toEqual([])
+    } finally {
+      await fs.rm(cwd, { recursive: true, force: true })
+    }
+  })
+
+  it('type-checks snippets with multiline imports', async () => {
+    const cwd = await setupProject({
+      'src/mod.ts': [
+        '/**',
+        ' * @example',
+        ' * ```ts',
+        ' * import {',
+        ' *   join,',
+        ' *   resolve',
+        " * } from 'node:path'",
+        " * const result: string = join(resolve('.'), 'file')",
+        ' * result satisfies string',
         ' * ```',
         ' */',
         'export const v = 0',
