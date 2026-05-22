@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.28
+
+### Patch Changes
+
+- [#42](https://github.com/wevm/zile/pull/42) [`921e6dc`](https://github.com/wevm/zile/commit/921e6dc7611093d05765c144d28e62c95d9ed031) Thanks [@jxom](https://github.com/jxom)! - Fixed multiline import declarations in JSDoc example typechecking.
+
 ## 0.0.27
 
 ### Patch Changes
