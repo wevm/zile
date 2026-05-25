@@ -9,7 +9,7 @@
     "paths": {
       "replace-me": ["./src/index.ts"]
     },
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vite-plus/test/globals"],
 
     // Other Outputs
     "sourceMap": true,
