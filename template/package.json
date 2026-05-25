@@ -3,17 +3,16 @@
     "build": "zile",
     "changeset:publish": "zile publish:prepare && changeset publish && zile publish:post",
     "changeset:version": "changeset version",
-    "check": "biome check --fix --unsafe",
+    "check": "vp check --fix",
     "check:types": "tsc",
     "dev": "zile dev",
-    "test": "vitest"
+    "test": "vp test"
   },
   "devDependencies": {
-    "@biomejs/biome": "latest",
     "@changesets/cli": "latest",
     "@types/node": "latest",
     "typescript": "latest",
-    "vitest": "latest",
+    "vite-plus": "latest",
     "zile": "latest"
   },
   "[!start-pkg]": "",
