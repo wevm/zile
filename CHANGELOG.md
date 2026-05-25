@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.29
+
+### Patch Changes
+
+- [#44](https://github.com/wevm/zile/pull/44) [`ca4e737`](https://github.com/wevm/zile/commit/ca4e737ffa97e90ee2e17a3ebed4a139a136b71e) Thanks [@jxom](https://github.com/jxom)! - Migrated the project template from Biome and Vitest scripts to Vite+ with Oxlint and Oxfmt.
+
 ## 0.0.28
 
 ### Patch Changes
