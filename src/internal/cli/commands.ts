@@ -3,7 +3,6 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import * as clack from '@clack/prompts'
 import type { Command } from 'cac'
-import * as Examples from '../../Examples.js'
 import * as Package from '../../Package.js'
 
 export async function build(command: Command, options: build.Options = {}) {
@@ -24,6 +23,7 @@ export async function build(command: Command, options: build.Options = {}) {
 
       if (checkExamples && !link) {
         console.log('→ Checking JSDoc examples')
+        const Examples = await import('../../Examples.js')
         const result = await Examples.check({ cwd, format: false, project })
         if (result.typeErrors.length > 0) {
           console.log('\nJSDoc example type errors:\n')
@@ -78,6 +78,7 @@ export async function examplesCheck(command: Command) {
     .option('--fix', 'Write formatted snippets back into the source')
     .action(async (options: examplesCheck.CommandOptions) => {
       const { cwd = process.cwd(), fix = false, project = './tsconfig.json', sourceDir } = options
+      const Examples = await import('../../Examples.js')
 
       const result = await Examples.check({
         cwd,
