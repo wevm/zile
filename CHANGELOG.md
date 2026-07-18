@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.30
+
+### Patch Changes
+
+- [#49](https://github.com/wevm/zile/pull/49) [`522f9f3`](https://github.com/wevm/zile/commit/522f9f3040781da14b03dc91718c42b011f837fa) Thanks [@jxom](https://github.com/jxom)! - Prevented concurrent package builds from deleting each other's temporary TypeScript projects.
+
 ## 0.0.29
 
 ### Patch Changes
