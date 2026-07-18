@@ -1,4 +1,5 @@
 import * as cp from 'node:child_process'
+import * as crypto from 'node:crypto'
 import * as fsSync from 'node:fs'
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
@@ -727,7 +728,7 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     include: [...(tsConfigJson.include ?? []), ...sources] as string[],
   } as const
 
-  const tmpProject = path.resolve(cwd, 'tsconfig.tmp.json')
+  const tmpProject = path.resolve(cwd, `tsconfig.${process.pid}.${crypto.randomUUID()}.tmp.json`)
   await fs.writeFile(tmpProject, JSON.stringify(tsConfig, null, 2))
 
   await fs.rm(compilerOptions.outDir, { recursive: true }).catch(() => {})

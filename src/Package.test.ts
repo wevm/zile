@@ -74,6 +74,59 @@ describe.each(await repos())('$relative: Package.build', ({ cwd }) => {
   })
 })
 
+describe('Package.transpile', () => {
+  test('isolates concurrent temporary projects', async () => {
+    const { repos } = await setupRepos()
+    const repo = repos.find(({ relative }) => relative === '/basic')
+    if (!repo) throw new Error('Basic fixture not found.')
+
+    const bin = path.resolve(repo.cwd, 'node_modules/.bin')
+    const compiler = path.resolve(repo.cwd, 'compiler.cjs')
+    const started = path.resolve(repo.cwd, 'compiler.started')
+    const resume = path.resolve(repo.cwd, 'compiler.resume')
+    await fs.mkdir(bin, { recursive: true })
+    await fs.writeFile(
+      compiler,
+      `#!/usr/bin/env node
+const fs = require('node:fs')
+const path = require('node:path')
+const started = path.resolve('compiler.started')
+const resume = path.resolve('compiler.resume')
+if (!fs.existsSync(started)) {
+  fs.writeFileSync(started, '')
+  const timer = setInterval(() => {
+    if (!fs.existsSync(resume)) return
+    clearInterval(timer)
+    fs.accessSync(process.argv.at(-1))
+  }, 10)
+} else fs.accessSync(process.argv.at(-1))
+`,
+      { mode: 0o755 },
+    )
+    await fs.symlink(compiler, path.resolve(bin, 'tsc'))
+
+    const options = {
+      cwd: repo.cwd,
+      sourceDir: repo.cwd,
+      sources: [path.resolve(repo.cwd, 'index.ts')],
+    }
+    const first = Package.transpile(options)
+    await vi.waitFor(() => expect(fs.access(started)).resolves.toBeUndefined())
+    const second = Package.transpile(options)
+    try {
+      await second
+    } finally {
+      await fs.writeFile(resume, '')
+    }
+    await first
+    expect(
+      (await fs.readdir(repo.cwd)).filter(
+        (name) => name.startsWith('tsconfig.') && name.endsWith('.tmp.json'),
+      ),
+    ).toEqual([])
+  })
+})
+
 describe('Package.getSourceDir', () => {
   test('common', async () => {
     {
