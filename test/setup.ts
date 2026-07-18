@@ -1,4 +1,4 @@
-import type * as vitest from 'vitest'
+import type * as vitest from 'vite-plus/test'
 
 const cwd = process.cwd()
 

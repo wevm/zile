@@ -16,6 +16,6 @@ jobs:
         run: bun install
 
       - name: Prerelease
-        run: | 
+        run: |
           bun run build
           bunx pkg-pr-new publish --bun

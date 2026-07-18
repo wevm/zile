@@ -1,8 +1,8 @@
 # Monorepo Example
 
-This example demonstrates monorepo usage of Zile. 
+This example demonstrates monorepo usage of Zile.
 
-Using Zile in a monorepo is not much different from using it in a single package. 
+Using Zile in a monorepo is not much different from using it in a single package.
 All you need to do is add scripts to your root `package.json` file to concurrently run the
 `build` script in all packages.
 

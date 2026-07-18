@@ -174,8 +174,9 @@ Point to your source file:
 ```
 
 > **↓↓↓ Output**
-> >
+>
 > Zile transforms this to point to the built file and generates `exports`, `module` and `types` fields:
+>
 > ```json
 > {
 >   "name": "my-pkg",
@@ -213,8 +214,8 @@ Point to your source files directly:
 ```
 
 > **↓↓↓ Output**
-> 
->Zile expands each entrypoint to include types and built files:
+>
+> Zile expands each entrypoint to include types and built files:
 >
 > ```json
 > {
@@ -257,9 +258,9 @@ Point to your source file:
 ```
 
 > **↓↓↓ Output**
-> 
+>
 > Zile creates both the built binary and preserves a `.src` reference:
-> 
+>
 > ```json
 > {
 >   "name": "my-cli",
@@ -289,9 +290,9 @@ Use keys with `.src` suffix to indicate source files:
 ```
 
 > **↓↓↓ Output**
-> 
+>
 > Zile creates built versions without the `.src` suffix:
-> 
+>
 > ```json
 > {
 >   "name": "my-cli",
@@ -326,10 +327,10 @@ When using `zile publish:prepare`, only fields that appear **after** the `[!star
   "scripts": {
     "build": "zile build",
     "publish": "zile publish:prepare && npm publish && zile publish:post",
-    "test": "vitest"
+    "test": "vp test"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^7.0.0"
   },
 + "[!start-pkg]": "",
   "name": "my-pkg",
@@ -373,7 +374,7 @@ Usage:
   $ zile [root]
 
 Commands:
-  [root]           
+  [root]
   build            Build package
   dev              Resolve package exports to source for development
   new              Create a new zile project
@@ -389,15 +390,14 @@ For more info, run any command with the `--help` flag:
   $ zile publish:post --help
 
 Options:
-  --cwd <directory>         Working directory to build 
-  --includes <patterns...>  Glob patterns to include 
-  --project <path>          Path to tsconfig.json file, relative to the working directory. 
-  --tsgo                    Use tsgo for transpilation 
-  -v, --version             Display version number 
-  -h, --help                Display this message 
+  --cwd <directory>         Working directory to build
+  --includes <patterns...>  Glob patterns to include
+  --project <path>          Path to tsconfig.json file, relative to the working directory.
+  --tsgo                    Use tsgo for transpilation
+  -v, --version             Display version number
+  -h, --help                Display this message
 ```
 
 ## License
 
 [MIT](./LICENSE) License.
-

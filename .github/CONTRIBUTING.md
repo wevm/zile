@@ -30,6 +30,7 @@ bun run test # Run tests
 When you observe patterns or style preferences that emerge during development or code review, please proactively update this guide to capture them. This helps maintain consistency and provides clear guidance for future contributions (both human and AI).
 
 Look for opportunities to document:
+
 - New coding patterns or conventions
 - Style preferences that come up in discussions
 - Refactoring patterns that improve code quality
@@ -84,12 +85,14 @@ git push origin feature/my-feature
 **Always use namespace imports, never named imports:**
 
 ✅ **Good:**
+
 ```typescript
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
 ```
 
 ❌ **Bad:**
+
 ```typescript
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -100,10 +103,11 @@ import { join } from 'node:path'
 **All exported functions must have a corresponding namespace for types:**
 
 ✅ **Good:**
+
 ```typescript
 /**
  * Does something useful.
- * 
+ *
  * @param options - Configuration options
  * @returns Result of the operation
  */
@@ -121,6 +125,7 @@ export declare namespace doSomething {
 ```
 
 ❌ **Bad:**
+
 ```typescript
 // Don't inline types
 export function doSomething(options: { value?: string }) {
@@ -138,6 +143,7 @@ export function doSomething({ value = 'default' }: Options) {
 **Never destructure parameters in function definitions:**
 
 ✅ **Good:**
+
 ```typescript
 export function process(options: process.Options) {
   const { input = 'default', verbose = false } = options
@@ -146,6 +152,7 @@ export function process(options: process.Options) {
 ```
 
 ❌ **Bad:**
+
 ```typescript
 export function process({ input = 'default', verbose = false }: process.Options) {
   // ... implementation
@@ -157,14 +164,16 @@ export function process({ input = 'default', verbose = false }: process.Options)
 **All exported functions must have complete JSDoc:**
 
 Required JSDoc tags:
+
 - `@param` for each parameter with description
 - `@returns` or `@return` for return value with description
 
 ✅ **Good:**
+
 ```typescript
 /**
  * Finds all packages matching the given patterns.
- * 
+ *
  * @param options - Search options
  * @returns Array of package paths
  */
@@ -174,6 +183,7 @@ export async function findPackages(options: findPackages.Options) {
 ```
 
 ❌ **Bad:**
+
 ```typescript
 // Missing parameter and return documentation
 /**
@@ -189,6 +199,7 @@ export async function findPackages(options: findPackages.Options) {
 **Avoid ternaries, use IIFEs for conditional assignments:**
 
 ✅ **Good:**
+
 ```typescript
 const globPattern = (() => {
   if (pattern.endsWith('package.json')) return pattern
@@ -197,24 +208,23 @@ const globPattern = (() => {
 ```
 
 ❌ **Bad:**
+
 ```typescript
-const globPattern = pattern.endsWith('package.json') 
-  ? pattern 
-  : `${pattern}/package.json`
+const globPattern = pattern.endsWith('package.json') ? pattern : `${pattern}/package.json`
 ```
 
 **Remove curly braces when possible:**
 
 ✅ **Good:**
-```typescript
-for (const item of items)
-  process(item)
 
-if (condition)
-  doSomething()
+```typescript
+for (const item of items) process(item)
+
+if (condition) doSomething()
 ```
 
 ❌ **Bad:**
+
 ```typescript
 for (const item of items) {
   process(item)
@@ -249,6 +259,7 @@ bun run test -u # Update snapshots
 **Test naming convention:**
 
 ✅ **Good:**
+
 ```typescript
 it('finds package.json with default options', async () => {
   // test implementation
@@ -260,6 +271,7 @@ it('returns empty array when no packages found', async () => {
 ```
 
 ❌ **Bad:**
+
 ```typescript
 it('should find package.json with default options', async () => {
   // test implementation

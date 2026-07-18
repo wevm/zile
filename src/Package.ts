@@ -218,10 +218,7 @@ export async function decoratePackageJson(
     if (typeof bin === 'string') {
       if (!bin.startsWith(relativeOutDir))
         bin = {
-          // biome-ignore lint/style/noNonNullAssertion: _
           [pkgJson.name!]: outFile(bin, '.js'),
-          // biome-ignore lint/style/useTemplate: _
-          // biome-ignore lint/style/noNonNullAssertion: _
           [pkgJson.name! + '.src']: bin,
         }
     } else {
@@ -281,7 +278,7 @@ export async function decoratePackageJson(
     // }
     exps = {
       '.': pkgJson.main,
-      ...(typeof exps === 'object' ? exps : {}),
+      ...(typeof exps === 'object' && !Array.isArray(exps) ? exps : {}),
     }
   }
 
@@ -504,10 +501,7 @@ export async function getEntries(options: getEntries.Options): Promise<getEntrie
     else
       sources.push(
         ...(Object.entries(pkgJson.bin)
-          .map(([key, value]) =>
-            // biome-ignore lint/style/noNonNullAssertion: _
-            key.endsWith('.src') ? path.resolve(cwd, value!) : undefined,
-          )
+          .map(([key, value]) => (key.endsWith('.src') ? path.resolve(cwd, value!) : undefined))
           .filter(Boolean) as string[]),
       )
   }
@@ -591,14 +585,12 @@ export function getSourceDir(options: getSourceDir.Options): string {
   const minLength = Math.min(...segments.map((s) => s.length))
 
   for (let i = 0; i < minLength; i++) {
-    // biome-ignore lint/style/noNonNullAssertion: _
     const segment = segments[0]![i]!
     if (segments.every((s) => s[i] === segment)) commonSegments.push(segment)
     else break
   }
 
   const commonPath = commonSegments.join(path.sep)
-  // biome-ignore lint/style/noNonNullAssertion: _
   return path.resolve(cwd, path.relative(cwd, commonPath).split(path.sep)[0]!)
 }
 
@@ -621,7 +613,6 @@ const packageJsonCache: Map<string, string> = new Map()
 export async function readPackageJson(options: readPackageJson.Options) {
   const { cwd } = options
 
-  // biome-ignore lint/style/noNonNullAssertion: _
   if (packageJsonCache.has(cwd)) return stripPreMarkerKeys(JSON.parse(packageJsonCache.get(cwd)!))
   const content = await fs.readFile(path.resolve(cwd, 'package.json'), 'utf-8')
   packageJsonCache.set(cwd, content)
@@ -708,8 +699,6 @@ export async function transpile(options: transpile.Options): Promise<transpile.R
     ...tsConfigJson.compilerOptions,
     composite: false,
     declaration: true,
-    // biome-ignore lint/style/noNonNullAssertion: _
-    declarationDir: tsConfigJson.compilerOptions?.declarationDir!,
     declarationMap: true,
     emitDeclarationOnly: false,
     esModuleInterop: true,
@@ -815,7 +804,6 @@ export function detectIndent(content: string): string {
   for (const line of lines) {
     const match = line.match(/^(\s+)/)
     if (match) {
-      // biome-ignore lint/style/noNonNullAssertion: _
       const indent = match[1]!
       // If it starts with a tab, use tabs
       if (indent[0] === '\t') return '\t'
@@ -835,7 +823,6 @@ export function detectIndent(content: string): string {
  * @returns Absolute path to the binary.
  * @internal
  */
-// biome-ignore lint/correctness/noUnusedVariables: _
 function findTsc(options: findTsc.Options): string {
   const { bin, cwd = import.meta.dirname } = options
 
