@@ -1,5 +1,15 @@
 # zile
 
+## 0.0.31
+
+### Patch Changes
+
+- [#52](https://github.com/wevm/zile/pull/52) [`a0da0b2`](https://github.com/wevm/zile/commit/a0da0b29f4787b543a8c31194a5b6de90c4431cd) Thanks [@jxom](https://github.com/jxom)! - Added `package.json#zile.transform`, which names a module whose default export rewrites each emitted JavaScript file.
+
+  ```js
+  export default (code, file) => code.replaceAll("process.env.DEBUG", "false");
+  ```
+
 ## 0.0.30
 
 ### Patch Changes
