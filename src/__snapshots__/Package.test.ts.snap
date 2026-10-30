@@ -153,7 +153,6 @@ exports[`'/basic': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
@@ -394,7 +393,6 @@ exports[`'/basic-object-exports': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
@@ -604,7 +602,6 @@ exports[`'/bin-with-src': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
@@ -824,7 +821,6 @@ exports[`'/dts-exports': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
@@ -1040,7 +1036,6 @@ exports[`'/dts-exports-object': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
@@ -1321,7 +1316,6 @@ exports[`'/multiple-entrypoint': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
@@ -1568,7 +1562,6 @@ exports[`'/single-entrypoint': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,
@@ -2024,7 +2017,6 @@ exports[`'/wildcard-exports': Package.build > default > result 1`] = `
     "compilerOptions": {
       "composite": false,
       "declaration": true,
-      "declarationDir": undefined,
       "declarationMap": true,
       "emitDeclarationOnly": false,
       "esModuleInterop": true,

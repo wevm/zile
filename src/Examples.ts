@@ -1,9 +1,33 @@
 import * as cp from 'node:child_process'
 import * as fsSync from 'node:fs'
 import * as fs from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import * as path from 'node:path'
 import * as oxfmt from 'oxfmt'
-import * as ts from 'typescript'
+
+type Ast = typeof import('typescript/unstable/ast')
+
+let astModule: Ast | undefined
+
+/**
+ * Lazily loads the TypeScript syntax toolkit (`typescript/unstable/ast`).
+ *
+ * Loaded on demand (instead of a top-level import) so that zile's CLI and
+ * library entrypoints work without TypeScript installed — `typescript` is an
+ * optional peer dependency, and only JSDoc example checking needs its API.
+ */
+function ast(): Ast {
+  if (astModule) return astModule
+  try {
+    astModule = createRequire(import.meta.url)('typescript/unstable/ast') as Ast
+  } catch (cause) {
+    throw new Error(
+      'zile: JSDoc example checking requires `typescript` (>=7.0.0) to be installed.',
+      { cause },
+    )
+  }
+  return astModule
+}
 
 export type FormatOptions = oxfmt.FormatOptions
 
@@ -49,8 +73,9 @@ const closeFence = /^([ \t]*)\*[ \t]?```[ \t]*$/
  * Extracts every fenced `ts` / `typescript` / `ts twoslash` code block from
  * JSDoc `/** ... *\u002F` comments in a source file.
  *
- * Comment extraction walks the TypeScript AST so fenced code inside string
- * or template literals can't be confused with a real doc comment.
+ * Comment extraction tokenizes the source with the TypeScript scanner so
+ * fenced code inside string or template literals can't be confused with a
+ * real doc comment.
  *
  * @param options - Options for extracting blocks.
  * @returns Array of extracted blocks in source order.
@@ -58,14 +83,7 @@ const closeFence = /^([ \t]*)\*[ \t]?```[ \t]*$/
 export function extract(options: extract.Options): extract.ReturnType {
   const { file, source } = options
 
-  const sf = ts.createSourceFile(
-    file,
-    source,
-    ts.ScriptTarget.Latest,
-    /*setParentNodes*/ false,
-    ts.ScriptKind.TS,
-  )
-  const ranges = collectJsDocRanges(source, sf)
+  const ranges = collectJsDocRanges(source)
   const starts = lineStarts(source)
   const blocks: Block[] = []
 
@@ -75,14 +93,12 @@ export function extract(options: extract.Options): extract.ReturnType {
     const lines = commentText.split('\n')
 
     for (let i = 0; i < lines.length; i++) {
-      // biome-ignore lint/style/noNonNullAssertion: i in range
       const line = lines[i]!.replace(/\r$/, '')
       const open = line.match(openFence)
       if (!open) continue
 
       let close = -1
       for (let j = i + 1; j < lines.length; j++) {
-        // biome-ignore lint/style/noNonNullAssertion: j in range
         if (closeFence.test(lines[j]!.replace(/\r$/, ''))) {
           close = j
           break
@@ -90,18 +106,13 @@ export function extract(options: extract.Options): extract.ReturnType {
       }
       if (close === -1) break
 
-      // biome-ignore lint/style/noNonNullAssertion: regex group
       const indent = open[1]!
-      // biome-ignore lint/style/noNonNullAssertion: regex group
       const fence = open[2]!.trim()
 
       const openLineFileNo = commentStartLine + i
       const closeLineFileNo = commentStartLine + close
-      // biome-ignore lint/style/noNonNullAssertion: line in range
       const openStart = starts[openLineFileNo - 1]!
-      // biome-ignore lint/style/noNonNullAssertion: line in range
       const closeStartOffset = starts[closeLineFileNo - 1]!
-      // biome-ignore lint/style/noNonNullAssertion: close found above
       const closeLineText = lines[close]!.replace(/\r$/, '')
       const closeEnd = closeStartOffset + closeLineText.length
 
@@ -319,28 +330,96 @@ function computeLineNumber(starts: number[], offset: number): number {
   let hi = starts.length - 1
   while (lo < hi) {
     const mid = (lo + hi + 1) >>> 1
-    // biome-ignore lint/style/noNonNullAssertion: mid in range
     if (starts[mid]! <= offset) lo = mid
     else hi = mid - 1
   }
   return lo + 1
 }
 
-function collectJsDocRanges(source: string, sf: ts.SourceFile): ts.CommentRange[] {
-  const ranges: ts.CommentRange[] = []
-  const seen = new Set<number>()
-  const visit = (node: ts.Node) => {
-    const leading = ts.getLeadingCommentRanges(source, node.pos) ?? []
-    for (const range of leading) {
-      if (range.kind !== ts.SyntaxKind.MultiLineCommentTrivia) continue
-      if (source[range.pos + 2] !== '*') continue
-      if (seen.has(range.pos)) continue
-      seen.add(range.pos)
-      ranges.push(range)
-    }
-    ts.forEachChild(node, visit)
+/** A comment's absolute offsets within its source file. */
+type CommentRange = {
+  pos: number
+  end: number
+}
+
+/**
+ * Returns whether a `/` following `prev` starts a regular expression literal
+ * (rather than a division operator). Mirrors the token table used by the
+ * TypeScript classifier: after a token that can end an expression, `/` means
+ * division; anywhere else it starts a regex.
+ */
+function isRegexStartContext(prev: number | undefined, kind: Ast['SyntaxKind']): boolean {
+  switch (prev) {
+    case kind.Identifier:
+    case kind.StringLiteral:
+    case kind.NumericLiteral:
+    case kind.BigIntLiteral:
+    case kind.RegularExpressionLiteral:
+    case kind.NoSubstitutionTemplateLiteral:
+    case kind.TemplateTail:
+    case kind.ThisKeyword:
+    case kind.TrueKeyword:
+    case kind.FalseKeyword:
+    case kind.NullKeyword:
+    case kind.PlusPlusToken:
+    case kind.MinusMinusToken:
+    case kind.CloseParenToken:
+    case kind.CloseBracketToken:
+    case kind.CloseBraceToken:
+      return false
+    default:
+      return true
   }
-  ts.forEachChild(sf, visit)
+}
+
+/**
+ * Collects the ranges of every JSDoc (`/**`) comment in the source.
+ *
+ * Runs the TypeScript scanner over the full text (with trivia included) so
+ * string, template, and regex literals are tokenized properly and comment
+ * look-alikes inside them are never collected.
+ */
+function collectJsDocRanges(source: string): CommentRange[] {
+  const { SyntaxKind, createScanner } = ast()
+  const scanner = createScanner(/*skipTrivia*/ false, /*languageVariant*/ undefined, source)
+
+  const ranges: CommentRange[] = []
+  // Brace depth recorded at each `${` so the matching `}` resumes its template.
+  const templateStack: number[] = []
+  let braceDepth = 0
+  let prevToken: number | undefined
+
+  while (true) {
+    let token: number = scanner.scan()
+    if (token === SyntaxKind.EndOfFile) break
+
+    switch (token) {
+      case SyntaxKind.OpenBraceToken:
+        braceDepth++
+        break
+      case SyntaxKind.CloseBraceToken:
+        if (templateStack.length > 0 && braceDepth === templateStack[templateStack.length - 1]) {
+          token = scanner.reScanTemplateToken(/*isTaggedTemplate*/ false)
+          if (token === SyntaxKind.TemplateTail) templateStack.pop()
+        } else braceDepth--
+        break
+      case SyntaxKind.TemplateHead:
+        templateStack.push(braceDepth)
+        break
+      case SyntaxKind.SlashToken:
+      case SyntaxKind.SlashEqualsToken:
+        if (isRegexStartContext(prevToken, SyntaxKind)) token = scanner.reScanSlashToken()
+        break
+      case SyntaxKind.MultiLineCommentTrivia:
+        if (source[scanner.getTokenStart() + 2] === '*')
+          ranges.push({ pos: scanner.getTokenStart(), end: scanner.getTokenEnd() })
+        break
+    }
+
+    const isTrivia = token >= SyntaxKind.FirstTriviaToken && token <= SyntaxKind.LastTriviaToken
+    if (!isTrivia) prevToken = token
+  }
+
   return ranges
 }
 
@@ -415,22 +494,150 @@ function writeExamples(options: WriteExamplesOptions): Map<string, Block> {
   return index
 }
 
+/**
+ * Splits top-level static import declarations out of a snippet.
+ *
+ * Tokenizes the snippet with the TypeScript scanner and tracks nesting so
+ * only genuine top-level `import` declarations are hoisted — dynamic
+ * `import()`, `import.meta`, and `import` look-alikes inside string,
+ * template, or regex literals are left in the body.
+ */
 function partitionImports(code: string): { imports: readonly string[]; body: string } {
-  const sf = ts.createSourceFile(
-    '__example.ts',
-    code,
-    ts.ScriptTarget.Latest,
-    /*setParentNodes*/ true,
-    ts.ScriptKind.TS,
-  )
-  const ranges: { start: number; end: number }[] = []
+  const { SyntaxKind, createScanner } = ast()
+  const scanner = createScanner(/*skipTrivia*/ true, /*languageVariant*/ undefined, code)
 
-  for (const statement of sf.statements) {
-    if (!ts.isImportDeclaration(statement) && !ts.isImportEqualsDeclaration(statement)) continue
-    ranges.push({
-      start: statement.getStart(sf),
-      end: trailingImportEnd(code, statement.end),
+  /**
+   * Consumes the right-hand side of `import x = ...` (e.g. `require('mod')`
+   * or a qualified name) and returns the offset just after its final token.
+   */
+  function scanImportEqualsTail(): number {
+    let parens = 0
+    let lastEnd = scanner.getTokenEnd()
+    while (true) {
+      const next = scanner.lookAhead(() => ({
+        token: scanner.scan(),
+        lineBreak: scanner.hasPrecedingLineBreak(),
+      }))
+      if (next.token === SyntaxKind.EndOfFile) return lastEnd
+      if (parens === 0 && next.lineBreak) return lastEnd
+      scanner.scan()
+      if (next.token === SyntaxKind.OpenParenToken) parens++
+      else if (next.token === SyntaxKind.CloseParenToken) {
+        if (--parens <= 0) return scanner.getTokenEnd()
+      } else if (parens === 0 && next.token === SyntaxKind.SemicolonToken)
+        return scanner.getTokenEnd()
+      lastEnd = scanner.getTokenEnd()
+    }
+  }
+
+  /**
+   * Consumes one import declaration (cursor sitting on the `import` keyword)
+   * and returns the offset just after its final token.
+   */
+  function scanImportDeclaration(): number {
+    let end = -1
+    let clauseDepth = 0
+    while (end === -1) {
+      const token = scanner.scan()
+      if (token === SyntaxKind.EndOfFile) return scanner.getTokenFullStart()
+      if (token === SyntaxKind.OpenBraceToken) clauseDepth++
+      else if (token === SyntaxKind.CloseBraceToken) clauseDepth--
+      else if (clauseDepth === 0) {
+        // The module specifier ends the declaration (side-effect imports and
+        // `from` clauses alike); `=` switches to `import x = ...` handling.
+        if (token === SyntaxKind.StringLiteral) end = scanner.getTokenEnd()
+        else if (token === SyntaxKind.EqualsToken) end = scanImportEqualsTail()
+      }
+    }
+
+    // `with { ... }` / `assert { ... }` import attributes extend the declaration.
+    const hasAttributes = scanner.lookAhead(() => {
+      const token = scanner.scan()
+      if (token !== SyntaxKind.WithKeyword && token !== SyntaxKind.AssertKeyword) return false
+      return scanner.scan() === SyntaxKind.OpenBraceToken
     })
+    if (hasAttributes) {
+      scanner.scan() // `with` / `assert`
+      let depth = 0
+      attributes: while (true) {
+        switch (scanner.scan()) {
+          case SyntaxKind.EndOfFile:
+            break attributes
+          case SyntaxKind.OpenBraceToken:
+            depth++
+            break
+          case SyntaxKind.CloseBraceToken:
+            if (--depth === 0) {
+              end = scanner.getTokenEnd()
+              break attributes
+            }
+            break
+        }
+      }
+    }
+
+    // A trailing semicolon is part of the declaration.
+    if (scanner.lookAhead(() => scanner.scan() === SyntaxKind.SemicolonToken)) {
+      scanner.scan()
+      end = scanner.getTokenEnd()
+    }
+
+    return end
+  }
+
+  const ranges: { start: number; end: number }[] = []
+  // Brace depth recorded at each `${` so the matching `}` resumes its template.
+  const templateStack: number[] = []
+  let braceDepth = 0
+  let groupDepth = 0
+  let prevToken: number | undefined
+
+  while (true) {
+    let token: number = scanner.scan()
+    if (token === SyntaxKind.EndOfFile) break
+
+    switch (token) {
+      case SyntaxKind.OpenBraceToken:
+        braceDepth++
+        break
+      case SyntaxKind.CloseBraceToken:
+        if (templateStack.length > 0 && braceDepth === templateStack[templateStack.length - 1]) {
+          token = scanner.reScanTemplateToken(/*isTaggedTemplate*/ false)
+          if (token === SyntaxKind.TemplateTail) templateStack.pop()
+        } else braceDepth--
+        break
+      case SyntaxKind.TemplateHead:
+        templateStack.push(braceDepth)
+        break
+      case SyntaxKind.OpenParenToken:
+      case SyntaxKind.OpenBracketToken:
+        groupDepth++
+        break
+      case SyntaxKind.CloseParenToken:
+      case SyntaxKind.CloseBracketToken:
+        groupDepth--
+        break
+      case SyntaxKind.SlashToken:
+      case SyntaxKind.SlashEqualsToken:
+        if (isRegexStartContext(prevToken, SyntaxKind)) token = scanner.reScanSlashToken()
+        break
+      case SyntaxKind.ImportKeyword: {
+        // Only top-level `import` declarations are hoisted.
+        if (braceDepth !== 0 || groupDepth !== 0 || templateStack.length > 0) break
+        // `foo.import` is a property access, not a declaration.
+        if (prevToken === SyntaxKind.DotToken || prevToken === SyntaxKind.QuestionDotToken) break
+        // `import(...)` and `import.meta` are expressions, not declarations.
+        const next = scanner.lookAhead(() => scanner.scan())
+        if (next === SyntaxKind.OpenParenToken || next === SyntaxKind.DotToken) break
+
+        const start = scanner.getTokenStart()
+        const end = scanImportDeclaration()
+        if (end > start) ranges.push({ start, end: trailingImportEnd(code, end) })
+        break
+      }
+    }
+
+    prevToken = token
   }
 
   if (ranges.length === 0) return { imports: [], body: code }
@@ -491,13 +698,9 @@ function runTsc(options: RunTscOptions): readonly TypeError[] {
     }
     const [, filename, line, col, message] = match
     errors.push({
-      // biome-ignore lint/style/noNonNullAssertion: regex group
       block: index.get(filename!),
-      // biome-ignore lint/style/noNonNullAssertion: regex group
       line: Number(line!),
-      // biome-ignore lint/style/noNonNullAssertion: regex group
       column: Number(col!),
-      // biome-ignore lint/style/noNonNullAssertion: regex group
       message: message!,
       raw,
     })

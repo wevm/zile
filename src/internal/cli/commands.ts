@@ -6,7 +6,7 @@ import type { Command } from 'cac'
 import * as Examples from '../../Examples.js'
 import * as Package from '../../Package.js'
 
-export async function build(command: Command, options: build.Options = {}) {
+export function build(command: Command, options: build.Options = {}) {
   const { link = false } = options
   return command
     .option('--cwd <directory>', 'Working directory to build')
@@ -70,7 +70,7 @@ export declare namespace build {
   }
 }
 
-export async function examplesCheck(command: Command) {
+export function examplesCheck(command: Command) {
   return command
     .option('--cwd <directory>', 'Working directory to check')
     .option('--source-dir <directory>', 'Directory to scan for source files. @default <cwd>/src')
@@ -139,7 +139,7 @@ export declare namespace examplesCheck {
   }
 }
 
-export async function preparePublish(command: Command) {
+export function preparePublish(command: Command) {
   return command
     .option('--cwd <directory>', 'Working directory to publish from')
     .action(async (options: preparePublish.CommandOptions) => {
@@ -169,7 +169,7 @@ export declare namespace preparePublish {
   type CommandOptions = build.CommandOptions
 }
 
-export async function postPublish(command: Command) {
+export function postPublish(command: Command) {
   return command
     .option('--cwd <directory>', 'Working directory to publish from')
     .action(async (options: postPublish.CommandOptions) => {
@@ -188,7 +188,7 @@ export declare namespace postPublish {
   }
 }
 
-export async function createNew(command: Command) {
+export function createNew(command: Command) {
   return command
     .option('--pnpm', 'Use pnpm as package manager')
     .option('--bun', 'Use bun as package manager')
@@ -319,7 +319,6 @@ export async function createNew(command: Command) {
         const newPackageJson: Record<string, unknown> = {}
         for (let i = 0; i < keys.length; i++) {
           if (i === markerIndex) newPackageJson.packageManager = `${packageManager}@${version}`
-          // biome-ignore lint/style/noNonNullAssertion: _
           newPackageJson[keys[i]!] = packageJson[keys[i]!]
         }
 

@@ -153,7 +153,6 @@ describe('Packages.find', () => {
     })
 
     expect(result.length).toBeGreaterThan(0)
-    // biome-ignore lint/style/noNonNullAssertion: _
     expect(path.isAbsolute(result[0]!)).toBe(true)
   })
 
