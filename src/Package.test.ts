@@ -132,6 +132,27 @@ describe('Package.readTransform', () => {
     expect(await Package.readTransform({ cwd: process.cwd(), pkgJson: {} })).toBeUndefined()
   })
 
+  test('resolves a package export with ESM conditions', async () => {
+    const cwd = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
+    const pkgDir = path.resolve(cwd, 'node_modules', 'my-flags')
+    await fs.mkdir(pkgDir, { recursive: true })
+    await fs.writeFile(
+      path.resolve(pkgDir, 'package.json'),
+      JSON.stringify({
+        name: 'my-flags',
+        type: 'module',
+        exports: { './zile': { import: './zile.js' } },
+      }),
+    )
+    await fs.writeFile(path.resolve(pkgDir, 'zile.js'), 'export default (code) => code + "!"')
+    const transform = await Package.readTransform({
+      cwd,
+      pkgJson: { zile: { transform: 'my-flags/zile' } },
+    })
+    expect(await transform?.('a', 'dist/index.js')).toBe('a!')
+    expect(await fs.readdir(cwd)).toEqual(['node_modules'])
+  })
+
   test('throws when the default export is not a function', async () => {
     const cwd = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
     await fs.mkdir(cwd, { recursive: true })

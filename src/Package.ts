@@ -2,7 +2,6 @@ import * as cp from 'node:child_process'
 import * as crypto from 'node:crypto'
 import * as fsSync from 'node:fs'
 import * as fs from 'node:fs/promises'
-import { createRequire } from 'node:module'
 import * as path from 'node:path'
 import * as url from 'node:url'
 import * as Tsconfig from 'tsconfck'
@@ -635,8 +634,13 @@ export async function readTransform(
   const specifier = (pkgJson.zile as { transform?: string } | undefined)?.transform
   if (!specifier) return undefined
 
-  const require = createRequire(path.resolve(cwd, 'package.json'))
-  const module = await import(url.pathToFileURL(require.resolve(specifier)).href)
+  // Re-exports from the package directory so the specifier resolves with ESM conditions.
+  const tmpModule = path.resolve(
+    cwd,
+    `zile.transform.${process.pid}.${crypto.randomUUID()}.tmp.mjs`,
+  )
+  await fs.writeFile(tmpModule, `export { default } from ${JSON.stringify(specifier)}\n`)
+  const module = await import(url.pathToFileURL(tmpModule).href).finally(() => fs.rm(tmpModule))
   if (typeof module.default !== 'function')
     throw new Error(
       `\`${specifier}\` on \`package.json#zile.transform\` must default export a function`,
