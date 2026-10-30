@@ -3,6 +3,7 @@ import * as crypto from 'node:crypto'
 import * as fsSync from 'node:fs'
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
+import * as url from 'node:url'
 import * as Tsconfig from 'tsconfck'
 import type { PackageJson, TsConfigJson } from 'type-fest'
 
@@ -31,8 +32,15 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
   const sourceDir = getSourceDir({ cwd, sources })
 
   if (!link) {
+    const transform = await readTransform({ cwd, pkgJson })
     const result = await transpile({ cwd, sources, sourceDir, tsgo })
     tsConfig = result.tsConfig
+    if (transform)
+      for await (const file of fs.glob('**/*.{js,mjs,cjs}', { cwd: outDir })) {
+        const filePath = path.resolve(outDir, file)
+        const code = await fs.readFile(filePath, 'utf-8')
+        await fs.writeFile(filePath, await transform(code, path.relative(cwd, filePath)))
+      }
   }
 
   await copyAssets({ assets, cwd, outDir, sourceDir })
@@ -610,6 +618,45 @@ export declare namespace getSourceDir {
     /** Source files. */
     sources: string[]
   }
+}
+
+/**
+ * Reads the transform function of the module named by `package.json#zile.transform`.
+ *
+ * @param options - Options for reading the transform.
+ * @returns Transform function, or `undefined` if `zile.transform` is not set.
+ */
+export async function readTransform(
+  options: readTransform.Options,
+): Promise<readTransform.ReturnType> {
+  const { cwd, pkgJson } = options
+
+  const specifier = (pkgJson.zile as { transform?: string } | undefined)?.transform
+  if (!specifier) return undefined
+
+  // Re-exports from the package directory so the specifier resolves with ESM conditions.
+  const tmpModule = path.resolve(
+    cwd,
+    `zile.transform.${process.pid}.${crypto.randomUUID()}.tmp.mjs`,
+  )
+  await fs.writeFile(tmpModule, `export { default } from ${JSON.stringify(specifier)}\n`)
+  const module = await import(url.pathToFileURL(tmpModule).href).finally(() => fs.rm(tmpModule))
+  if (typeof module.default !== 'function')
+    throw new Error(
+      `\`${specifier}\` on \`package.json#zile.transform\` must default export a function`,
+    )
+  return module.default
+}
+
+export declare namespace readTransform {
+  type Options = {
+    /** Working directory. */
+    cwd: string
+    /** Package.json file. */
+    pkgJson: PackageJson
+  }
+
+  type ReturnType = ((code: string, file: string) => string | Promise<string>) | undefined
 }
 
 /**

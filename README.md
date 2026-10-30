@@ -306,6 +306,33 @@ Use keys with `.src` suffix to indicate source files:
 > }
 > ```
 
+### `zile.transform`
+
+The `zile.transform` field names a module that rewrites each emitted JavaScript file. Zile runs it after `tsc` emits the output.
+
+```diff
+{
+  "name": "my-pkg",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
++ "zile": {
++   "transform": "./transform.js"
++ }
+}
+```
+
+The module's default export receives the code of a `.js`, `.mjs`, or `.cjs` file and its output path relative to the package directory, such as `dist/index.js`. It returns, or resolves to, the new code.
+
+```js
+// transform.js
+export default (code, file) => code.replaceAll('process.env.DEBUG', 'false')
+```
+
+- **Resolution**: The specifier resolves from the package directory, so it can be a relative path or a package export such as `my-flags/zile`.
+- **Source maps**: Zile leaves `.js.map` files unchanged, so mappings can shift on lines that the transform changes.
+- **`zile dev`**: The transform does not run. Link mode does not emit JavaScript, so the output resolves to the unchanged source.
+
 ### Additional Fields
 
 Zile also sets these fields if not already present:

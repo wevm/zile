@@ -18,6 +18,7 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
@@ -50,6 +51,7 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
@@ -103,6 +105,7 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
@@ -179,6 +182,7 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
