@@ -127,89 +127,20 @@ if (!fs.existsSync(started)) {
   })
 })
 
-describe('Package.applyDefine', () => {
-  test('replaces member expressions and removes the unused import', () => {
-    const code = `import { flags } from 'flargs';
-import { other } from './other.js';
-/** Docs. */
-export function f(value) {
-    // comment
-    if (flags.newEncoder)
-        return other(value);
-    return !flags.newEncoder;
-}
-`
-    expect(
-      Package.applyDefine({ code, define: { 'flags.newEncoder': 'false' } }),
-    ).toMatchInlineSnapshot(`
-        "
-        import { other } from './other.js';
-        /** Docs. */
-        export function f(value) {
-            // comment
-            if (false)
-                return other(value);
-            return !false;
-        }
-        "
-      `)
+describe('Package.readTransform', () => {
+  test('returns undefined when not set', async () => {
+    expect(await Package.readTransform({ cwd: process.cwd(), pkgJson: {} })).toBeUndefined()
   })
 
-  test('keeps an import with remaining references', () => {
-    const code = `import { flags } from 'flargs';
-export const a = flags.newEncoder;
-export const b = flags.other;
-`
-    expect(
-      Package.applyDefine({ code, define: { 'flags.newEncoder': 'false' } }),
-    ).toMatchInlineSnapshot(`
-        "import { flags } from 'flargs';
-        export const a = false;
-        export const b = flags.other;
-        "
-      `)
-  })
-
-  test('keeps imports unrelated to replacements', () => {
-    const code = `import { unused } from 'a';
-import 'side-effect';
-export const a = __DEV__;
-`
-    expect(Package.applyDefine({ code, define: { __DEV__: 'true' } })).toMatchInlineSnapshot(`
-      "import { unused } from 'a';
-      import 'side-effect';
-      export const a = true;
-      "
-    `)
-  })
-
-  test('skips property names, declarations, and assignment targets, ignoring scope', () => {
-    const code = `export const x = { __DEV__: 1, y: a.__DEV__ };
-__DEV__ = 1;
-__DEV__++;
-export function __DEV__fn(__DEV__) { return __DEV__; }
-`
-    expect(Package.applyDefine({ code, define: { __DEV__: 'true' } })).toMatchInlineSnapshot(`
-      "export const x = { __DEV__: 1, y: a.__DEV__ };
-      __DEV__ = 1;
-      __DEV__++;
-      export function __DEV__fn(__DEV__) { return true; }
-      "
-    `)
-  })
-
-  test('wraps compound expressions', () => {
-    const code = 'export const a = flags.limit * 2;\nexport const b = flags.name;\n'
-    expect(
-      Package.applyDefine({
-        code,
-        define: { 'flags.limit': '1 + 1', 'flags.name': '"zile"' },
-      }),
-    ).toMatchInlineSnapshot(`
-      "export const a = (1 + 1) * 2;
-      export const b = "zile";
-      "
-    `)
+  test('throws when the default export is not a function', async () => {
+    const cwd = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
+    await fs.mkdir(cwd, { recursive: true })
+    await fs.writeFile(path.resolve(cwd, 'transform.js'), 'export default {}')
+    await expect(
+      Package.readTransform({ cwd, pkgJson: { zile: { transform: './transform.js' } } }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: \`./transform.js\` on \`package.json#zile.transform\` must default export a function]`,
+    )
   })
 })
 

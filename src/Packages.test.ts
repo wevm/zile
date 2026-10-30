@@ -18,6 +18,7 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
@@ -29,7 +30,6 @@ describe('Packages.find', () => {
         "/test/repos/error-bin-object-not-exists",
         "/test/repos/dts-exports-object",
         "/test/repos/dts-exports",
-        "/test/repos/define",
         "/test/repos/bin-with-src",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
@@ -51,6 +51,7 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
@@ -62,7 +63,6 @@ describe('Packages.find', () => {
         "/test/repos/error-bin-object-not-exists",
         "/test/repos/dts-exports-object",
         "/test/repos/dts-exports",
-        "/test/repos/define",
         "/test/repos/bin-with-src",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
@@ -105,6 +105,7 @@ describe('Packages.find', () => {
     expect(relative(result)).toMatchInlineSnapshot(`
       [
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
@@ -116,7 +117,6 @@ describe('Packages.find', () => {
         "/test/repos/error-bin-object-not-exists",
         "/test/repos/dts-exports-object",
         "/test/repos/dts-exports",
-        "/test/repos/define",
         "/test/repos/bin-with-src",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",
@@ -182,6 +182,7 @@ describe('Packages.find', () => {
       [
         "/",
         "/test/repos/wildcard-exports",
+        "/test/repos/transform",
         "/test/repos/single-entrypoint",
         "/test/repos/multiple-entrypoint",
         "/test/repos/error-module-resolution",
@@ -193,7 +194,6 @@ describe('Packages.find', () => {
         "/test/repos/error-bin-object-not-exists",
         "/test/repos/dts-exports-object",
         "/test/repos/dts-exports",
-        "/test/repos/define",
         "/test/repos/bin-with-src",
         "/test/repos/basic-object-exports",
         "/test/repos/basic",

@@ -7,7 +7,6 @@ import * as path from 'node:path'
 import * as url from 'node:url'
 import * as Tsconfig from 'tsconfck'
 import type { PackageJson, TsConfigJson } from 'type-fest'
-import * as ts from 'typescript'
 
 export type { PackageJson, TsConfigJson }
 
@@ -34,14 +33,14 @@ export async function build(options: build.Options): Promise<build.ReturnType> {
   const sourceDir = getSourceDir({ cwd, sources })
 
   if (!link) {
-    const define = await readDefine({ cwd, pkgJson })
+    const transform = await readTransform({ cwd, pkgJson })
     const result = await transpile({ cwd, sources, sourceDir, tsgo })
     tsConfig = result.tsConfig
-    if (define)
+    if (transform)
       for await (const file of fs.glob('**/*.{js,mjs,cjs}', { cwd: outDir })) {
         const filePath = path.resolve(outDir, file)
         const code = await fs.readFile(filePath, 'utf-8')
-        await fs.writeFile(filePath, applyDefine({ code, define }))
+        await fs.writeFile(filePath, await transform(code, path.relative(cwd, filePath)))
       }
   }
 
@@ -76,118 +75,6 @@ export declare namespace build {
     packageJson: PackageJson
     /** tsconfig.json used for transpilation. */
     tsConfig: TsConfigJson
-  }
-}
-
-/**
- * Replaces identifiers and member expressions (such as `flags.newEncoder`) in
- * JavaScript code, and removes imports that the replacements leave unused.
- * The rest of the code is left unchanged.
- *
- * @param options - Options for applying the replacements.
- * @returns Code with the replacements applied.
- */
-export function applyDefine(options: applyDefine.Options): string {
-  const { code, define } = options
-
-  const sourceFile = ts.createSourceFile(
-    'index.js',
-    code,
-    ts.ScriptTarget.Latest,
-    true,
-    ts.ScriptKind.JS,
-  )
-
-  const edits: { start: number; end: number; text: string }[] = []
-  // Roots of replaced keys (`flags` for `flags.newEncoder`), and names still referenced.
-  const replacedRoots = new Set<string>()
-  const references = new Set<string>()
-
-  function keyOf(node: ts.Node): string | undefined {
-    if (ts.isIdentifier(node)) return node.text
-    if (
-      ts.isPropertyAccessExpression(node) &&
-      !node.questionDotToken &&
-      ts.isIdentifier(node.name)
-    ) {
-      const object = keyOf(node.expression)
-      return object && `${object}.${node.name.text}`
-    }
-    return undefined
-  }
-
-  // Excludes property names, declaration names, labels, and assignment targets.
-  function isReplaceable(node: ts.Node): boolean {
-    const parent = node.parent
-    if ('name' in parent && parent.name === node) return false
-    if ('propertyName' in parent && parent.propertyName === node) return false
-    if ('label' in parent && parent.label === node) return false
-    if (
-      ts.isBinaryExpression(parent) &&
-      parent.left === node &&
-      parent.operatorToken.kind >= ts.SyntaxKind.FirstAssignment &&
-      parent.operatorToken.kind <= ts.SyntaxKind.LastAssignment
-    )
-      return false
-    if (
-      (ts.isPrefixUnaryExpression(parent) || ts.isPostfixUnaryExpression(parent)) &&
-      (parent.operator === ts.SyntaxKind.PlusPlusToken ||
-        parent.operator === ts.SyntaxKind.MinusMinusToken)
-    )
-      return false
-    return true
-  }
-
-  function visit(node: ts.Node) {
-    if (ts.isImportDeclaration(node)) return
-    const key = keyOf(node)
-    if (key && Object.hasOwn(define, key) && isReplaceable(node)) {
-      // biome-ignore lint/style/noNonNullAssertion: _
-      const value = define[key]!
-      // Wraps compound expressions so they keep their precedence at the replaced position.
-      const text = /^(?:[\w$.]+|"(?:[^"\\]|\\.)*")$/.test(value) ? value : `(${value})`
-      edits.push({ start: node.getStart(), end: node.end, text })
-      // biome-ignore lint/style/noNonNullAssertion: _
-      replacedRoots.add(key.split('.')[0]!)
-      return
-    }
-    if (ts.isIdentifier(node)) references.add(node.text)
-    ts.forEachChild(node, visit)
-  }
-  visit(sourceFile)
-
-  // Removes an import only when a replacement left all of its bindings unreferenced.
-  // References are matched by name, so a shadowing local keeps the import.
-  for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement) || !statement.importClause) continue
-    const { name, namedBindings } = statement.importClause
-    const names = [
-      ...(name ? [name.text] : []),
-      ...(namedBindings && ts.isNamespaceImport(namedBindings) ? [namedBindings.name.text] : []),
-      ...(namedBindings && ts.isNamedImports(namedBindings)
-        ? namedBindings.elements.map((element) => element.name.text)
-        : []),
-    ]
-    if (
-      names.some((name) => replacedRoots.has(name)) &&
-      !names.some((name) => references.has(name))
-    )
-      // Keeps the line break so source maps stay aligned.
-      edits.push({ start: statement.getStart(), end: statement.end, text: '' })
-  }
-
-  let result = code
-  for (const edit of edits.sort((a, b) => b.start - a.start))
-    result = result.slice(0, edit.start) + edit.text + result.slice(edit.end)
-  return result
-}
-
-export declare namespace applyDefine {
-  type Options = {
-    /** JavaScript code. */
-    code: string
-    /** Replacements, keyed by identifier or member expression. Each value is a JavaScript expression. */
-    define: Record<string, string>
   }
 }
 
@@ -735,27 +622,29 @@ export declare namespace getSourceDir {
 }
 
 /**
- * Reads the replacements of the module named by `package.json#zile.define`.
+ * Reads the transform function of the module named by `package.json#zile.transform`.
  *
- * @param options - Options for reading the replacements.
- * @returns Replacements, or `undefined` if `zile.define` is not set.
+ * @param options - Options for reading the transform.
+ * @returns Transform function, or `undefined` if `zile.transform` is not set.
  */
-export async function readDefine(options: readDefine.Options): Promise<readDefine.ReturnType> {
+export async function readTransform(
+  options: readTransform.Options,
+): Promise<readTransform.ReturnType> {
   const { cwd, pkgJson } = options
 
-  const specifier = (pkgJson.zile as { define?: string } | undefined)?.define
+  const specifier = (pkgJson.zile as { transform?: string } | undefined)?.transform
   if (!specifier) return undefined
 
   const require = createRequire(path.resolve(cwd, 'package.json'))
   const module = await import(url.pathToFileURL(require.resolve(specifier)).href)
   if (typeof module.default !== 'function')
     throw new Error(
-      `\`${specifier}\` on \`package.json#zile.define\` must default export a function`,
+      `\`${specifier}\` on \`package.json#zile.transform\` must default export a function`,
     )
-  return await module.default({ cwd })
+  return module.default
 }
 
-export declare namespace readDefine {
+export declare namespace readTransform {
   type Options = {
     /** Working directory. */
     cwd: string
@@ -763,7 +652,7 @@ export declare namespace readDefine {
     pkgJson: PackageJson
   }
 
-  type ReturnType = Record<string, string> | undefined
+  type ReturnType = ((code: string, file: string) => string | Promise<string>) | undefined
 }
 
 /**
