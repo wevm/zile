@@ -306,6 +306,47 @@ Use keys with `.src` suffix to indicate source files:
 > }
 > ```
 
+### `zile.define`
+
+The `zile.define` field names a module that returns replacements for identifiers and member expressions. Zile applies them to the JavaScript that `tsc` emits, before it writes the output.
+
+```diff
+{
+  "name": "my-pkg",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
++ "zile": {
++   "define": "./define.js"
++ }
+}
+```
+
+The module's default export is a function that receives `{ cwd }` and returns, or resolves to, a record. Each key is an identifier or member expression, and each value is a JavaScript expression string, as in esbuild's `define`.
+
+```js
+// define.js
+export default () => ({ 'flags.newEncoder': 'false' })
+```
+
+> **↓↓↓ Output**
+>
+> ```diff
+> - import { flags } from './flags.js';
+>   export function encode(value) {
+> -     if (flags.newEncoder)
+> +     if (false)
+>           return `v2:${value}`;
+>       return `v1:${value}`;
+>   }
+> ```
+
+- **Resolution**: The specifier resolves from the package directory, so it can be a relative path or a package export such as `my-flags/zile`.
+- **Matching**: Keys match by name and ignore scope, so a local variable that shadows a key is also replaced. Property names, declarations, and assignment targets are not replaced.
+- **Imports**: An import whose bindings are all unused after the replacements is removed. Other imports stay unchanged, so a replaced package can stay a dev dependency.
+- **Formatting**: The rest of the output, including comments, stays unchanged. Removed imports leave an empty line so source maps stay aligned.
+- **`zile dev`**: Ignored. Link mode does not transpile, so the output resolves to the unreplaced source.
+
 ### Additional Fields
 
 Zile also sets these fields if not already present:

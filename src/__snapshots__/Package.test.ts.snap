@@ -715,6 +715,219 @@ exports[`'/bin-with-src': Package.build > link > result 1`] = `
 
 exports[`'/bin-with-src': Package.build > link > types-target 1`] = `"../src/index.ts"`;
 
+exports[`'/define': Package.build > default > check 1`] = `
+{
+  "output": {
+    "attw": "
+define v0.0.0
+
+ (ignoring resolutions: 'node10', 'node16-cjs')
+
+(ignored per resolution) ⚠️ A require call resolved to an ESM JavaScript file, which is an error in Node and some bundlers. CommonJS consumers will need to use a dynamic import. https://github.com/arethetypeswrong/arethetypeswrong.github.io/blob/main/docs/problems/CJSResolvesToESM.md
+
+
+"define"
+
+node16 (from ESM): 🟢 (ESM)
+bundler: 🟢 
+node10: (ignored) 🟢 
+node16 (from CJS): (ignored) ⚠️ ESM (dynamic import only)
+
+***********************************
+",
+    "publint": "Running publint v0.3.14 for define...
+Packing files with \`bun pack\`...
+Linting...
+All good!
+",
+  },
+}
+`;
+
+exports[`'/define': Package.build > default > main 1`] = `
+"
+/** Encodes a value. */
+export function encode(value) {
+    // Replaced with \`false\` by \`define.js\`.
+    if (false)
+        return \`v2:\${value}\`;
+    return \`v1:\${value}\`;
+}
+//# sourceMappingURL=index.js.map"
+`;
+
+exports[`'/define': Package.build > default > output 1`] = `
+"{
+  "name": "define",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "zile": {
+    "define": "./define.js"
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}
+
+
+
+├── dist
+│   ├── flags.d.ts
+│   ├── flags.d.ts.map
+│   ├── flags.js
+│   ├── flags.js.map
+│   ├── index.d.ts
+│   ├── index.d.ts.map
+│   ├── index.js
+│   └── index.js.map
+├── src
+│   ├── flags.ts
+│   └── index.ts
+├── define.js
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/define': Package.build > default > result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "define",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+    "zile": {
+      "define": "./define.js",
+    },
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "composite": false,
+      "declaration": true,
+      "declarationDir": undefined,
+      "declarationMap": true,
+      "emitDeclarationOnly": false,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": false,
+      "outDir": "/repos/define/dist",
+      "rootDir": "/repos/define/src",
+      "skipLibCheck": true,
+      "sourceMap": true,
+      "strict": true,
+      "target": "es2022",
+      "verbatimModuleSyntax": true,
+    },
+    "exclude": [],
+    "include": [
+      "/repos/define/src/index.ts",
+    ],
+  },
+}
+`;
+
+exports[`'/define': Package.build > default > types 1`] = `
+"/** Encodes a value. */
+export declare function encode(value: string): string;
+//# sourceMappingURL=index.d.ts.map"
+`;
+
+exports[`'/define': Package.build > link > main-target 1`] = `"../src/index.ts"`;
+
+exports[`'/define': Package.build > link > output 1`] = `
+"{
+  "name": "define",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "zile": {
+    "define": "./define.js"
+  },
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "src": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}
+
+
+
+├── dist
+│   ├── index.d.ts -> ../src/index.ts
+│   └── index.js -> ../src/index.ts
+├── src
+│   ├── flags.ts
+│   └── index.ts
+├── define.js
+├── package.json
+└── tsconfig.json
+"
+`;
+
+exports[`'/define': Package.build > link > result 1`] = `
+{
+  "packageJson": {
+    "exports": {
+      ".": {
+        "default": "./dist/index.js",
+        "src": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+      },
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "name": "define",
+    "sideEffects": false,
+    "type": "module",
+    "types": "./dist/index.d.ts",
+    "version": "0.0.0",
+    "zile": {
+      "define": "./define.js",
+    },
+  },
+  "tsConfig": {
+    "compilerOptions": {
+      "isolatedModules": true,
+      "module": "nodenext",
+      "moduleDetection": "force",
+      "moduleResolution": "nodenext",
+      "noEmit": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "verbatimModuleSyntax": true,
+    },
+  },
+}
+`;
+
+exports[`'/define': Package.build > link > types-target 1`] = `"../src/index.ts"`;
+
 exports[`'/dts-exports': Package.build > default > check 1`] = `
 {
   "output": {
