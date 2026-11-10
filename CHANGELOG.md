@@ -1,5 +1,11 @@
 # zile
 
+## 0.0.32
+
+### Patch Changes
+
+- [#54](https://github.com/wevm/zile/pull/54) [`dcf13cd`](https://github.com/wevm/zile/commit/dcf13cdc018d2a18ed3fa9d9673df88a797c952c) Thanks [@jxom](https://github.com/jxom)! - Fixed a race where a concurrent reader, such as pnpm linking workspace projects, could read an empty `package.json` while `zile dev` or `zile build` rewrote it. An unchanged manifest is no longer written, and a changed one replaces the file in one rename.
+
 ## 0.0.31
 
 ### Patch Changes
