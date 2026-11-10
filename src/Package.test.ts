@@ -345,4 +345,45 @@ describe('Package.writePackageJson', () => {
 
     await fs.rm(tmpDir, { recursive: true })
   })
+
+  test('does not rewrite an unchanged manifest', async () => {
+    const tmpDir = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
+    await fs.mkdir(tmpDir, { recursive: true })
+
+    const pkgPath = path.resolve(tmpDir, 'package.json')
+    const content = `{\n  "name": "test",\n  "version": "1.0.0"\n}\n`
+    await fs.writeFile(pkgPath, content, 'utf-8')
+    const past = new Date(Date.now() - 60_000)
+    await fs.utimes(pkgPath, past, past)
+    const before = await fs.stat(pkgPath)
+
+    const pkgJson = await Package.readPackageJson({ cwd: tmpDir })
+    await Package.writePackageJson(tmpDir, pkgJson)
+
+    const after = await fs.stat(pkgPath)
+    expect(after.ino).toBe(before.ino)
+    expect(after.mtimeMs).toBe(before.mtimeMs)
+    expect(await fs.readFile(pkgPath, 'utf-8')).toBe(content)
+
+    await fs.rm(tmpDir, { recursive: true })
+  })
+
+  test('replaces a changed manifest in full', async () => {
+    const tmpDir = path.resolve(import.meta.dirname, '.tmp', crypto.randomUUID())
+    await fs.mkdir(tmpDir, { recursive: true })
+
+    const pkgPath = path.resolve(tmpDir, 'package.json')
+    await fs.writeFile(pkgPath, `{\n  "name": "test",\n  "version": "1.0.0"\n}\n`, 'utf-8')
+
+    const pkgJson = await Package.readPackageJson({ cwd: tmpDir })
+    pkgJson.version = '1.0.1'
+    await Package.writePackageJson(tmpDir, pkgJson)
+
+    expect(await fs.readFile(pkgPath, 'utf-8')).toBe(
+      `{\n  "name": "test",\n  "version": "1.0.1"\n}\n`,
+    )
+    expect(await fs.readdir(tmpDir)).toEqual(['package.json'])
+
+    await fs.rm(tmpDir, { recursive: true })
+  })
 })
