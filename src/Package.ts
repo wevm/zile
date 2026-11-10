@@ -847,7 +847,14 @@ export async function writePackageJson(cwd: string, pkgJson: PackageJson) {
   let output = JSON.stringify(merged, null, indent)
   if (hasTrailingNewline) output += '\n'
 
-  await fs.writeFile(path.resolve(cwd, 'package.json'), output, 'utf-8')
+  // A rewrite truncates the file before it writes, so a concurrent reader, such as pnpm linking a
+  // workspace project that depends on this package, can read an empty manifest. An unchanged
+  // manifest is not written, and a changed one replaces the file in one rename.
+  if (output === content) return
+  const file = path.resolve(cwd, 'package.json')
+  const temporary = `${file}.${process.pid}.tmp`
+  await fs.writeFile(temporary, output, 'utf-8')
+  await fs.rename(temporary, file)
 }
 
 /**
